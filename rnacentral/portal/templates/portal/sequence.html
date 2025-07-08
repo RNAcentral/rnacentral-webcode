@@ -410,43 +410,9 @@ limitations under the License.
 
     {% if context.expression_atlas %}
     <link rel="stylesheet" type="text/css" href="https://www.ebi.ac.uk/gxa/resources/css/customized-bootstrap-3.3.5.css"/>
-        <!-- Load Expression Atlas bundle with error handling -->
-        <script type="text/javascript">
-            // Load Expression Atlas scripts
-            function loadExpressionAtlasScripts() {
-                var vendorScript = document.createElement('script');
-                vendorScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js';
-                vendorScript.onload = function() {
-                    var mainScript = document.createElement('script');
-                    mainScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js';
-                    document.head.appendChild(mainScript);
-                };
-                document.head.appendChild(vendorScript);
-            }
-            
-            // Load scripts when DOM is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', loadExpressionAtlasScripts);
-            } else {
-                loadExpressionAtlasScripts();
-            }
-            
-            // Handle SVG loading errors (these are often non-critical)
-            window.addEventListener('error', function(e) {
-                if (e.target && e.target.src && e.target.src.includes('.svg')) {
-                    // Prevent error from bubbling up
-                    e.preventDefault();
-                }
-            });
-            
-            // Handle cross-origin errors
-            window.addEventListener('unhandledrejection', function(e) {
-                if (e.reason && e.reason.message && e.reason.message.includes('cross-origin')) {
-                    // Prevent error from bubbling up
-                    e.preventDefault();
-                }
-            });
-        </script>
+    <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js"></script>
+    <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js"></script>
+       
     {% endif %}
 {% endblock %}
 
