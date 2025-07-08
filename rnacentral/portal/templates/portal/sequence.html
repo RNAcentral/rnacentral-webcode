@@ -409,43 +409,89 @@ limitations under the License.
     {% endif %}
 
     {% if context.expression_atlas %}
-    <link rel="stylesheet" type="text/css" href="https://www.ebi.ac.uk/gxa/resources/css/customized-bootstrap-3.3.5.css"/>
-        <!-- Load Expression Atlas bundle with error handling -->
+        <!-- Load Expression Atlas CSS first -->
+        <link rel="stylesheet" type="text/css" href="https://www.ebi.ac.uk/gxa/resources/css/customized-bootstrap-3.3.5.css" onload="this.onload=null;"/>
+        
+        <!-- Load Expression Atlas bundle with enhanced error handling -->
         <script type="text/javascript">
-            // Load Expression Atlas scripts
-            function loadExpressionAtlasScripts() {
-                var vendorScript = document.createElement('script');
-                vendorScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js';
-                vendorScript.onload = function() {
-                    var mainScript = document.createElement('script');
-                    mainScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js';
-                    document.head.appendChild(mainScript);
-                };
-                document.head.appendChild(vendorScript);
-            }
-            
-            // Load scripts when DOM is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', loadExpressionAtlasScripts);
-            } else {
-                loadExpressionAtlasScripts();
-            }
-            
-            // Handle SVG loading errors (these are often non-critical)
-            window.addEventListener('error', function(e) {
-                if (e.target && e.target.src && e.target.src.includes('.svg')) {
-                    // Prevent error from bubbling up
-                    e.preventDefault();
+            (function() {
+                var scriptsLoaded = 0;
+                var scriptsToLoad = 2;
+                var loadingStarted = false;
+                
+                function checkAllScriptsLoaded() {
+                    scriptsLoaded++;
+                    if (scriptsLoaded === scriptsToLoad) {
+                        // All scripts loaded, dispatch custom event
+                        var event = new CustomEvent('expressionAtlasReady');
+                        document.dispatchEvent(event);
+                    }
                 }
-            });
-            
-            // Handle cross-origin errors
-            window.addEventListener('unhandledrejection', function(e) {
-                if (e.reason && e.reason.message && e.reason.message.includes('cross-origin')) {
-                    // Prevent error from bubbling up
-                    e.preventDefault();
+                
+                function loadExpressionAtlasScripts() {
+                    if (loadingStarted) return;
+                    loadingStarted = true;
+                    
+                    // Load vendor script first
+                    var vendorScript = document.createElement('script');
+                    vendorScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js';
+                    vendorScript.onload = function() {
+                        checkAllScriptsLoaded();
+                        
+                        // Load main script
+                        var mainScript = document.createElement('script');
+                        mainScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js';
+                        mainScript.onload = function() {
+                            checkAllScriptsLoaded();
+                        };
+                        mainScript.onerror = function() {
+                            console.warn('Failed to load Expression Atlas main script');
+                        };
+                        document.head.appendChild(mainScript);
+                    };
+                    vendorScript.onerror = function() {
+                        console.warn('Failed to load Expression Atlas vendor script');
+                    };
+                    document.head.appendChild(vendorScript);
                 }
-            });
+                
+                // Load scripts when DOM is ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', loadExpressionAtlasScripts);
+                } else {
+                    loadExpressionAtlasScripts();
+                }
+                
+                // Enhanced error handling for various types of loading errors
+                window.addEventListener('error', function(e) {
+                    if (e.target && e.target.src) {
+                        if (e.target.src.includes('.svg') || e.target.src.includes('expression-atlas') || e.target.src.includes('gxa')) {
+                            // Prevent Expression Atlas related errors from bubbling up
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    }
+                }, true);
+                
+                // Handle promise rejections
+                window.addEventListener('unhandledrejection', function(e) {
+                    if (e.reason && e.reason.message && 
+                        (e.reason.message.includes('cross-origin') || 
+                         e.reason.message.includes('expression-atlas') ||
+                         e.reason.message.includes('gxa'))) {
+                        e.preventDefault();
+                    }
+                });
+                
+                // Handle network errors
+                window.addEventListener('beforeunload', function() {
+                    // Cancel any pending Expression Atlas requests
+                    if (window.expressionAtlasHeatmapHighcharts && 
+                        window.expressionAtlasHeatmapHighcharts.cleanup) {
+                        window.expressionAtlasHeatmapHighcharts.cleanup();
+                    }
+                });
+            })();
         </script>
     {% endif %}
 {% endblock %}
