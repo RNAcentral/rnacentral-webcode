@@ -75,22 +75,25 @@ var expressionAtlas = {
                     return;
                 }
                 
-                // Prepare configuration with fallbacks
+                // Simple single configuration approach
                 var config = {
                     target: 'highchartsContainer',
                     experiment: 'reference',
                     query: {
                         species: ctrl.species || 'homo sapiens',
-                        gene: ctrl.gene ? [{value: ctrl.gene}] : [{value: 'ENSG00000139618'}] // Default to a known gene
+                        gene: ctrl.gene ? [{value: ctrl.gene}] : [{value: 'ENSG00000139618'}]
                     },
-                    // Add additional configuration to handle errors
                     failSilently: true,
-                    minExpressionLevel: 0.1, // Lower threshold for better results
+                    minExpressionLevel: 0.1,
+                    showAnatomogram: false,
+                    showControls: true,
+                    showTooltips: true,
+                    isWidget: true,
+                    height: 400,
                     onLoad: function() {
                         console.log('Expression Atlas widget loaded successfully');
                         ctrl.isLoading = false;
                         ctrl.hasError = false;
-                        // Use $timeout to ensure we're in the Angular digest cycle
                         $timeout(function() {
                             ctrl.isLoading = false;
                             ctrl.hasError = false;
@@ -98,16 +101,19 @@ var expressionAtlas = {
                     },
                     onError: function(error) {
                         console.error('Expression Atlas widget error:', error);
-                        ctrl.handleError("Widget rendering failed", error);
+                        // Don't show error immediately, let the widget try to recover
+                        $timeout(function() {
+                            if (ctrl.isLoading) {
+                                ctrl.handleError("Expression data not available for this RNA sequence", error);
+                            }
+                        }, 5000);
                     }
                 };
                 
                 console.log('Rendering with config:', config);
                 
-                // Clear any existing content
-                container.innerHTML = '<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading Expression Atlas data...</div>';
-                
-                // Render the widget
+                // Don't manipulate the container DOM - let Expression Atlas handle it
+                // Just render the widget directly
                 expressionAtlasHeatmapHighcharts.render(config);
                 
             } catch (error) {
@@ -157,19 +163,11 @@ var expressionAtlas = {
 
     }],
     template: '<div id="highchartsContainer">' +
-              '    <div ng-if="$ctrl.isLoading && !$ctrl.hasError" class="text-center" style="padding: 20px;">' +
-              '        <i class="fa fa-spinner fa-spin fa-2x"></i>' +
-              '        <div style="margin-top: 10px;">Loading Expression Atlas data...</div>' +
+              '    <div ng-if="!$ctrl.response">' +
+              '        <i class="fa fa-spinner fa-spin fa-2x"></i><span class="margin-left-5px">Loading Expression Atlas...</span>' +
               '    </div>' +
-              '    <div ng-if="$ctrl.hasError" class="alert alert-warning">' +
-              '        <i class="fa fa-exclamation-triangle"></i> ' +
-              '        <strong>Expression Atlas data unavailable</strong><br>' +
-              '        {{ $ctrl.errorMessage }}' +
-              '        <div style="margin-top: 10px;">' +
-              '            <button class="btn btn-sm btn-default" ng-click="$ctrl.retry()">' +
-              '                <i class="fa fa-refresh"></i> Retry' +
-              '            </button>' +
-              '        </div>' +
+              '    <div ng-if="$ctrl.response.status >= 400" class="alert alert-danger fade">' +
+              '        <i class="fa fa-exclamation-triangle"></i>Sorry, there was a problem loading the data. Please try again and contact us if the problem persists.' +
               '    </div>' +
               '</div>'
 };
