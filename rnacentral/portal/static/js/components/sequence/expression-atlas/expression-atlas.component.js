@@ -10,7 +10,6 @@ var expressionAtlas = {
         ctrl.errorMessage = '';
 
         ctrl.$onInit = function() {
-            console.log('Expression Atlas component initializing...');
             ctrl.fetchGeneAndSpecies().then(
                 function(response) {
                     ctrl.processResponse(response);
@@ -23,15 +22,11 @@ var expressionAtlas = {
 
         ctrl.processResponse = function(response) {
             try {
-                console.log('Processing response:', response);
-                
                 // Process genes
                 var genes = response.data.genes || [];
                 var ensemblGenes = genes.filter(function(item) { 
                     return item && typeof item === 'string' && item.startsWith('ENS'); 
                 });
-                
-                console.log('Filtered genes:', ensemblGenes);
                 
                 // Process gene
                 if (ensemblGenes.length > 0) {
@@ -42,11 +37,6 @@ var expressionAtlas = {
                 
                 // Process species
                 ctrl.species = response.data.species || null;
-                
-                console.log('Final processed data:', {
-                    gene: ctrl.gene,
-                    species: ctrl.species
-                });
                 
                 // Small delay to ensure DOM is ready
                 $timeout(function() {
@@ -60,8 +50,6 @@ var expressionAtlas = {
 
         ctrl.renderWidget = function() {
             try {
-                console.log('Attempting to render Expression Atlas widget...');
-                
                 // Check if library is loaded
                 if (typeof expressionAtlasHeatmapHighcharts === 'undefined') {
                     ctrl.handleError("Expression Atlas library not loaded", null);
@@ -91,7 +79,6 @@ var expressionAtlas = {
                     isWidget: true,
                     height: 400,
                     onLoad: function() {
-                        console.log('Expression Atlas widget loaded successfully');
                         ctrl.isLoading = false;
                         ctrl.hasError = false;
                         $timeout(function() {
@@ -100,7 +87,6 @@ var expressionAtlas = {
                         });
                     },
                     onError: function(error) {
-                        console.error('Expression Atlas widget error:', error);
                         // Don't show error immediately, let the widget try to recover
                         $timeout(function() {
                             if (ctrl.isLoading) {
@@ -109,8 +95,6 @@ var expressionAtlas = {
                         }, 5000);
                     }
                 };
-                
-                console.log('Rendering with config:', config);
                 
                 // Don't manipulate the container DOM - let Expression Atlas handle it
                 // Just render the widget directly
@@ -122,7 +106,6 @@ var expressionAtlas = {
         };
 
         ctrl.handleError = function(message, error) {
-            console.error(message, error);
             ctrl.isLoading = false;
             ctrl.hasError = true;
             ctrl.errorMessage = message;
