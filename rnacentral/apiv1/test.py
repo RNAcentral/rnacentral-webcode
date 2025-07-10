@@ -570,7 +570,7 @@ class InteractionsTestCase(ApiV1BaseClass):
             "intenz",
             "mgd/mgi",
             "protein ontology",
-            "reactome",
+            "rhea",
             "rnacentral",
             "sgd",
             "signor",

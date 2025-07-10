@@ -127,3 +127,6 @@ rnacentral/export/results
 
 # kubernetes
 kubernetes/secrets
+
+#files created for local development
+staticfiles/*
