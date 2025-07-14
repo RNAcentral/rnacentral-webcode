@@ -1,5 +1,5 @@
 import json
-
+import requests
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.urls import resolve, reverse
@@ -311,6 +311,67 @@ class PortalTest(TestCase):
     def test_genome_browser_template(self):
         response = self.client.get(reverse("genome-browser"))
         self.assertTemplateUsed(response, "portal/genome-browser.html")
+
+    def test_genome_browser_dev_ftp_available(self):       
+        url = "https://ftp.ebi.ac.uk/pub/databases/RNAcentral/.genome-browser-dev/"
+        
+        try:
+            response = requests.get(url, timeout=30)
+            self.assertEqual(response.status_code, 200)
+            
+            content = response.text.lower()
+            # Check for directory listing indicators
+            directory_indicators = [
+                "index of", "parent directory", "<pre>", "last modified", "size"
+            ]
+            self.assertTrue(
+                any(indicator in content for indicator in directory_indicators),
+                "Response does not appear to be a valid directory listing"
+            )
+            
+            # Verify it's not an error page
+            self.assertNotIn("not found", content)
+            self.assertNotIn("forbidden", content)
+            
+        except requests.exceptions.RequestException as e:
+            self.fail(f"Failed to connect to genome browser dev FTP: {e}")
+
+    def test_genome_browser_prod_ftp_available(self):       
+        url = "https://ftp.ebi.ac.uk/pub/databases/RNAcentral/.genome-browser/"
+        
+        try:
+            response = requests.get(url, timeout=30)
+            self.assertEqual(response.status_code, 200)
+            
+            content = response.text.lower()
+            # Check for directory listing indicators
+            directory_indicators = [
+                "index of", "parent directory", "<pre>", "last modified", "size"
+            ]
+            self.assertTrue(
+                any(indicator in content for indicator in directory_indicators),
+                "Response does not appear to be a valid directory listing"
+            )
+            
+            # Verify it's not an error page
+            self.assertNotIn("not found", content)
+            self.assertNotIn("forbidden", content)
+            
+        except requests.exceptions.RequestException as e:
+            self.fail(f"Failed to connect to genome browser prod FTP: {e}")
+
+    def test_genome_browser_nonexistent_ftp_404(self):     
+        url = "https://ftp.ebi.ac.uk/pub/databases/RNAcentral/.nonexistent-directory/"
+        
+        try:
+            response = requests.get(url, timeout=30)
+            # Should return 404 for non-existent directory
+            self.assertEqual(response.status_code, 404)
+            
+        except requests.exceptions.RequestException:
+            # If connection fails entirely, that's also acceptable for this negative test
+            # as it confirms the directory doesn't exist
+            pass
 
     ########################
     # proxy
