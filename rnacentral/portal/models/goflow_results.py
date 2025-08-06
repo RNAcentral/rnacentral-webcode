@@ -8,7 +8,7 @@ class GoflowResults(models.Model):
     rna_id = models.TextField(help_text="RNA identifier")
     pmcid = models.TextField(help_text="PubMed Central ID", db_column="PMCID", primary_key=True)
     
-    # Boolean filters and flags
+    # Filters and flags
     mirna_binding_filter = models.BooleanField(default=False)
     mirna_cluster = models.BooleanField(default=False)
     binding_type_filter = models.BooleanField(default=False)
@@ -26,7 +26,7 @@ class GoflowResults(models.Model):
     no_validated_binding = models.BooleanField(default=False)
     mrna_expression_assay = models.BooleanField(default=False)
     
-    # Result fields (mixed types)
+    # Results
     mirna_binding_filter_result = models.TextField(blank=True, null=True)
     mirna_cluster_result = models.TextField(blank=True, null=True)
     binding_type_filter_result = models.TextField(blank=True, null=True)
@@ -44,7 +44,7 @@ class GoflowResults(models.Model):
     no_validated_binding_result = models.TextField(blank=True, null=True)
     mrna_expression_assay_result = models.BooleanField(default=False)
     
-    # Evidence fields
+    # Evidence
     mirna_binding_filter_evidence = models.TextField(blank=True, null=True)
     mirna_binding_filter_reasoning = models.TextField(blank=True, null=True)
     mirna_cluster_evidence = models.TextField(blank=True, null=True)
@@ -78,7 +78,7 @@ class GoflowResults(models.Model):
     effect_endogenous_2_evidence = models.TextField(blank=True, null=True)
     effect_endogenous_2_reasoning = models.TextField(blank=True, null=True)
     
-    # Annotation and target fields
+    # Annotation and targets
     annotation = models.TextField(blank=True, null=True)
     target_0 = models.TextField(blank=True, null=True)
     target_1 = models.TextField(blank=True, null=True)

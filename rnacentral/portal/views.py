@@ -46,6 +46,7 @@ from portal.models import (
     Rna,
     Taxonomy,
     Xref,
+    GoflowResults
 )
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.rna_summary import RnaSummary
@@ -311,6 +312,11 @@ def rna_view(request, upi, taxid=None):
     else:
         active_tab = 0
 
+    if taxid:
+        goflow_results = GoflowResults.objects.filter(urs_taxid=upi+"_"+taxid)
+        if not goflow_results.exists():
+            goflow_results = None
+
     context = {
         "upi": upi,
         "symbol_counts": symbol_counts,
@@ -334,7 +340,7 @@ def rna_view(request, upi, taxid=None):
         "expression_atlas": expression_atlas,
         "interactions": rna.get_intact(taxid),
         "litsumm_summary": litsumm_summary,
-        "goflow_results":True,
+        "goflow_results":goflow_results,
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google
