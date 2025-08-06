@@ -1,0 +1,147 @@
+/* Browser supports interpolate-size */
+@supports (interpolate-size: allow-keywords) {
+    :root{
+    interpolate-size: allow-keywords;
+        [open]::details-content {
+         height: auto;
+    }
+
+}
+}
+
+:root{
+    --c-heading-text: #bf8e3e;
+    --c-secondary: #4682b4;
+}
+
+.step__container {
+  margin: auto;
+}
+
+h2 {
+  color: var(--c-heading-text);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.step {
+  background: #ffffff;
+  border-left: 5px solid var(--c-secondary);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+.step .step__label {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.step .prompt {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.step .result {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 24px;
+}
+
+.yes { color: green; }
+.no { color: red; }
+.unknown { color: #999; }
+
+details {
+  margin-top: 12px;
+  background: #f4f6f9;
+  padding: 10px 14px;
+  border-left: 4px solid #f0eeee;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #5c5b5b;
+  line-height: 1.75;
+}
+
+summary {
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  margin-bottom: 8px;
+}
+
+summary:hover {
+  color: var(--c-heading-text);
+}
+
+summary::marker {
+  /* angularjs not rendering the default marker */
+    content: "▶ ";
+    color: var(--c-heading-text);
+    font-size: 1.25rem;
+}
+
+::details-content {
+    transition: height 0.3s ease, content-visibility 0.5s ease allow-discrete;
+    height: 0;
+    overflow: clip;
+}
+
+/* Line clamp styles for reasoning text */
+details .reasoning-text {
+  position: relative;
+}
+
+.reasoning-text.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.show-more-btn {
+  color: var(--c-secondary);
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+  margin-top: 8px;
+  display: block !important;
+  font-size: 13px;
+  clear: both;
+  width: auto;
+  background: transparent;
+  border: none;
+  padding: 2px 0;
+  font-size: 1rem;
+}
+
+.show-more-btn:hover {
+  color: var(--c-heading-text);
+}
+
+
+.label {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+  color: white;
+}
+
+.label-primary {
+  background-color: var(--c-secondary);
+}
+
+.pill {
+  border-radius: 15px;
+}
+
+@media (max-width: 660px) {
+      .step .prompt {
+        font-size: 0.95rem;
+      }
+}

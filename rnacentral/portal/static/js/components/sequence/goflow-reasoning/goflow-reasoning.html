@@ -1,0 +1,127 @@
+<div class="step__container">
+  <h2>GoFlow Results</h2>
+  <div class="step">
+    <div class="prompt">Does this paper present an experiment on miRNA binding to mRNA?</div>
+    <div class="step__label">mirna_binding</div>
+    <div class="result yes">&checkmark;</div>
+    <details name="reasoning">
+      <summary>Show reasoning</summary>
+      <p class="reasoning-text">The dual-luciferase assay described in the methods confirms miRNA (miR-15b-5p) binding to TXNIP mRNA.
+      Mimics were co-transfected with vectors carrying TXNIP 4'UTR.
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Unde esse, perspiciatis eaque recusandae distinctio vitae atque quod laboriosam, a facere nam, optio tenetur exercitationem veritatis vero excepturi deleniti voluptate temporibus!
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt exercitationem molestiae voluptatum iure mollitia possimus optio provident architecto! Quasi qui exercitationem accusantium, ratione fuga eum earum quisquam! Illo, error tempore.
+      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Earum, officiis adipisci laborum aspernatur esse placeat ab, iusto dolore rerum debitis modi nesciunt ullam sapiente enim alias. Labore quos ipsum distinctio?
+      Recusandae laboriosam molestias repudiandae. Obcaecati commodi aut tempora. Error, sint! Corrupti, doloribus, ipsum voluptatem ducimus et sequi, omnis dolorem suscipit delectus aspernatur adipisci dignissimos? Ratione excepturi animi eos repudiandae laborum?
+      Saepe consectetur animi iste repudiandae nulla voluptas recusandae, obcaecati necessitatibus id! Molestiae quod voluptas iure, sequi iusto ratione, fugit ad quam provident numquam quae. Ab iusto quod eligendi dolorem obcaecati?
+      Omnis ad perferendis adipisci quia expedita deserunt, non laudantium reiciendis asperiores in iste quos veritatis? Consequuntur error ea, nisi dolore aspernatur laudantium voluptatem similique debitis odit expedita dolorum quae sequi.
+      Aspernatur repudiandae odit quaerat, eaque molestias harum excepturi eum quam dolor doloribus facere iure odio nisi et recusandae aut nobis voluptate totam accusamus dignissimos adipisci iusto laboriosam! Et, atque recusandae.
+      Iure harum at possimus voluptatum ratione illum voluptatem nobis sapiente dolores dicta, fugiat odit delectus ut eveniet aspernatur similique! Quae laborum quam reprehenderit rerum eaque fugiat tenetur est voluptate laboriosam!
+      Blanditiis delectus laudantium tempora harum consequuntur vitae esse rerum, accusantium, fugiat labore modi dolores enim, ab quo alias vero repellendus magnam laborum iste doloremque quas atque? Illo saepe explicabo magnam.
+      Labore, debitis unde! Atque nam quod vel, delectus error quis suscipit ipsa dolore quaerat voluptatum ad? Inventore, temporibus quod culpa perspiciatis saepe sint omnis dolores iure accusantium voluptas sunt esse!
+      Ducimus, assumenda doloribus suscipit eveniet, officiis, nesciunt eos dicta corrupti ipsum deserunt voluptas? Ut nemo est quam eos alias id obcaecati quisquam impedit quia, praesentium amet veritatis expedita nisi incidunt?
+      Neque sunt aperiam maiores mollitia, accusantium eum laudantium quisquam inventore, corporis, molestiae saepe laboriosam aspernatur eius animi accusamus veniam error quis et possimus. Repellendus nulla perspiciatis totam modi, inventore odit?
+    </p>
+    </details>
+      <details name="evidence">
+      <summary>Show evidence</summary>
+  <p> "Dual-luciferase reporter assay"</p>
+    </details>
+  </div>
+
+  <div class="step">
+    
+    <div class="prompt">Does this paper present an experiment on a miRNA cluster?</div>
+    <div class="step__label"> <span class="label label-primary pill"> mirna_cluster</span> </div>
+    <div class="result no">&cross;</div>
+    <details name="reasoning">
+      <summary>Reasoning</summary>
+      <p class="reasoning-text">No evidence in the paper of miRNAs within 10 kb acting as a coordinated cluster. The study isolates miR-15b-5p activity.</p>
+    </details>
+  </div>
+
+  <div class="step">
+    <div class="prompt">Is the binding between a miRNA and an mRNA?</div>
+    <div class="step__label">binding_type_filter</div>
+
+    <div class="result yes">&checkmark;</div>
+    <details name="reasoning">
+      <summary>Reasoning</summary>
+      <p class="reasoning-text">The target site is the 3'UTR of TXNIP mRNA. No mention of circRNA or lncRNA binding.</p>
+    </details>
+  </div>
+
+  <div class="step">
+    <div class="prompt">Does the paper have experimental evidence?</div>
+    <div class="step__label">experimental_evidence</div>
+    <div class="result yes">&checkmark;</div>
+    <details name="reasoning">
+      <summary>Reasoning</summary>
+      <p class="reasoning-text">Includes dual-luciferase reporter assay, qRT-PCR, and Western blot. These confirm TXNIP repression and miRNA expression. In vivo evidence from rat bone formation experiments supports functional impact.</p>
+    </details>
+  </div>
+
+  <div class="step">
+    <div class="prompt">Does the paper have a functional interaction between the miRNA and an mRNA?</div>
+    <div class="step__label">functional_interaction</div>
+
+    <div class="result yes">&checkmark;</div>
+    <details name="reasoning">
+      <summary>Reasoning</summary>
+      <p class="reasoning-text">Luciferase assays using wild-type and mutated 3'UTR sequences directly show regulation of TXNIP by miR-15b-5p.</p>
+    </details>
+  </div>
+
+  <div class="step">
+    <div class="prompt">Does the paper have a miRNA-mRNA binding assay?</div>
+    <div class="step__label">mirna_mrna_binding</div>
+
+    <div class="result unknown">&minus;</div>
+    <details name="reasoning">
+      <summary>Reasoning</summary>
+      <p class="reasoning-text">Not explicitly labeled as a binding assay, though luciferase activity changes imply binding. No CAS9 mutagenesis or CLIP-type method used.</p>
+    </details>
+  </div>
+
+  <div class="step">
+    <div class="prompt">Does the paper directly demonstrate changes in endogenous target gene expression?</div>
+    <div class="step__label">effect_endogenous_2</div>
+
+    <div class="result unknown">&minus;</div>
+    <details name="reasoning">
+      <summary>Reasoning</summary>
+      <p class="reasoning-text">Western blot for TXNIP is shown after manipulation of miR-15b-5p, but no qRT-PCR of TXNIP mRNA was reported.</p>
+    </details>
+  </div>
+
+  <div class="step">
+    <div class="prompt">Does the paper make a computational target prediction?</div>
+    <div class="step__label">computational_prediction</div>
+
+    <div class="result unknown">&minus;</div>
+    <details name="reasoning">
+      <summary>Reasoning</summary>
+      <p class="reasoning-text">No mention of bioinformatics tools (e.g., TargetScan, miRanda) in the extracted text.</p>
+    </details>
+  </div>
+
+  <div class="step">
+    <div class="prompt">Validated binding target based on conclusions section.</div>
+    <div class="step__label">validated_binding_only</div>
+
+    <div class="result yes">&checkmark; TXNIP</div>
+    <details name="reasoning">
+      <summary>Reasoning</summary>
+      <p class="reasoning-text">TXNIP is the only experimentally validated mRNA target for miR-15b-5p shown in the study. somehiddenText</p>
+    </details>
+  </div>
+
+  <div class="step">
+    <div class="prompt">Does the paper include an assay for the miRNA effect on the target gene mRNA expression?</div>
+    <div class="step__label">mrna_expression_assay</div>
+    <div class="result no">&cross;</div>
+    <details name="reasoning">
+      <summary>Reasoning</summary>
+      <p class="reasoning-text">Only protein level (TXNIP) was measured by Western blot. No qRT-PCR on TXNIP mRNA.</p>
+    </details>
+  </div>
+</div>

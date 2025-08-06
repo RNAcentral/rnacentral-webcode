@@ -339,8 +339,18 @@ limitations under the License.
                 </uib-tab>
             {% endif %}
 
+              {% if context.goflow_results %}
+              
+                <uib-tab index="4" id="goflow-results" deselect="checkTab($event, $selectedIndex)">
+                    <uib-tab-heading>
+                        GoFlow Results <span class="label label-primary">Test</span>
+                    </uib-tab-heading>
+                    <goflow-reasoning upi="upi" taxid="taxid"></goflow-reasoning> >
+                </uib-tab>
+            {% endif %}
+
             {% if context.pub_count %}
-            <uib-tab index="4" id="publications" deselect="checkTab($event, $selectedIndex)">
+            <uib-tab index="5" id="publications" deselect="checkTab($event, $selectedIndex)">
                 <uib-tab-heading>
                   Publications
                 </uib-tab-heading>
@@ -357,7 +367,7 @@ limitations under the License.
             </uib-tab>
             {% endif %}
 
-            <uib-tab index="5" class="dropdown pull-right hidden-xs">
+            <uib-tab index="6" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>
                     <span uib-dropdown>
                         <a uib-dropdown-toggle>

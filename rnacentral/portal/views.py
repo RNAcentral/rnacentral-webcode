@@ -307,7 +307,7 @@ def rna_view(request, upi, taxid=None):
     if tab == "2d":
         active_tab = 2
     elif tab == "pub":
-        active_tab = 4
+        active_tab = 5
     else:
         active_tab = 0
 
@@ -334,6 +334,7 @@ def rna_view(request, upi, taxid=None):
         "expression_atlas": expression_atlas,
         "interactions": rna.get_intact(taxid),
         "litsumm_summary": litsumm_summary,
+        "goflow_results":True,
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google
