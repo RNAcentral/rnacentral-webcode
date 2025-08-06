@@ -32,7 +32,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.checkTab = function ($event, $selectedIndex) {
 	let getUrl = window.location.href.split("?");
 	let getTab = getUrl[1];
-	if ($selectedIndex == 5) {
+	if ($selectedIndex == 6) {
 	    // don't call $event.stopPropagation() - we need the link on the tab to open a dropdown;
 	    $event.preventDefault();
 	} else if ($selectedIndex == 0) {

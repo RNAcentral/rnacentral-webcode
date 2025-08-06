@@ -340,12 +340,12 @@ limitations under the License.
             {% endif %}
 
               {% if context.goflow_results %}
-              
-                <uib-tab index="4" id="goflow-results" deselect="checkTab($event, $selectedIndex)">
+              <link rel="stylesheet" href="{% static "css/goflow-reasoning.css" %}">
+                <uib-tab index="4" id="goflow-reasoning" deselect="checkTab($event, $selectedIndex)">
                     <uib-tab-heading>
                         GoFlow Results <span class="label label-primary">Test</span>
                     </uib-tab-heading>
-                    <goflow-reasoning upi="upi" taxid="taxid"></goflow-reasoning> >
+                    <goflow-reasoning upi="upi" taxid="taxid"></goflow-reasoning>
                 </uib-tab>
             {% endif %}
 
