@@ -311,11 +311,6 @@ def rna_view(request, upi, taxid=None):
         active_tab = 5
     else:
         active_tab = 0
-
-    # if taxid:
-    #     goflow_results = GoflowResults.objects.filter(urs_taxid=upi+"_"+taxid) 
-    #     if not goflow_results.exists():
-    #         goflow_results = None
     goflow_results = None
     if taxid:
         try:
