@@ -1,127 +1,193 @@
-<div class="step__container">
+<div class="step__container" ng-show="goflowData">
   <h2>GoFlow Results</h2>
-  <div class="step">
-    <div class="prompt">Does this paper present an experiment on miRNA binding to mRNA?</div>
-    <div class="step__label">mirna_binding</div>
-    <div class="result yes">&checkmark;</div>
-    <details name="reasoning">
-      <summary>Show reasoning</summary>
-      <p class="reasoning-text">The dual-luciferase assay described in the methods confirms miRNA (miR-15b-5p) binding to TXNIP mRNA.
-      Mimics were co-transfected with vectors carrying TXNIP 4'UTR.
-      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Unde esse, perspiciatis eaque recusandae distinctio vitae atque quod laboriosam, a facere nam, optio tenetur exercitationem veritatis vero excepturi deleniti voluptate temporibus!
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt exercitationem molestiae voluptatum iure mollitia possimus optio provident architecto! Quasi qui exercitationem accusantium, ratione fuga eum earum quisquam! Illo, error tempore.
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Earum, officiis adipisci laborum aspernatur esse placeat ab, iusto dolore rerum debitis modi nesciunt ullam sapiente enim alias. Labore quos ipsum distinctio?
-      Recusandae laboriosam molestias repudiandae. Obcaecati commodi aut tempora. Error, sint! Corrupti, doloribus, ipsum voluptatem ducimus et sequi, omnis dolorem suscipit delectus aspernatur adipisci dignissimos? Ratione excepturi animi eos repudiandae laborum?
-      Saepe consectetur animi iste repudiandae nulla voluptas recusandae, obcaecati necessitatibus id! Molestiae quod voluptas iure, sequi iusto ratione, fugit ad quam provident numquam quae. Ab iusto quod eligendi dolorem obcaecati?
-      Omnis ad perferendis adipisci quia expedita deserunt, non laudantium reiciendis asperiores in iste quos veritatis? Consequuntur error ea, nisi dolore aspernatur laudantium voluptatem similique debitis odit expedita dolorum quae sequi.
-      Aspernatur repudiandae odit quaerat, eaque molestias harum excepturi eum quam dolor doloribus facere iure odio nisi et recusandae aut nobis voluptate totam accusamus dignissimos adipisci iusto laboriosam! Et, atque recusandae.
-      Iure harum at possimus voluptatum ratione illum voluptatem nobis sapiente dolores dicta, fugiat odit delectus ut eveniet aspernatur similique! Quae laborum quam reprehenderit rerum eaque fugiat tenetur est voluptate laboriosam!
-      Blanditiis delectus laudantium tempora harum consequuntur vitae esse rerum, accusantium, fugiat labore modi dolores enim, ab quo alias vero repellendus magnam laborum iste doloremque quas atque? Illo saepe explicabo magnam.
-      Labore, debitis unde! Atque nam quod vel, delectus error quis suscipit ipsa dolore quaerat voluptatum ad? Inventore, temporibus quod culpa perspiciatis saepe sint omnis dolores iure accusantium voluptas sunt esse!
-      Ducimus, assumenda doloribus suscipit eveniet, officiis, nesciunt eos dicta corrupti ipsum deserunt voluptas? Ut nemo est quam eos alias id obcaecati quisquam impedit quia, praesentium amet veritatis expedita nisi incidunt?
-      Neque sunt aperiam maiores mollitia, accusantium eum laudantium quisquam inventore, corporis, molestiae saepe laboriosam aspernatur eius animi accusamus veniam error quis et possimus. Repellendus nulla perspiciatis totam modi, inventore odit?
-    </p>
-    </details>
-      <details name="evidence">
-      <summary>Show evidence</summary>
-  <p> "Dual-luciferase reporter assay"</p>
-    </details>
+  
+  <!-- Loading state -->
+  <div ng-show="isLoading" class="loading-container">
+    <p>Loading GoFlow data...</p>
   </div>
-
-  <div class="step">
+  
+  <!-- Error state -->
+  <div ng-show="error" class="error-container">
+    <p>{{ error }}</p>
+  </div>
+  
+  <!-- Results -->
+  <div ng-show="goflowData && !isLoading && !error">
     
-    <div class="prompt">Does this paper present an experiment on a miRNA cluster?</div>
-    <div class="step__label"> <span class="label label-primary pill"> mirna_cluster</span> </div>
-    <div class="result no">&cross;</div>
-    <details name="reasoning">
-      <summary>Reasoning</summary>
-      <p class="reasoning-text">No evidence in the paper of miRNAs within 10 kb acting as a coordinated cluster. The study isolates miR-15b-5p activity.</p>
-    </details>
+    <!-- miRNA Binding Experiment -->
+    <div class="step" ng-show="hasValue(goflowData.mirna_binding_filter_result)">
+      <div class="prompt">Does this paper present an experiment on miRNA binding to mRNA?</div>
+      <div class="result" ng-class="getResultClass(goflowData.mirna_binding_filter_result)">
+        {{ getResultIcon(goflowData.mirna_binding_filter_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.mirna_binding_filter_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.mirna_binding_filter_reasoning }}</p>
+      </details>
+      <details name="reasoning" ng-show="hasValue(goflowData.mirna_binding_filter_evidence)">
+        <summary>Show Evidence</summary>
+        <p>{{ goflowData.mirna_binding_filter_evidence }}</p>
+      </details>
+    </div>
+
+    <!-- miRNA Cluster -->
+    <div class="step" ng-show="hasValue(goflowData.mirna_cluster_result)">
+      <div class="prompt">Does this paper present an experiment on a miRNA cluster?</div>
+      <div class="result" ng-class="getResultClass(goflowData.mirna_cluster_result)">
+        {{ getResultIcon(goflowData.mirna_cluster_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.mirna_cluster_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.mirna_cluster_reasoning }}</p>
+      </details>
+         <details name="reasoning" ng-show="hasValue(goflowData.mirna_cluster_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text">{{ goflowData.mirna_cluster_evidence }}</p>
+      </details>
+  
+    </div>
+
+    <!-- Binding Type Filter -->
+    <div class="step" ng-show="hasValue(goflowData.binding_type_filter_result)">
+      <div class="prompt">Is the binding between a miRNA and an mRNA?</div>
+      <div class="result" ng-class="getResultClass(goflowData.binding_type_filter_result)">
+        {{ getResultIcon(goflowData.binding_type_filter_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.binding_type_filter_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.binding_type_filter_reasoning }}</p>
+      </details>
+        <details name="reasoning" ng-show="hasValue(goflowData.binding_type_filter_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text">{{ goflowData.binding_type_filter_evidence }}</p>
+      </details>
+    </div>
+
+    <!-- Experimental Evidence -->
+    <div class="step" ng-show="hasValue(goflowData.experimental_evidence_result)">
+      <div class="prompt">Does the paper have experimental evidence?</div>
+      <div class="result" ng-class="getResultClass(goflowData.experimental_evidence_result)">
+        {{ getResultIcon(goflowData.experimental_evidence_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.experimental_evidence_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.experimental_evidence_reasoning }}</p>
+      </details>
+       <details name="reasoning" ng-show="hasValue(goflowData.experimental_evidence_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text">{{ goflowData.experimental_evidence_evidence }}</p>
+      </details>
+    </div>
+
+    <!-- Functional Interaction -->
+    <div class="step" ng-show="hasValue(goflowData.functional_interaction_result)">
+      <div class="prompt">Does the paper have a functional interaction between the miRNA and an mRNA?</div>
+      <div class="result" ng-class="getResultClass(goflowData.functional_interaction_result)">
+        {{ getResultIcon(goflowData.functional_interaction_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.functional_interaction_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.functional_interaction_reasoning }}</p>
+      </details>
+         <details name="reasoning" ng-show="hasValue(goflowData.functional_interaction_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text">{{ goflowData.functional_interaction_evidence}}</p>
+      </details>
+    </div>
+
+    <!-- miRNA-mRNA Binding -->
+    <div class="step" ng-show="hasValue(goflowData.mirna_mrna_binding_result)">
+      <div class="prompt">Does the paper have a miRNA-mRNA binding assay?</div>
+      <div class="result" ng-class="getResultClass(goflowData.mirna_mrna_binding_result)">
+        {{ getResultIcon(goflowData.mirna_mrna_binding_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.mirna_mrna_binding_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.mirna_mrna_binding_reasoning }}</p>
+      </details>
+        <details name="reasoning" ng-show="hasValue(goflowData.mirna_mrna_binding_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text">{{ goflowData.mirna_mrna_binding_evidence }}</p>
+      </details>
+      
+    </div>
+
+    <!-- Effect on Endogenous Target -->
+    <div class="step" ng-show="hasValue(goflowData.effect_endogenous_2_result)">
+      <div class="prompt">Does the paper directly demonstrate changes in endogenous target gene expression?</div>
+      <div class="result" ng-class="getResultClass(goflowData.effect_endogenous_2_result)">
+        {{ getResultIcon(goflowData.effect_endogenous_2_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.effect_endogenous_2_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.effect_endogenous_2_reasoning }}</p>
+      </details>
+        <details name="reasoning" ng-show="hasValue(goflowData.effect_endogenous_2_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text">{{ goflowData.effect_endogenous_2_evidence }}</p>
+      </details>
+    </div>
+
+    <!-- Computational Prediction -->
+    <div class="step" ng-show="hasValue(goflowData.computational_prediction_result)">
+      <div class="prompt">Does the paper make a computational target prediction?</div>
+      <div class="result" ng-class="getResultClass(goflowData.computational_prediction_result)">
+        {{ getResultIcon(goflowData.computational_prediction_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.computational_prediction_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.computational_prediction_reasoning }}</p>
+      </details>
+         <details name="reasoning" ng-show="hasValue(goflowData.computational_prediction_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text">{{ goflowData.computational_prediction_evidence }}</p>
+      </details>
+    </div>
+
+    <!-- Validated Binding Target -->
+    <div class="step" ng-show="hasValue(goflowData.validated_binding_only_result)">
+      <div class="prompt">Validated binding target based on conclusions section.</div>
+      <div class="result" ng-class="getResultClass(goflowData.validated_binding_only_result)">
+        {{ getResultIcon(goflowData.validated_binding_only_result) }} {{ goflowData.validated_binding_only_result }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.validated_binding_only_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.validated_binding_only_reasoning }}</p>
+      </details>
+          <details name="reasoning" ng-show="hasValue(goflowData.validated_binding_only_revidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text">{{ goflowData.validated_binding_only_revidence }}</p>
+      </details>
+    </div>
+
+    <!-- mRNA Expression Assay -->
+    <div class="step" ng-show="hasValue(goflowData.mrna_expression_assay_result)">
+      <div class="prompt">Does the paper include an assay for the miRNA effect on the target gene mRNA expression?</div>
+      <div class="result" ng-class="getResultClass(goflowData.mrna_expression_assay_result)">
+        {{ getResultIcon(goflowData.mrna_expression_assay_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.mrna_expression_assay_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text">{{ goflowData.mrna_expression_assay_reasoning }}</p>
+      </details>
+       <details name="reasoning" ng-show="hasValue(goflowData.mrna_expression_assay_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text">{{ goflowData.mrna_expression_assay_evidence }}</p>
+      </details>
+    </div>
+
+    <!-- Targets Section -->
+    <div class="step" ng-show="goflowData.targets || goflowData.target">
+      <div class="prompt">Identified Targets</div>
+      <div class="targets-list">
+        <p ng-show="goflowData.targets">{{ goflowData.targets }}</p>
+        <p ng-show="goflowData.target && !goflowData.targets">{{ goflowData.target }}</p>
+      </div>
+    </div>
   </div>
-
-  <div class="step">
-    <div class="prompt">Is the binding between a miRNA and an mRNA?</div>
-    <div class="step__label">binding_type_filter</div>
-
-    <div class="result yes">&checkmark;</div>
-    <details name="reasoning">
-      <summary>Reasoning</summary>
-      <p class="reasoning-text">The target site is the 3'UTR of TXNIP mRNA. No mention of circRNA or lncRNA binding.</p>
-    </details>
-  </div>
-
-  <div class="step">
-    <div class="prompt">Does the paper have experimental evidence?</div>
-    <div class="step__label">experimental_evidence</div>
-    <div class="result yes">&checkmark;</div>
-    <details name="reasoning">
-      <summary>Reasoning</summary>
-      <p class="reasoning-text">Includes dual-luciferase reporter assay, qRT-PCR, and Western blot. These confirm TXNIP repression and miRNA expression. In vivo evidence from rat bone formation experiments supports functional impact.</p>
-    </details>
-  </div>
-
-  <div class="step">
-    <div class="prompt">Does the paper have a functional interaction between the miRNA and an mRNA?</div>
-    <div class="step__label">functional_interaction</div>
-
-    <div class="result yes">&checkmark;</div>
-    <details name="reasoning">
-      <summary>Reasoning</summary>
-      <p class="reasoning-text">Luciferase assays using wild-type and mutated 3'UTR sequences directly show regulation of TXNIP by miR-15b-5p.</p>
-    </details>
-  </div>
-
-  <div class="step">
-    <div class="prompt">Does the paper have a miRNA-mRNA binding assay?</div>
-    <div class="step__label">mirna_mrna_binding</div>
-
-    <div class="result unknown">&minus;</div>
-    <details name="reasoning">
-      <summary>Reasoning</summary>
-      <p class="reasoning-text">Not explicitly labeled as a binding assay, though luciferase activity changes imply binding. No CAS9 mutagenesis or CLIP-type method used.</p>
-    </details>
-  </div>
-
-  <div class="step">
-    <div class="prompt">Does the paper directly demonstrate changes in endogenous target gene expression?</div>
-    <div class="step__label">effect_endogenous_2</div>
-
-    <div class="result unknown">&minus;</div>
-    <details name="reasoning">
-      <summary>Reasoning</summary>
-      <p class="reasoning-text">Western blot for TXNIP is shown after manipulation of miR-15b-5p, but no qRT-PCR of TXNIP mRNA was reported.</p>
-    </details>
-  </div>
-
-  <div class="step">
-    <div class="prompt">Does the paper make a computational target prediction?</div>
-    <div class="step__label">computational_prediction</div>
-
-    <div class="result unknown">&minus;</div>
-    <details name="reasoning">
-      <summary>Reasoning</summary>
-      <p class="reasoning-text">No mention of bioinformatics tools (e.g., TargetScan, miRanda) in the extracted text.</p>
-    </details>
-  </div>
-
-  <div class="step">
-    <div class="prompt">Validated binding target based on conclusions section.</div>
-    <div class="step__label">validated_binding_only</div>
-
-    <div class="result yes">&checkmark; TXNIP</div>
-    <details name="reasoning">
-      <summary>Reasoning</summary>
-      <p class="reasoning-text">TXNIP is the only experimentally validated mRNA target for miR-15b-5p shown in the study. somehiddenText</p>
-    </details>
-  </div>
-
-  <div class="step">
-    <div class="prompt">Does the paper include an assay for the miRNA effect on the target gene mRNA expression?</div>
-    <div class="step__label">mrna_expression_assay</div>
-    <div class="result no">&cross;</div>
-    <details name="reasoning">
-      <summary>Reasoning</summary>
-      <p class="reasoning-text">Only protein level (TXNIP) was measured by Western blot. No qRT-PCR on TXNIP mRNA.</p>
-    </details>
+  
+  <!-- No data state -->
+  <div ng-show="!goflowData && !isLoading && !error" class="no-data-container">
+    <p>No GoFlow data available for this sequence.</p>
   </div>
 </div>

@@ -1,147 +1,280 @@
 /* Browser supports interpolate-size */
 @supports (interpolate-size: allow-keywords) {
-    :root{
-    interpolate-size: allow-keywords;
-        [open]::details-content {
-         height: auto;
+    :root {
+        interpolate-size: allow-keywords;
     }
-
+    
+    [open]::details-content {
+        height: auto;
+    }
 }
-}
 
-:root{
+:root {
     --c-heading-text: #bf8e3e;
     --c-secondary: #4682b4;
+    --c-success: #28a745;
+    --c-danger: #dc3545;
+    --c-warning: #ffc107;
+    --c-muted: #6c757d;
 }
 
 .step__container {
-  margin: auto;
+    margin: auto;
+    max-width: 900px;
 }
 
 h2 {
-  color: var(--c-heading-text);
-  text-align: center;
-  margin-bottom: 30px;
+    color: var(--c-heading-text);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    font-weight: 600;
 }
 
 .step {
-  background: #ffffff;
-  border-left: 5px solid var(--c-secondary);
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-  position: relative;
+    background: #ffffff;
+    border-left: 5px solid var(--c-secondary);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: relative;
+    transition: box-shadow 0.2s ease;
+}
+
+.step:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .step .step__label {
-  margin-bottom: 8px;
-  color: #555;
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.step__label .label {
+    color: #ffffff;
 }
 
 .step .prompt {
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #222;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #222;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    padding-right: 50px; /* Space for result icon */
 }
 
 .step .result {
-  position: absolute;
-  top: 16px;
-  right: 20px;
-  font-size: 24px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
 }
 
-.yes { color: green; }
-.no { color: red; }
-.unknown { color: #999; }
+.yes { 
+    color: var(--c-success);
+}
+
+.no { 
+    color: var(--c-danger);
+}
+
+.unknown { 
+    color: var(--c-muted);
+}
 
 details {
-  margin-top: 12px;
-  background: #f4f6f9;
-  padding: 10px 14px;
-  border-left: 4px solid #f0eeee;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #5c5b5b;
-  line-height: 1.75;
+    margin-top: 15px;
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-left: 4px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #495057;
+    line-height: 1.6;
+    transition: background-color 0.2s ease;
+}
+
+details:hover {
+    background: #f1f3f4;
 }
 
 summary {
-  font-weight: bold;
-  cursor: pointer;
-  outline: none;
-  margin-bottom: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    margin-bottom: 10px;
+    color: #343a40;
+    font-size: 0.95rem;
+    user-select: none;
 }
 
 summary:hover {
-  color: var(--c-heading-text);
+    color: var(--c-heading-text);
 }
 
 summary::marker {
-  /* angularjs not rendering the default marker */
     content: "▶ ";
     color: var(--c-heading-text);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+}
+
+details[open] summary::marker {
+    content: "▼ ";
 }
 
 ::details-content {
-    transition: height 0.3s ease, content-visibility 0.5s ease allow-discrete;
+    transition: height 0.3s ease, content-visibility 0.3s ease allow-discrete;
     height: 0;
     overflow: clip;
 }
 
 /* Line clamp styles for reasoning text */
 details .reasoning-text {
-  position: relative;
+    position: relative;
+    margin: 8px 0;
+    padding: 0;
 }
 
 .reasoning-text.clamped {
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.6;
 }
 
 .show-more-btn {
-  color: var(--c-secondary);
-  cursor: pointer;
-  text-decoration: underline;
-  font-weight: bold;
-  margin-top: 8px;
-  display: block !important;
-  font-size: 13px;
-  clear: both;
-  width: auto;
-  background: transparent;
-  border: none;
-  padding: 2px 0;
-  font-size: 1rem;
+    color: var(--c-secondary);
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 600;
+    margin-top: 10px;
+    display: block !important;
+    font-size: 0.9rem;
+    clear: both;
+    width: auto;
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    transition: color 0.2s ease;
 }
 
 .show-more-btn:hover {
-  color: var(--c-heading-text);
+    color: var(--c-heading-text);
+    text-decoration: none;
 }
 
-
 .label {
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 12px;
-  color: white;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    display: inline-block;
 }
 
 .label-primary {
-  background-color: var(--c-secondary);
+    background-color: var(--c-secondary);
 }
 
 .pill {
-  border-radius: 15px;
+    border-radius: 20px;
 }
 
-@media (max-width: 660px) {
-      .step .prompt {
+/* Loading, error, and no-data states */
+.loading-container, 
+.error-container, 
+.no-data-container {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--c-muted);
+}
+
+.error-container {
+    color: var(--c-danger);
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+}
+
+.loading-container {
+    color: var(--c-secondary);
+}
+
+.no-data-container {
+    font-style: italic;
+}
+
+/* Targets section */
+.targets-list {
+    background: #e7f3ff;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid var(--c-secondary);
+    margin-top: 10px;
+}
+
+.targets-list p {
+    margin: 0;
+    font-weight: 600;
+    color: #0c5460;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .step {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .step .prompt {
         font-size: 0.95rem;
-      }
+        padding-right: 40px;
+    }
+    
+    .step .result {
+        font-size: 24px;
+        top: 16px;
+        right: 16px;
+    }
+    
+    h2 {
+        font-size: 1.6rem;
+        margin-bottom: 24px;
+    }
+    
+    details {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .show-more-btn {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .step {
+        padding: 12px;
+    }
+    
+    .step .prompt {
+        font-size: 0.9rem;
+        padding-right: 35px;
+    }
+    
+    .step .result {
+        font-size: 20px;
+        top: 12px;
+        right: 12px;
+    }
+    
+    h2 {
+        font-size: 1.4rem;
+    }
 }
