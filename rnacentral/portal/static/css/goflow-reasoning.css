@@ -23,7 +23,7 @@
     max-width: 900px;
 }
 
-h2 {
+h2.goflow-header {
     color: var(--c-heading-text);
     text-align: center;
     margin-bottom: 30px;
