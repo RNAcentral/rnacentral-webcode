@@ -393,6 +393,16 @@ limitations under the License.
                     </uib-tab-heading>  
             </uib-tab>
 
+            <!-- TODO -->
+             <!-- Remove debug tab -->
+              {% if context.goflow_results %}
+               <uib-tab index="4" id="goflow-test" deselect="checkTab($event, $selectedIndex)">
+                    <uib-tab-heading>
+                        Total GoFlow Results {{context.goflow_data | length}}</span>
+                    </uib-tab-heading>  
+            </uib-tab>
+              {% endif %}
+
             {% if context.pub_count %}
             <uib-tab index="5" id="publications" deselect="checkTab($event, $selectedIndex)">
                 <uib-tab-heading>
