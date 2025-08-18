@@ -384,6 +384,15 @@ limitations under the License.
                 </script>
             {% endif %}
 
+            <!-- TODO -->
+             <!-- Remove debug tab -->
+
+           <uib-tab index="4" id="goflow-test" deselect="checkTab($event, $selectedIndex)">
+                    <uib-tab-heading>
+                        GoFlow Results TEST</span>
+                    </uib-tab-heading>  
+            </uib-tab>
+
             {% if context.pub_count %}
             <uib-tab index="5" id="publications" deselect="checkTab($event, $selectedIndex)">
                 <uib-tab-heading>
