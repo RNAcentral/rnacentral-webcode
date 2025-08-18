@@ -343,7 +343,7 @@ limitations under the License.
               <link rel="stylesheet" href="{% static "css/goflow-reasoning.css" %}">
                 <uib-tab index="4" id="goflow-reasoning" deselect="checkTab($event, $selectedIndex)">
                     <uib-tab-heading>
-                        GoFlow Results <span class="label label-primary">Test</span>
+                        GoFlow Results
                     </uib-tab-heading>
                  <goflow-reasoning 
                    upi="{{ context.upi }}" 
@@ -383,26 +383,6 @@ limitations under the License.
                 })();
                 </script>
             {% endif %}
-
-            <!-- TODO -->
-             <!-- Remove debug tab -->
-
-           <uib-tab index="4" id="goflow-test" deselect="checkTab($event, $selectedIndex)">
-                    <uib-tab-heading>
-                        GoFlow Results TEST</span>
-                    </uib-tab-heading>  
-            </uib-tab>
-
-            <!-- TODO -->
-             <!-- Remove debug tab -->
-              {% if context.goflow_results %}
-               <uib-tab index="4" id="goflow-test" deselect="checkTab($event, $selectedIndex)">
-                    <uib-tab-heading>
-                        Total GoFlow Results {{context.goflow_data | length}}</span>
-                    </uib-tab-heading>  
-            </uib-tab>
-              {% endif %}
-
             {% if context.pub_count %}
             <uib-tab index="5" id="publications" deselect="checkTab($event, $selectedIndex)">
                 <uib-tab-heading>
