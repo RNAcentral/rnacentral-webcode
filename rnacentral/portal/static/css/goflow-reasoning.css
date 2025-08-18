@@ -25,6 +25,10 @@
 
 h2.goflow-header {
     color: var(--c-heading-text);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    font-weight: 600;
 }
 
 .step {
@@ -140,7 +144,6 @@ details .reasoning-text {
     display: -webkit-box;
     -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
-    line-clamp: 5;
     overflow: hidden;
     line-height: 1.6;
 }
@@ -240,7 +243,7 @@ details .reasoning-text {
         right: 16px;
     }
     
-    h2.header {
+    h2 {
         font-size: 1.6rem;
         margin-bottom: 24px;
     }
@@ -271,7 +274,7 @@ details .reasoning-text {
         right: 12px;
     }
     
-    h2.header {
+    h2 {
         font-size: 1.4rem;
     }
 }

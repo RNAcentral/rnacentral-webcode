@@ -93,7 +93,7 @@ var goflowReasoning = {
         };
         
         ctrl.$postLink = function() {
-            // If data was passed in, init reasoning text
+            // If data was passed in, initialize reasoning text
             if (ctrl.results) {
                 $timeout(function() {
                     initializeReasoningText();
