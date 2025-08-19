@@ -207,8 +207,8 @@ details .reasoning-text {
     font-style: italic;
 }
 
-/* Targets section */
-.targets-list {
+/* Annotation, PMCID, and targets */
+.annotation, .pmcid, .targets-list {
     background: #e7f3ff;
     padding: 12px;
     border-radius: 6px;
@@ -216,7 +216,7 @@ details .reasoning-text {
     margin-top: 10px;
 }
 
-.targets-list p {
+.targets-list p, .annotation p, .targets p{
     margin: 0;
     font-weight: 600;
     color: #0c5460;

@@ -16,6 +16,15 @@ var goflowReasoning = {
         ctrl.$onInit = function() {
             if (ctrl.results) {
                 $scope.goflowData = ctrl.results;
+
+                 // Parse annotation if it's a string
+                if (typeof $scope.goflowData.annotation === 'string') {
+                try {
+                    $scope.goflowData.annotation = JSON.parse($scope.goflowData.annotation);
+                } catch (e) {
+                    console.error('Failed to parse annotation JSON:', e);
+                }
+                }
             } else if (ctrl.upi && ctrl.taxid) {
                 fetchGoflowData();
             }
@@ -36,6 +45,7 @@ var goflowReasoning = {
                 function(response) {
                     $scope.goflowData = response.data;
                     $scope.isLoading = false;
+
                     // Initialize reasoning text after data loads
                     $timeout(function() {
                         initializeReasoningText();
@@ -88,7 +98,7 @@ var goflowReasoning = {
         
         // Check if field should be displayed
         $scope.shouldDisplayField = function(fieldName) {
-            var excludeFields = ['id', 'urs_taxid', 'rna_id', 'pmcid'];
+            var excludeFields = ['id', 'urs_taxid', 'rna_id'];
             return excludeFields.indexOf(fieldName) === -1;
         };
         
@@ -163,6 +173,7 @@ var goflowReasoning = {
         $scope.hasValue = function(value) {
             return value && value !== '' && value !== null && value !== undefined;
         };
+        
     }],
     templateUrl: '/static/js/components/sequence/goflow-reasoning/goflow-reasoning.html' 
 };

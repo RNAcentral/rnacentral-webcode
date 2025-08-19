@@ -184,6 +184,26 @@
         <p ng-show="goflowData.target && !goflowData.targets">{{ goflowData.target }}</p>
       </div>
     </div>
+     <!-- PMCID -->
+    <div class="step" ng-show="goflowData.pmcid">
+      <div class="prompt">PMCID</div>
+      <div class="pmcid">
+        <p ng-show="goflowData.pmcid">{{ goflowData.pmcid }}</p>
+      </div>
+    </div>
+
+<!-- Annotation -->
+<div class="step" ng-show="goflowData.annotation">
+  <div class="prompt">Annotation</div>
+  <div class="annotation">
+    <p ng-if="goflowData && goflowData.annotation && goflowData.annotation.BP">
+      {{ goflowData.annotation.BP.involved_in}}
+  </p>
+    </div>
+  </div>
+</div>
+
+
   </div>
   
   <!-- No data state -->

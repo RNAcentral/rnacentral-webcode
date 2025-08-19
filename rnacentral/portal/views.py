@@ -361,7 +361,7 @@ def rna_view(request, upi, taxid=None):
                     'targets': goflow_results.targets,
                     'target': goflow_results.target,
                     'target_list': goflow_results.get_target_list(),
-                    'annotation': goflow_results.annotation,
+                    'annotation': goflow_results.annotation
                 }
 
                 # Clean up None values for JSON serialization
