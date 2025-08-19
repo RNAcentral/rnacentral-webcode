@@ -197,7 +197,11 @@
   <div class="prompt">Annotation</div>
   <div class="annotation">
     <p ng-if="goflowData && goflowData.annotation && goflowData.annotation.BP">
-      {{ goflowData.annotation.BP.involved_in}}
+      <a
+      ng-href="https://www.ebi.ac.uk/QuickGO/GTerm?id={{goflowData.annotation.BP.involved_in}}"
+      target="_blank">
+   {{goflowData.annotation.BP.involved_in}}
+      </a>
   </p>
     </div>
   </div>
