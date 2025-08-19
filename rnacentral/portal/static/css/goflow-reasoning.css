@@ -25,10 +25,7 @@
 
 h2.goflow-header {
     color: var(--c-heading-text);
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 1.8rem;
-    font-weight: 600;
+
 }
 
 .step {
