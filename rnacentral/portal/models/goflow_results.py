@@ -6,7 +6,7 @@ class GoflowResults(models.Model):
     # IDs
     urs_taxid = models.TextField(help_text="URS taxonomic identifier")
     rna_id = models.TextField(help_text="RNA identifier")
-    pmcid = models.TextField(help_text="PubMed Central ID", db_column="PMCID", primary_key=True)
+    pmcid = models.TextField(help_text="PubMed Central ID", db_column="pmcid", primary_key=True)
     
     # Filters and flags
     mirna_binding_filter = models.BooleanField(default=False)
