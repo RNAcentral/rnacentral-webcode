@@ -188,7 +188,13 @@
     <div class="step" ng-show="goflowData.pmcid">
       <div class="prompt">PMCID</div>
       <div class="pmcid">
-        <p ng-show="goflowData.pmcid">{{ goflowData.pmcid }}</p>
+        <p ng-show="goflowData.pmcid">
+           <a
+      ng-href="https://europepmc.org/article/PMC/{{goflowData.pmcid}}"
+      target="_blank">
+   {{goflowData.pmcid}}
+      </a>
+        </p>
       </div>
     </div>
 
