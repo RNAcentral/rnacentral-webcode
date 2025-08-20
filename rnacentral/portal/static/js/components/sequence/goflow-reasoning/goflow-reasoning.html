@@ -22,11 +22,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.mirna_binding_filter_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.mirna_binding_filter_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_binding_filter_reasoning | markdown "></p>
       </details>
       <details name="reasoning" ng-show="hasValue(goflowData.mirna_binding_filter_evidence)">
         <summary>Show Evidence</summary>
-        <p>{{ goflowData.mirna_binding_filter_evidence }}</p>
+        <p ng-biind-html="goflowData.mirna_binding_filter_evidence | markdown"></p>
       </details>
     </div>
 
@@ -38,11 +38,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.mirna_cluster_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.mirna_cluster_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_cluster_reasoning | markdown"></p>
       </details>
          <details name="reasoning" ng-show="hasValue(goflowData.mirna_cluster_evidence)">
         <summary>Show Evidence</summary>
-        <p class="reasoning-text">{{ goflowData.mirna_cluster_evidence }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_cluster_evidence | markdown"></p>
       </details>
   
     </div>
@@ -55,11 +55,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.binding_type_filter_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.binding_type_filter_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.binding_type_filter_reasoning | markdown"></p>
       </details>
         <details name="reasoning" ng-show="hasValue(goflowData.binding_type_filter_evidence)">
         <summary>Show Evidence</summary>
-        <p class="reasoning-text">{{ goflowData.binding_type_filter_evidence }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.binding_type_filter_evidence | markdown"></p>
       </details>
     </div>
 
@@ -71,11 +71,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.experimental_evidence_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.experimental_evidence_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.experimental_evidence_reasoning | markdown"></p>
       </details>
        <details name="reasoning" ng-show="hasValue(goflowData.experimental_evidence_evidence)">
         <summary>Show Evidence</summary>
-        <p class="reasoning-text">{{ goflowData.experimental_evidence_evidence }}</p>
+        <p class="reasoning-text"  ng-bind-html="goflowData.experimental_evidence_evidence | markdown"></p>
       </details>
     </div>
 
@@ -87,11 +87,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.functional_interaction_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.functional_interaction_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.functional_interaction_reasoning | markdown"></p>
       </details>
          <details name="reasoning" ng-show="hasValue(goflowData.functional_interaction_evidence)">
         <summary>Show Evidence</summary>
-        <p class="reasoning-text">{{ goflowData.functional_interaction_evidence}}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.functional_interaction_evidence | markdown"></p>
       </details>
     </div>
 
@@ -103,11 +103,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.mirna_mrna_binding_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.mirna_mrna_binding_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_mrna_binding_reasoning | markdown"></p>
       </details>
         <details name="reasoning" ng-show="hasValue(goflowData.mirna_mrna_binding_evidence)">
         <summary>Show Evidence</summary>
-        <p class="reasoning-text">{{ goflowData.mirna_mrna_binding_evidence }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_mrna_binding_evidence | markdown"></p>
       </details>
       
     </div>
@@ -120,11 +120,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.effect_endogenous_2_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.effect_endogenous_2_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.effect_endogenous_2_reasoning | markdown"></p>
       </details>
         <details name="reasoning" ng-show="hasValue(goflowData.effect_endogenous_2_evidence)">
         <summary>Show Evidence</summary>
-        <p class="reasoning-text">{{ goflowData.effect_endogenous_2_evidence }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.effect_endogenous_2_evidence | markdown"></p>
       </details>
     </div>
 
@@ -136,11 +136,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.computational_prediction_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.computational_prediction_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.computational_prediction_reasoning | markdown"></p>
       </details>
          <details name="reasoning" ng-show="hasValue(goflowData.computational_prediction_evidence)">
         <summary>Show Evidence</summary>
-        <p class="reasoning-text">{{ goflowData.computational_prediction_evidence }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.computational_prediction_evidence | markdown"></p>
       </details>
     </div>
 
@@ -152,11 +152,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.validated_binding_only_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.validated_binding_only_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.validated_binding_only_reasoning | markdown"></p>
       </details>
           <details name="reasoning" ng-show="hasValue(goflowData.validated_binding_only_revidence)">
         <summary>Show Evidence</summary>
-        <p class="reasoning-text">{{ goflowData.validated_binding_only_revidence }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.validated_binding_only_revidence | markdown"></p>
       </details>
     </div>
 
@@ -168,11 +168,11 @@
       </div>
       <details name="reasoning" ng-show="hasValue(goflowData.mrna_expression_assay_reasoning)">
         <summary>Show Reasoning</summary>
-        <p class="reasoning-text">{{ goflowData.mrna_expression_assay_reasoning }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.mrna_expression_assay_reasoning | markdown"></p>
       </details>
        <details name="reasoning" ng-show="hasValue(goflowData.mrna_expression_assay_evidence)">
         <summary>Show Evidence</summary>
-        <p class="reasoning-text">{{ goflowData.mrna_expression_assay_evidence }}</p>
+        <p class="reasoning-text" ng-bind-html="goflowData.mrna_expression_assay_evidence | markdown"></p>
       </details>
     </div>
 

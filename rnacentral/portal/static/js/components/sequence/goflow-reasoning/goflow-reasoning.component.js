@@ -178,4 +178,12 @@ var goflowReasoning = {
     templateUrl: '/static/js/components/sequence/goflow-reasoning/goflow-reasoning.html' 
 };
 
-angular.module("rnaSequence").component("goflowReasoning", goflowReasoning);
+angular.module("rnaSequence").component("goflowReasoning", goflowReasoning)
+.filter('markdown', ['$sce', function($sce) {
+    return function(input) {
+      if (input) {
+        return $sce.trustAsHtml(marked.parse(input));
+      }
+      return '';
+    };
+  }]);
