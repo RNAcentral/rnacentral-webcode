@@ -10,6 +10,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'author',
             'common_name',
             'description',
+            'entry_type',
             'expert_db',
             'function',
             'gene',
@@ -64,7 +65,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name',
             'tax_string': 'Taxonomy'
         },
-        facetfields: ['rna_type', 'so_rna_type', 'has_litsumm', 'has_lit_scan', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        facetfields: ['entry_type','rna_type', 'so_rna_type', 'has_litsumm', 'has_lit_scan', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         foldableFacets: ['rna_type', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates'],
         sortableFields: [
             { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },

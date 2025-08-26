@@ -156,13 +156,12 @@
         </li>
         <hr />
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
-          <div ng-if="facet.label === 'Entry type' ">
+          <div ng-if="facet.label === 'Entry type'">
             <h3>
-              Entry Type
+              Entry type
             </h3>
             <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
-              <!-- Show "True" values for both LitScan and LitSumm -->
-              <li ng-repeat="facetValue in facet.facetValues" ng-if="facetValue.label != 'False'">
+              <li ng-repeat="facetValue in facet.facetValues">
                 <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
                 <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
               </li>
