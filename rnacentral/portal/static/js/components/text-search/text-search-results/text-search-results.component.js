@@ -29,7 +29,9 @@ var textSearchResults = {
             // slider that allows users to set range of sequence lengths
             ctrl.setLengthSlider(); // initial value
 
-            search.registerSearchCallback(function() { ctrl.setLengthSlider(); });
+            search.registerSearchCallback(function() { 
+                ctrl.setLengthSlider(); 
+            });
 
             // retrieve expert_dbs json for display in tooltips
             $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
@@ -46,6 +48,23 @@ var textSearchResults = {
                     ctrl.showExpertDbError = true;
                 }
             );
+        };
+
+        // Add function to get entry type count
+        ctrl.getEntryTypeCount = function(entryType) {
+            if (!ctrl.search.result.facets) return 0;
+            
+            var entryTypeFacet = ctrl.search.result.facets.find(function(facet) {
+                return facet.label === 'Entry type';
+            });
+            
+            if (!entryTypeFacet) return 0;
+            
+            var facetValue = entryTypeFacet.facetValues.find(function(fv) {
+                return fv.value === entryType;
+            });
+            
+            return facetValue ? facetValue.count : 0;
         };
 
         // Length slider-related code
