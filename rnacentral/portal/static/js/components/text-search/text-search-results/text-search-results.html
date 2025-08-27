@@ -161,9 +161,21 @@
               Entry type
             </h3>
             <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
-              <li ng-repeat="facetValue in facet.facetValues">
-                <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
-                <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+              <!-- Hard-coded Sequence option -->
+              <li>
+                <input type="checkbox" name="entry_type" ng-checked="$ctrl.isFacetApplied('entry_type', 'Sequence')" ng-click="$ctrl.facetSearch('entry_type', 'Sequence')">
+                <a href="" ng-click="$ctrl.facetSearch('entry_type', 'Sequence')" class="text-search-facet-link">
+                  Sequence 
+                  <small>({{ $ctrl.getEntryTypeCount('Sequence') | number }})</small>
+                </a>
+              </li>
+              <!-- Hard-coded Gene option -->
+              <li>
+                <input type="checkbox" name="entry_type" ng-checked="$ctrl.isFacetApplied('entry_type', 'Gene')" ng-click="$ctrl.facetSearch('entry_type', 'Gene')">
+                <a href="" ng-click="$ctrl.facetSearch('entry_type', 'Gene')" class="text-search-facet-link">
+                  Gene 
+                  <small>({{ $ctrl.getEntryTypeCount('Gene') | number }})</small>
+                </a>
               </li>
             </ul>
           </div>
