@@ -288,7 +288,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         query = '(' + query + ')'
 
         if (!query.match(/entry_type\:/i)) {
-          query += ' AND entry_type:"Sequence"'
+          query += ' AND (entry_type:"Sequence" OR entry_type:"Gene")'
         }
         return query;
 
