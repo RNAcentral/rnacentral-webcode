@@ -37,6 +37,7 @@ from apiv1.serializers import (
     RnaFastaSerializer,
     RnaFlatSerializer,
     RnaGenomeLocationsSerializer,
+    RnaGenesSerializer,  # NEW IMPORT
     RnaNestedSerializer,
     RnaSecondaryStructureSerializer,
     RnaSpeciesSpecificSerializer,
@@ -622,58 +623,46 @@ class RnaGenomeLocations(generics.ListAPIView):
         return SequenceRegionActive.objects.raw(sequence_region_active_query)
 
 
-class AccessionView(generics.RetrieveAPIView):
+class RnaGenesView(APIView):
     """
-    API endpoint that allows single accessions to be viewed.
+    List of genes associated with a specific RNA sequence in a specific species.
 
     [API documentation](/api)
     """
-
-    # the above docstring appears on the API website
-    queryset = Accession.objects.select_related().all()
-    serializer_class = AccessionSerializer
-
-
-class CitationsView(generics.ListAPIView):
-    """
-    API endpoint that allows the citations associated with
-    a particular cross-reference to be viewed.
-
-    [API documentation](/api)
-    """
-
-    serializer_class = CitationSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs["pk"]
-        try:
-            citations = Accession.objects.select_related().get(pk=pk).refs.all()
-        except Accession.DoesNotExist:
-            citations = Accession.objects.none()
-
-        return citations
-
-
-class RnaPublicationsView(generics.ListAPIView):
-    """
-    API endpoint that allows the citations associated with
-    each Unique RNA Sequence to be viewed.
-
-    [API documentation](/api)
-    """
-
-    # the above docstring appears on the API website
+    
     permission_classes = (AllowAny,)
-    serializer_class = RawPublicationSerializer
-    pagination_class = Pagination
+    
+    def get(self, request, pk, taxid, **kwargs):
+        """Return gene information for a given URS and taxid"""
+        
+        # For now, return dummy data
+        # This structure matches what the frontend table expects
+        dummy_gene_data = {
+            "count": 2,
+            "results": [
+                {
+                    "location": "chr1:12345-67890",
+                    "gene_id": "ENSG00000123456", 
+                    "gene_name": "BRCA1"
+                },
+                {
+                    "location": "chr2:98765-54321",
+                    "gene_id": "ENSG00000789012",
+                    "gene_name": "TP53"
+                }
+            ]
+        }
+        
+        # You can also test the "no genes" case by uncommenting this:
+        # dummy_gene_data = {
+        #     "count": 0,
+        #     "results": []
+        # }
+        
+        return Response(dummy_gene_data)
 
-    def get_queryset(self):
-        upi = self.kwargs["pk"]
-        taxid = self.kwargs["taxid"] if "taxid" in self.kwargs else None
-        return Rna.objects.get(upi=upi).get_publications(
-            taxid
-        )  # this is actually a list
 
+# Add the missing view classes and complete the file
 
 class ExpertDatabasesAPIView(APIView):
     """
@@ -706,10 +695,6 @@ class ExpertDatabasesAPIView(APIView):
                 db.update(databases[normalized_label])
 
         return Response(expert_dbs)
-
-    # def get_queryset(self):
-    #     expert_db_name = self.kwargs['expert_db_name']
-    #     return Database.objects.get(expert_db_name).references
 
 
 @extend_schema(exclude=True)
@@ -1127,6 +1112,62 @@ class LitSummView(ReadOnlyModelViewSet):
         if primary_id is not None:
             queryset = queryset.filter(primary_id=primary_id)
         return queryset
+
+
+class AccessionView(generics.RetrieveAPIView):
+    """
+    API endpoint that allows single accessions to be viewed.
+
+    [API documentation](/api)
+    """
+
+    # the above docstring appears on the API website
+    queryset = Accession.objects.select_related().all()
+    serializer_class = AccessionSerializer
+
+
+class CitationsView(generics.ListAPIView):
+    """
+    API endpoint that allows the citations associated with
+    a particular cross-reference to be viewed.
+
+    [API documentation](/api)
+    """
+
+    serializer_class = CitationSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs["pk"]
+        try:
+            citations = Accession.objects.select_related().get(pk=pk).refs.all()
+        except Accession.DoesNotExist:
+            citations = Accession.objects.none()
+
+        return citations
+
+
+class RnaPublicationsView(generics.ListAPIView):
+    """
+    API endpoint that allows the citations associated with
+    each Unique RNA Sequence to be viewed.
+
+    [API documentation](/api)
+    """
+
+    # the above docstring appears on the API website
+    permission_classes = (AllowAny,)
+    serializer_class = RawPublicationSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        upi = self.kwargs["pk"]
+        taxid = self.kwargs["taxid"] if "taxid" in self.kwargs else None
+        return Rna.objects.get(upi=upi).get_publications(
+            taxid
+        )  # this is actually a list
+
+
+# ... [Rest of the file continues with existing views] ...
 
 
 class Md5SequenceView(APIView):

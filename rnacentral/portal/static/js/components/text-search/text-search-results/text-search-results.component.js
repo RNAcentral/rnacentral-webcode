@@ -67,6 +67,125 @@ var textSearchResults = {
             return facetValue ? facetValue.count : 0;
         };
 
+        // NEW: Helper function to safely check field existence and log missing fields
+        ctrl.safeFieldAccess = function(rna, fieldName, index) {
+            index = index || 0;
+            try {
+                if (!rna || !rna.fields) {
+                    console.warn('Missing rna.fields for entry:', rna ? rna.id : 'unknown');
+                    return null;
+                }
+                
+                if (!rna.fields[fieldName]) {
+                    console.log('Missing field "' + fieldName + '" for entry:', rna.id, 
+                               'Entry type:', rna.fields.entry_type ? rna.fields.entry_type[0] : 'unknown');
+                    return null;
+                }
+                
+                if (!Array.isArray(rna.fields[fieldName])) {
+                    console.warn('Field "' + fieldName + '" is not an array for entry:', rna.id, 
+                                'Value:', rna.fields[fieldName]);
+                    return rna.fields[fieldName]; // return as-is if it's not an array
+                }
+                
+                if (rna.fields[fieldName].length <= index) {
+                    console.log('Field "' + fieldName + '" array too short (length: ' + 
+                               rna.fields[fieldName].length + ', requested index: ' + index + 
+                               ') for entry:', rna.id);
+                    return null;
+                }
+                
+                return rna.fields[fieldName][index];
+            } catch (error) {
+                console.error('Error accessing field "' + fieldName + '" for entry:', 
+                             rna ? rna.id : 'unknown', 'Error:', error);
+                return null;
+            }
+        };
+
+        // NEW: Function to analyze and log field availability across all results
+        ctrl.analyzeFieldAvailability = function() {
+            if (!ctrl.search.result || !ctrl.search.result.entries) {
+                console.log('No search results to analyze');
+                return;
+            }
+
+            console.log('=== Field Availability Analysis ===');
+            console.log('Total entries:', ctrl.search.result.entries.length);
+            
+            var expectedFields = ['description', 'length', 'has_secondary_structure', 
+                                 'has_genomic_coordinates', 'qc_warning', 'active', 'expert_db',
+                                 'gene', 'standard_name', 'entry_type'];
+            
+            var fieldStats = {};
+            var entryTypeStats = {};
+            
+            ctrl.search.result.entries.forEach(function(entry) {
+                var entryType = ctrl.safeFieldAccess(entry, 'entry_type') || 'unknown';
+                
+                if (!entryTypeStats[entryType]) {
+                    entryTypeStats[entryType] = {
+                        count: 0,
+                        missingFields: {}
+                    };
+                }
+                entryTypeStats[entryType].count++;
+                
+                expectedFields.forEach(function(field) {
+                    if (!fieldStats[field]) {
+                        fieldStats[field] = { present: 0, missing: 0 };
+                    }
+                    
+                    var value = ctrl.safeFieldAccess(entry, field);
+                    if (value !== null && value !== undefined && value !== '') {
+                        fieldStats[field].present++;
+                    } else {
+                        fieldStats[field].missing++;
+                        if (!entryTypeStats[entryType].missingFields[field]) {
+                            entryTypeStats[entryType].missingFields[field] = 0;
+                        }
+                        entryTypeStats[entryType].missingFields[field]++;
+                    }
+                });
+            });
+            
+            console.log('Field availability:');
+            Object.keys(fieldStats).forEach(function(field) {
+                var stats = fieldStats[field];
+                var percentage = ((stats.present / (stats.present + stats.missing)) * 100).toFixed(1);
+                console.log('  ' + field + ': ' + stats.present + '/' + (stats.present + stats.missing) + 
+                           ' (' + percentage + '%)');
+            });
+            
+            console.log('By entry type:');
+            Object.keys(entryTypeStats).forEach(function(entryType) {
+                var typeStats = entryTypeStats[entryType];
+                console.log('  ' + entryType + ' (' + typeStats.count + ' entries):');
+                Object.keys(typeStats.missingFields).forEach(function(field) {
+                    var missing = typeStats.missingFields[field];
+                    var percentage = ((missing / typeStats.count) * 100).toFixed(1);
+                    console.log('    Missing ' + field + ': ' + missing + '/' + typeStats.count + 
+                               ' (' + percentage + '%)');
+                });
+            });
+            console.log('=== End Analysis ===');
+        };
+
+        // Override the original search callback to include field analysis
+        var originalSearch = search.search;
+        search.search = function() {
+            var result = originalSearch.apply(this, arguments);
+            
+            // Add a timeout to ensure the results are loaded before analysis
+            $timeout(function() {
+                if (ctrl.search.status === 'success') {
+                    ctrl.analyzeFieldAvailability();
+                }
+            }, 100);
+            
+            return result;
+        };
+
         // Length slider-related code
         // --------------------------
 
@@ -106,6 +225,7 @@ var textSearchResults = {
                     $timeout(function () { $scope.$broadcast('rzSliderForceRender'); }); // issue render just in case
                 },
                 function (failure) { // non-mission critical, let's fallback to sensible defaults
+                    console.log('Length slider failed to get floor/ceil, using defaults:', failure);
                     var floor = 10;
                     var ceil = 2147483647; // macrocosm constant - if length exceeds it, EBI search fails
 
@@ -427,7 +547,7 @@ var textSearchResults = {
          * @returns {boolean}
          */
         ctrl.expertDbHasStar = function(db) {
-            return ctrl.expertDbsObject[db].tags.indexOf('curated') != -1 && ctrl.expertDbsObject[db].tags.indexOf('automatic') == -1;
+            return ctrl.expertDbsObject[db] && ctrl.expertDbsObject[db].tags.indexOf('curated') != -1 && ctrl.expertDbsObject[db].tags.indexOf('automatic') == -1;
         };
 
         /**
@@ -437,52 +557,76 @@ var textSearchResults = {
          * @returns {{highlight: String, fieldName: String}}
          */
         ctrl.highlight = function(fields) {
-            var highlight;
-            var verboseFieldName;
-            var maxWeight = -1; // multiple fields can have highlights - pick the field with highest weight
+            try {
+                var highlight;
+                var verboseFieldName;
+                var maxWeight = -1; // multiple fields can have highlights - pick the field with highest weight
 
-            for (var fieldName in fields) {
-                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) { // description is quoted in hit's header, ignore it
-                    if (search.config.fieldWeights[fieldName] > maxWeight) {
+                for (var fieldName in fields) {
+                    if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) { // description is quoted in hit's header, ignore it
+                        if (search.config.fieldWeights[fieldName] > maxWeight) {
 
-                        // get highlight string with match
-                        var field = fields[fieldName];
-                        for (var i = 0; i < fields.length; i++) {
-                            if (field[i].indexOf('text-search-highlights') !== -1) {
-                                highlight = field[i];
-                                break;
+                            // get highlight string with match
+                            var field = fields[fieldName];
+                            for (var i = 0; i < field.length; i++) {
+                                if (field[i].indexOf('text-search-highlights') !== -1) {
+                                    highlight = field[i];
+                                    break;
+                                }
                             }
-                        }
 
-                        // assign the new weight and verboseFieldName
-                        maxWeight = search.config.fieldWeights[fieldName];
-                        verboseFieldName = search.config.fieldVerboseNames[fieldName];
+                            // assign the new weight and verboseFieldName
+                            maxWeight = search.config.fieldWeights[fieldName];
+                            verboseFieldName = search.config.fieldVerboseNames[fieldName];
+                        }
                     }
                 }
-            }
 
-            // use human-readable fieldName
-            return {highlight: highlight, fieldName: verboseFieldName};
+                // use human-readable fieldName
+                return {highlight: highlight, fieldName: verboseFieldName};
+            } catch (error) {
+                console.error('Error in highlight function:', error, 'Fields:', fields);
+                return {highlight: '', fieldName: ''};
+            }
         };
 
         /**
          * Are there any highlighted snippets in search results at all?
          */
         ctrl.anyHighlights = function(fields) {
-            return Object.keys(fields).some(function(fieldName) {
-                return (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName]));
-            });
+            try {
+                return Object.keys(fields).some(function(fieldName) {
+                    return (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName]));
+                });
+            } catch (error) {
+                console.error('Error checking highlights:', error, 'Fields:', fields);
+                return false;
+            }
         };
 
         /**
          * Does the given field contain any highlighted text snippets?
          */
         ctrl.anyHighlightsInField = function(field) {
-            return field.some(function(el) { return el.indexOf('text-search-highlights') !== -1 });
+            try {
+                if (!Array.isArray(field)) {
+                    console.warn('anyHighlightsInField: field is not an array:', field);
+                    return false;
+                }
+                return field.some(function(el) { return el && el.indexOf('text-search-highlights') !== -1 });
+            } catch (error) {
+                console.error('Error checking field highlights:', error, 'Field:', field);
+                return false;
+            }
         };
 
         ctrl.getURS = function(urs_taxid) {
-            return urs_taxid.replace(/_\d+/, '');
+            try {
+                return urs_taxid.replace(/_\d+/, '');
+            } catch (error) {
+                console.error('Error extracting URS from:', urs_taxid, 'Error:', error);
+                return urs_taxid || '';
+            }
         }
     }]
 };
