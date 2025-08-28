@@ -635,31 +635,71 @@ class RnaGenesView(APIView):
     def get(self, request, pk, taxid, **kwargs):
         """Return gene information for a given URS and taxid"""
         
-        # For now, return dummy data
-        # This structure matches what the frontend table expects
-        dummy_gene_data = {
-            "count": 2,
-            "results": [
-                {
-                    "location": "chr1:12345-67890",
-                    "gene_id": "ENSG00000123456", 
-                    "gene_name": "BRCA1"
-                },
-                {
-                    "location": "chr2:98765-54321",
-                    "gene_id": "ENSG00000789012",
-                    "gene_name": "TP53"
+        urs_taxid = pk + "_" + taxid
+        
+        # Query using the correct column names from rnc_genes table
+        gene_query = """
+            SELECT DISTINCT
+                sr.chromosome,
+                sr.region_start,
+                sr.region_stop,
+                g.internal_name,
+                g.public_name,
+                g.chromosome as gene_chromosome,
+                g.start as gene_start,
+                g.stop as gene_stop
+            FROM rnc_sequence_regions sr
+            INNER JOIN rnc_gene_members gm ON sr.id = gm.locus_id
+            INNER JOIN rnc_genes g ON gm.rnc_gene_id = g.id
+            WHERE sr.urs_taxid = %s
+            ORDER BY sr.chromosome, sr.region_start
+        """
+        
+        from django.db import connection
+        
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(gene_query, [urs_taxid])
+                results = cursor.fetchall()
+                
+                # Format the results
+                genes = []
+                for row in results:
+                    # Use gene coordinates if available, otherwise use sequence region coordinates
+                    chromosome = row[5] or row[0]  # gene_chromosome or sr.chromosome
+                    start = row[6] or row[1]       # gene_start or sr.region_start
+                    stop = row[7] or row[2]        # gene_stop or sr.region_stop
+                    
+                    # Build location string
+                    if chromosome:
+                        location = f"chr{chromosome}:{start}-{stop}"
+                    else:
+                        location = "Unknown"
+                    
+                    # Use public_name if available, otherwise internal_name
+                    gene_name = row[4] or row[3] or "GENE"  # public_name or internal_name
+                    gene_id = row[3] or "Unknown"           # internal_name as ID
+                    
+                    genes.append({
+                        "location": location,
+                        "gene_id": gene_id,
+                        "gene_name": gene_name
+                    })
+                
+                response_data = {
+                    "count": len(genes),
+                    "results": genes
                 }
-            ]
-        }
-        
-        # You can also test the "no genes" case by uncommenting this:
-        # dummy_gene_data = {
-        #     "count": 0,
-        #     "results": []
-        # }
-        
-        return Response(dummy_gene_data)
+                
+                return Response(response_data)
+                
+        except Exception as e:
+            # If there's an error, return empty results
+            return Response({
+                "count": 0,
+                "results": [],
+                "error": f"Database query failed: {str(e)}"
+            })
 
 
 # Add the missing view classes and complete the file
