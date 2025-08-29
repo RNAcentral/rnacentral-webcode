@@ -37,6 +37,7 @@ from apiv1.serializers import (
     RnaFastaSerializer,
     RnaFlatSerializer,
     RnaGenomeLocationsSerializer,
+    RnaGenesSerializer,  # NEW IMPORT
     RnaNestedSerializer,
     RnaSecondaryStructureSerializer,
     RnaSpeciesSpecificSerializer,
@@ -622,58 +623,86 @@ class RnaGenomeLocations(generics.ListAPIView):
         return SequenceRegionActive.objects.raw(sequence_region_active_query)
 
 
-class AccessionView(generics.RetrieveAPIView):
+class RnaGenesView(APIView):
     """
-    API endpoint that allows single accessions to be viewed.
+    List of genes associated with a specific RNA sequence in a specific species.
 
     [API documentation](/api)
     """
-
-    # the above docstring appears on the API website
-    queryset = Accession.objects.select_related().all()
-    serializer_class = AccessionSerializer
-
-
-class CitationsView(generics.ListAPIView):
-    """
-    API endpoint that allows the citations associated with
-    a particular cross-reference to be viewed.
-
-    [API documentation](/api)
-    """
-
-    serializer_class = CitationSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs["pk"]
-        try:
-            citations = Accession.objects.select_related().get(pk=pk).refs.all()
-        except Accession.DoesNotExist:
-            citations = Accession.objects.none()
-
-        return citations
-
-
-class RnaPublicationsView(generics.ListAPIView):
-    """
-    API endpoint that allows the citations associated with
-    each Unique RNA Sequence to be viewed.
-
-    [API documentation](/api)
-    """
-
-    # the above docstring appears on the API website
+    
     permission_classes = (AllowAny,)
-    serializer_class = RawPublicationSerializer
-    pagination_class = Pagination
+    
+    def get(self, request, pk, taxid, **kwargs):
+        """Return gene information for a given URS and taxid"""
+        
+        urs_taxid = pk + "_" + taxid
+        
+        # Query using the correct column names from rnc_genes table
+        gene_query = """
+            SELECT DISTINCT
+                sr.chromosome,
+                sr.region_start,
+                sr.region_stop,
+                g.internal_name,
+                g.public_name,
+                g.chromosome as gene_chromosome,
+                g.start as gene_start,
+                g.stop as gene_stop
+            FROM rnc_sequence_regions sr
+            INNER JOIN rnc_gene_members gm ON sr.id = gm.locus_id
+            INNER JOIN rnc_genes g ON gm.rnc_gene_id = g.id
+            WHERE sr.urs_taxid = %s
+            ORDER BY sr.chromosome, sr.region_start
+        """
+        
+        from django.db import connection
+        
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(gene_query, [urs_taxid])
+                results = cursor.fetchall()
+                
+                # Format the results
+                genes = []
+                for row in results:
+                    # Use gene coordinates if available, otherwise use sequence region coordinates
+                    chromosome = row[5] or row[0]  # gene_chromosome or sr.chromosome
+                    start = row[6] or row[1]       # gene_start or sr.region_start
+                    stop = row[7] or row[2]        # gene_stop or sr.region_stop
+                    
+                    # Build location string
+                    if chromosome:
+                        location = f"chr{chromosome}:{start}-{stop}"
+                    else:
+                        location = "Unknown"
+                    
+                    # Use public_name if available, otherwise internal_name
+                    gene_name = row[4] or row[3] or "GENE"  # public_name or internal_name
+                    gene_id = row[3] or "Unknown"           # internal_name as ID
+                    
+                    genes.append({
+                        "location": location,
+                        "gene_id": gene_id,
+                        "gene_name": gene_name
+                    })
+                
+                response_data = {
+                    "count": len(genes),
+                    "results": genes
+                }
+                
+                return Response(response_data)
+                
+        except Exception as e:
+            # If there's an error, return empty results
+            return Response({
+                "count": 0,
+                "results": [],
+                "error": f"Database query failed: {str(e)}"
+            })
 
-    def get_queryset(self):
-        upi = self.kwargs["pk"]
-        taxid = self.kwargs["taxid"] if "taxid" in self.kwargs else None
-        return Rna.objects.get(upi=upi).get_publications(
-            taxid
-        )  # this is actually a list
 
+# Add the missing view classes and complete the file
 
 class ExpertDatabasesAPIView(APIView):
     """
@@ -706,10 +735,6 @@ class ExpertDatabasesAPIView(APIView):
                 db.update(databases[normalized_label])
 
         return Response(expert_dbs)
-
-    # def get_queryset(self):
-    #     expert_db_name = self.kwargs['expert_db_name']
-    #     return Database.objects.get(expert_db_name).references
 
 
 @extend_schema(exclude=True)
@@ -1127,6 +1152,62 @@ class LitSummView(ReadOnlyModelViewSet):
         if primary_id is not None:
             queryset = queryset.filter(primary_id=primary_id)
         return queryset
+
+
+class AccessionView(generics.RetrieveAPIView):
+    """
+    API endpoint that allows single accessions to be viewed.
+
+    [API documentation](/api)
+    """
+
+    # the above docstring appears on the API website
+    queryset = Accession.objects.select_related().all()
+    serializer_class = AccessionSerializer
+
+
+class CitationsView(generics.ListAPIView):
+    """
+    API endpoint that allows the citations associated with
+    a particular cross-reference to be viewed.
+
+    [API documentation](/api)
+    """
+
+    serializer_class = CitationSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs["pk"]
+        try:
+            citations = Accession.objects.select_related().get(pk=pk).refs.all()
+        except Accession.DoesNotExist:
+            citations = Accession.objects.none()
+
+        return citations
+
+
+class RnaPublicationsView(generics.ListAPIView):
+    """
+    API endpoint that allows the citations associated with
+    each Unique RNA Sequence to be viewed.
+
+    [API documentation](/api)
+    """
+
+    # the above docstring appears on the API website
+    permission_classes = (AllowAny,)
+    serializer_class = RawPublicationSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        upi = self.kwargs["pk"]
+        taxid = self.kwargs["taxid"] if "taxid" in self.kwargs else None
+        return Rna.objects.get(upi=upi).get_publications(
+            taxid
+        )  # this is actually a list
+
+
+# ... [Rest of the file continues with existing views] ...
 
 
 class Md5SequenceView(APIView):

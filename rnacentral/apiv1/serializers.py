@@ -976,6 +976,14 @@ class RnaGenomeLocationsSerializer(serializers.Serializer):
         }
 
 
+class RnaGenesSerializer(serializers.Serializer):
+    """Serializer class for Gene Information"""
+    
+    location = serializers.ReadOnlyField()
+    gene_id = serializers.ReadOnlyField()
+    gene_name = serializers.ReadOnlyField()
+
+
 class Md5Serializer(serializers.Serializer):
     """Serializer class to fetch sequence using md5"""
 

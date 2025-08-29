@@ -109,6 +109,12 @@ urlpatterns = [
         cache_page(CACHE_TIMEOUT)(views.RnaGenomeLocations.as_view()),
         name="rna-genome-locations",
     ),
+    # genes for RNA (species-specific) - NEW ENDPOINT
+    re_path(
+        r"^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genes/(?P<taxid>\d+)/?$",
+        cache_page(CACHE_TIMEOUT)(views.RnaGenesView.as_view()),
+        name="rna-genes",
+    ),
     # go annotations for RNA (species-specific)
     re_path(
         r"^rna/(?P<pk>URS[0-9A-Fa-f]{10})/go-annotations/(?P<taxid>\d+)/?$",
