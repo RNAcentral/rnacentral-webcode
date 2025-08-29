@@ -979,7 +979,9 @@ class RnaGenomeLocationsSerializer(serializers.Serializer):
 class RnaGenesSerializer(serializers.Serializer):
     """Serializer class for Gene Information"""
     
-    location = serializers.ReadOnlyField()
+    chromosome = serializers.ReadOnlyField()
+    start = serializers.ReadOnlyField()
+    end = serializers.ReadOnlyField()
     gene_name = serializers.ReadOnlyField()
 
 
