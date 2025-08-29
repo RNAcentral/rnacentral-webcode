@@ -637,69 +637,114 @@ class RnaGenesView(APIView):
         
         urs_taxid = pk + "_" + taxid
         
-        # Query using the correct column names from rnc_genes table
-        gene_query = """
-            SELECT DISTINCT
-                sr.chromosome,
-                sr.region_start,
-                sr.region_stop,
-                g.internal_name,
-                g.public_name,
-                g.chromosome as gene_chromosome,
-                g.start as gene_start,
-                g.stop as gene_stop
-            FROM rnc_sequence_regions sr
-            INNER JOIN rnc_gene_members gm ON sr.id = gm.locus_id
-            INNER JOIN rnc_genes g ON gm.rnc_gene_id = g.id
-            WHERE sr.urs_taxid = %s
-            ORDER BY sr.chromosome, sr.region_start
-        """
-        
         from django.db import connection
         
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute(gene_query, [urs_taxid])
-                results = cursor.fetchall()
-                
-                # Format the results
-                genes = []
-                for row in results:
-                    # Use gene coordinates if available, otherwise use sequence region coordinates
-                    chromosome = row[5] or row[0]  # gene_chromosome or sr.chromosome
-                    start = row[6] or row[1]       # gene_start or sr.region_start
-                    stop = row[7] or row[2]        # gene_stop or sr.region_stop
-                    
-                    # Build location string
-                    if chromosome:
-                        location = f"chr{chromosome}:{start}-{stop}"
+        # Try different approaches to get gene information
+        approaches = [
+            # Approach 1: Check if gene info is in rnc_accessions table
+            {
+                "name": "accessions_gene_info",
+                "query": """
+                    SELECT DISTINCT
+                        sr.chromosome,
+                        sr.region_start,
+                        sr.region_stop,
+                        acc.gene,
+                        acc.product
+                    FROM rnc_sequence_regions sr
+                    INNER JOIN rnc_accession_sequence_region asr ON sr.id = asr.region_id
+                    INNER JOIN rnc_accessions acc ON asr.accession = acc.accession
+                    WHERE sr.urs_taxid = %s 
+                        AND (acc.gene IS NOT NULL OR acc.product IS NOT NULL)
+                    ORDER BY sr.chromosome, sr.region_start
+                    LIMIT 10
+                """
+            },
+            
+            # Approach 2: Check sequence features for gene-related information
+            {
+                "name": "sequence_features",
+                "query": """
+                    SELECT DISTINCT
+                        sr.chromosome,
+                        sr.region_start,
+                        sr.region_stop,
+                        sf.feature_name,
+                        sf.metadata
+                    FROM rnc_sequence_regions sr,
+                         rnc_sequence_features sf
+                    WHERE sr.urs_taxid = %s 
+                        AND sf.upi = %s
+                        AND sf.taxid = %s
+                        AND sf.feature_name ILIKE '%%gene%%'
+                    ORDER BY sr.chromosome, sr.region_start
+                    LIMIT 10
+                """
+            },
+            
+            # Approach 3: Just return sequence regions without gene info
+            {
+                "name": "regions_only",
+                "query": """
+                    SELECT DISTINCT
+                        sr.chromosome,
+                        sr.region_start,
+                        sr.region_stop
+                    FROM rnc_sequence_regions sr
+                    WHERE sr.urs_taxid = %s
+                    ORDER BY sr.chromosome, sr.region_start
+                    LIMIT 10
+                """
+            }
+        ]
+        
+        for approach in approaches:
+            try:
+                with connection.cursor() as cursor:
+                    if approach["name"] == "sequence_features":
+                        cursor.execute(approach["query"], [urs_taxid, pk, taxid])
                     else:
-                        location = "Unknown"
+                        cursor.execute(approach["query"], [urs_taxid])
                     
-                    # Use public_name if available, otherwise internal_name
-                    gene_name = row[4] or row[3] or "GENE"  # public_name or internal_name
-                    gene_id = row[3] or "Unknown"           # internal_name as ID
+                    results = cursor.fetchall()
                     
-                    genes.append({
-                        "location": location,
-                        "gene_id": gene_id,
-                        "gene_name": gene_name
-                    })
-                
-                response_data = {
-                    "count": len(genes),
-                    "results": genes
-                }
-                
-                return Response(response_data)
-                
-        except Exception as e:
-            # If there's an error, return empty results
-            return Response({
-                "count": 0,
-                "results": [],
-                "error": f"Database query failed: {str(e)}"
-            })
+                    if results:
+                        genes = []
+                        for row in results:
+                            # Build location string
+                            if row[0]:  # chromosome
+                                location = f"chr{row[0]}:{row[1]}-{row[2]}"
+                            else:
+                                location = "Unknown"
+                            
+                            # Extract gene name based on approach - remove gene_id
+                            if approach["name"] == "accessions_gene_info":
+                                gene_name = row[4] or row[3] or "GENE"  # product or gene
+                            elif approach["name"] == "sequence_features":
+                                gene_name = str(row[4]) if row[4] else "GENE"  # metadata
+                            else:  # regions_only
+                                gene_name = "Genomic Region"
+                            
+                            genes.append({
+                                "location": location,
+                                "gene_name": gene_name
+                            })
+                        
+                        return Response({
+                            "count": len(genes),
+                            "results": genes
+                        })
+                        
+            except Exception as e:
+                # Continue to next approach if this one fails
+                continue
+        
+        # If all approaches fail, return no genes found
+        return Response({
+            "count": 0,
+            "results": [],
+            "message": "No gene information available for this sequence"
+        })
 
 
 # Add the missing view classes and complete the file

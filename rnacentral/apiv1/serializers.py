@@ -980,7 +980,6 @@ class RnaGenesSerializer(serializers.Serializer):
     """Serializer class for Gene Information"""
     
     location = serializers.ReadOnlyField()
-    gene_id = serializers.ReadOnlyField()
     gene_name = serializers.ReadOnlyField()
 
 
