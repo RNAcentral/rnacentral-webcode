@@ -1168,13 +1168,15 @@ class RnaGenesView(APIView):
             with connection.cursor() as cursor:
                 query = """
                     SELECT DISTINCT
-                        public_name,
-                        chromosome,
-                        start,
-                        stop
-                    FROM rnc_genes
-                    WHERE taxid = %s
-                    ORDER BY chromosome, start
+                        rg.public_name,
+                        rg.chromosome,
+                        rg.start,
+                        rg.stop,
+                        rgm.description
+                    FROM rnc_genes rg
+                    LEFT JOIN rnc_gene_metadata rgm ON rg.id = rgm.rnc_gene_id
+                    WHERE rg.taxid = %s
+                    ORDER BY rg.chromosome, rg.start
                     LIMIT 10
                 """
                 
@@ -1188,12 +1190,14 @@ class RnaGenesView(APIView):
                         chromosome = row[1] if row[1] else "Unknown"
                         start = row[2] if row[2] else None
                         end = row[3] if row[3] else None
+                        description = row[4] if row[4] else "No description available"
                         
                         genes.append({
                             "chromosome": chromosome,
                             "start": start,
                             "end": end,
-                            "gene_name": gene_name
+                            "gene_name": gene_name,
+                            "description": description
                         })
                     
                     return Response({
