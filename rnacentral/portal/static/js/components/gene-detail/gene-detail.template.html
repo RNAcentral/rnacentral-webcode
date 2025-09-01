@@ -35,10 +35,6 @@
             <span class="gene__info-label">Gene Type</span>
             <span class="gene__info-value">{{ vm.geneData.geneType }}</span>
           </div>
-          <div class="gene__info-item">
-            <span class="gene__info-label">Gene Length</span>
-            <span class="gene__info-value">{{ vm.geneData.geneLength }}</span>
-          </div>
         </div>
       </div>
     </header>
@@ -80,6 +76,7 @@
                 <a ng-repeat="link in vm.externalLinks" 
                    ng-href="{{ link.url }}" 
                    class="gene__external-link"
+                   target="_blank"
                    ng-click="vm.onExternalLinkClick(link)">{{ link.name }}</a>
               </div>
             </div>

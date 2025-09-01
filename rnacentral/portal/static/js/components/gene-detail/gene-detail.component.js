@@ -22,7 +22,6 @@ var geneDetail = {
             endPosition: '43,170,245',
             strand: 'Reverse (-)',
             geneType: 'Protein Coding',
-            geneLength: '125,951 bp',
             summary: 'BRCA1 (BRCA1 DNA Repair Associated) is a protein-coding gene that plays a critical role in DNA repair and genome stability. Mutations in BRCA1 are associated with increased risk of breast and ovarian cancers. The gene encodes a nuclear phosphoprotein that acts as a tumor suppressor.'
         };
 
