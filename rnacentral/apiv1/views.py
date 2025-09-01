@@ -1175,12 +1175,14 @@ class RnaGenesView(APIView):
                         rgm.description
                     FROM rnc_genes rg
                     LEFT JOIN rnc_gene_metadata rgm ON rg.id = rgm.rnc_gene_id
-                    WHERE rg.taxid = %s
+                    INNER JOIN rnc_gene_members rgmb ON rg.id = rgmb.rnc_gene_id
+                    INNER JOIN rnc_sequence_regions rsr ON rgmb.locus_id = rsr.id
+                    WHERE rsr.urs_taxid = %s
                     ORDER BY rg.chromosome, rg.start
                     LIMIT 10
                 """
                 
-                cursor.execute(query, [taxid])
+                cursor.execute(query, [urs_taxid])
                 results = cursor.fetchall()
                 
                 if results:
