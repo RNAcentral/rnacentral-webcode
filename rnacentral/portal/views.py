@@ -352,6 +352,16 @@ def rna_view(request, upi, taxid=None):
 
 
 @cache_page(CACHE_TIMEOUT)
+def gene_detail(request, name, version=None):
+    """ Gene detail view """
+    context = {
+        'version': version,
+        'name': name,
+        'symbol': name.upper()
+  }
+    return render(request, 'portal/gene_detail.html',context)
+
+@cache_page(CACHE_TIMEOUT)
 def expert_database_view(request, expert_db_name):
     """Expert database view."""
     expert_db_name = expert_db_name.upper()
