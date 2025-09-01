@@ -711,11 +711,10 @@ class RnaGenesView(APIView):
                     if results:
                         genes = []
                         for row in results:
-                            # Build location string
-                            if row[0]:  # chromosome
-                                location = f"chr{row[0]}:{row[1]}-{row[2]}"
-                            else:
-                                location = "Unknown"
+                            # Extract chromosome, start, end separately
+                            chromosome = row[0] if row[0] else "Unknown"
+                            start = row[1] if row[1] else None
+                            end = row[2] if row[2] else None
                             
                             # Extract gene name based on approach - remove gene_id
                             if approach["name"] == "accessions_gene_info":
@@ -726,7 +725,9 @@ class RnaGenesView(APIView):
                                 gene_name = "Genomic Region"
                             
                             genes.append({
-                                "location": location,
+                                "chromosome": chromosome,
+                                "start": start,
+                                "end": end,
                                 "gene_name": gene_name
                             })
                         
