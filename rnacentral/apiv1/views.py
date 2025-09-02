@@ -1179,7 +1179,6 @@ class RnaGenesView(APIView):
                     INNER JOIN rnc_sequence_regions rsr ON rgmb.locus_id = rsr.id
                     WHERE rsr.urs_taxid = %s
                     ORDER BY rg.chromosome, rg.start
-                    LIMIT 10
                 """
                 
                 cursor.execute(query, [urs_taxid])
