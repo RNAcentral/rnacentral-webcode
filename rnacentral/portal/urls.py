@@ -237,10 +237,11 @@ urlpatterns = [
     ),
     # gene detail
     re_path(
-    r"^genes/(?P<name>[A-Za-z0-9_-]+)(?:\.(?P<version>\d+))?/?$",
+    r"^genes/(?P<name>[A-Za-z0-9_.-]+)/?$",
     views.gene_detail,
     name="gene-detail"
-)
+
+    )
 
 
 

@@ -20,6 +20,8 @@ import re
 
 import requests
 import six
+from django.db.models import Max, IntegerField, F, Func, CharField
+from django.db.models.functions import Cast
 
 if six.PY2:
     from urlparse import urlparse
@@ -46,6 +48,8 @@ from portal.models import (
     Rna,
     Taxonomy,
     Xref,
+    Gene,
+    GeneMetadata
 )
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.rna_summary import RnaSummary
@@ -350,16 +354,96 @@ def rna_view(request, upi, taxid=None):
         pass
     return response
 
-
 @cache_page(CACHE_TIMEOUT)
-def gene_detail(request, name, version=None):
-    """ Gene detail view """
-    context = {
-        'version': version,
-        'name': name,
-        'symbol': name.upper()
-  }
-    return render(request, 'portal/gene_detail.html',context)
+def gene_detail(request, name):
+    """
+    Gene detail view for genes with format public_name.version
+    - If name contains version (e.g., "RNACG12082614835.5"): fetch exact gene
+    - If no version (e.g., "RNACG12082614835"): fetch latest version for that public name
+    """
+    
+    gene = None
+    version = None
+    base_name = name
+    
+    # Parse version from name if it exists
+    if '.' in name and name.split('.')[-1].isdigit():
+        parts = name.rsplit('.', 1)
+        base_name = parts[0]
+        version = int(parts[1])
+        
+        # Look for exact match
+        gene = Gene.objects.filter(name=name).first()
+
+    else:
+        # No version in name, find latest version
+        # Look for all genes starting with "base_name." and get the one with highest version
+        versioned_genes = Gene.objects.filter(name__startswith=f"{base_name}.")
+        
+        if versioned_genes.exists():
+            # Extract version numbers and find the highest
+            latest_gene = None
+            highest_version = -1
+            
+            for g in versioned_genes:
+                try:
+                    # Extract version from gene name (e.g., "RNACG12082614835.5" -> 5)
+                    gene_version = int(g.name.split('.')[-1])
+                    if gene_version > highest_version:
+                        highest_version = gene_version
+                        latest_gene = g
+                        version = gene_version  # Set version for template
+                except (ValueError, IndexError):
+                    # TODO: handle exception (log it/print stacktrace?) 
+                    continue
+            
+            gene = latest_gene
+        else:
+            # Try exact match without version (fallback)
+            gene = Gene.objects.filter(name=base_name).first()
+    
+    if not gene:
+        return render(request, "portal/gene_detail.html", {
+            "geneFound": False,
+            "geneName": base_name,
+            "geneVersion": version,
+            "geneData": {},
+            "transcriptsData": [],
+            "externalLinksData": [],
+        })
+
+    
+    # TODO: Get metadata
+    metadata = getattr(gene, "metadata", None)
+
+    gene_data = {
+        "name": gene.name,
+        "chromosome": gene.chromosome,
+        "startPosition": gene.start,
+        "endPosition": gene.stop,
+        "strand": gene.strand,
+        "geneType": metadata.ontology_term.name if metadata and metadata.ontology_term else "Unknown",
+        "summary": metadata.description if metadata else "No summary available",
+        "length": abs(gene.stop - gene.start) + 1 if gene.start and gene.stop else 0,
+        "version": version,
+    }
+
+
+    # TODO: Add transcript data 
+    transcripts_data = []
+    
+    # TODO: Add external links (if needed)
+    external_links_data = []
+
+    return render(request, "portal/gene_detail.html", {
+        "geneData": gene_data,
+        "geneName": base_name,
+        "geneVersion": version,
+        "geneFound": True,
+        "transcriptsData": transcripts_data,
+        "externalLinksData": external_links_data,
+    })
+
 
 @cache_page(CACHE_TIMEOUT)
 def expert_database_view(request, expert_db_name):
