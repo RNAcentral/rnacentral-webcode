@@ -1,10 +1,11 @@
-<div class="row">
+<div class="row" ng-if="!vm.error">
   <div class="col-md-12">
     <header class="gene__header">
       <div class="gene-container">
         <div class="gene-title">
           <h1 class="gene-name">{{ vm.geneData.name }}</h1>
-          <span class="gene-symbol">{{ vm.geneData.symbol }}</span>
+          <span class="gene-symbol" ng-if="vm.geneData.symbol && vm.geneData.symbol !== vm.geneData.name">{{ vm.geneData.symbol }}</span>
+          <span class="gene-version" ng-if="vm.geneData.version">.{{ vm.geneData.version }}</span>
         </div>
         
         <div class="gene__widget-header">
@@ -15,25 +16,29 @@
         </p>
         
         <div class="gene-info">
-          <div class="gene__info-item">
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.chromosome)">
             <span class="gene__info-label">Chromosome</span>
-            <span class="gene__info-value">{{ vm.geneData.chromosome }}</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.chromosome) }}</span>
           </div>
-          <div class="gene__info-item">
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.startPosition)">
             <span class="gene__info-label">Start Position</span>
-            <span class="gene__info-value">{{ vm.geneData.startPosition }}</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.startPosition) }}</span>
           </div>
-          <div class="gene__info-item">
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.endPosition)">
             <span class="gene__info-label">End Position</span>
-            <span class="gene__info-value">{{ vm.geneData.endPosition }}</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.endPosition) }}</span>
           </div>
-          <div class="gene__info-item">
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.strand)">
             <span class="gene__info-label">Strand</span>
-            <span class="gene__info-value">{{ vm.geneData.strand }}</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.strand) }}</span>
           </div>
-          <div class="gene__info-item">
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.geneType)">
             <span class="gene__info-label">Gene Type</span>
-            <span class="gene__info-value">{{ vm.geneData.geneType }}</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.geneType) }}</span>
+          </div>
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.length)">
+            <span class="gene__info-label">Length</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.length) }} bp</span>
           </div>
         </div>
       </div>
@@ -43,32 +48,45 @@
       <div class="gene-container">
         <div class="gene__tabs">
           <div class="gene__tab" 
-               ng-class="{active: vm.activeTab === 'overview'}"
-               ng-click="vm.showTab('overview')">Overview</div>
-          <div class="gene__tab" 
                ng-class="{active: vm.activeTab === 'transcripts'}"
                ng-click="vm.showTab('transcripts')">Transcripts</div>
           <div class="gene__tab" 
                ng-class="{active: vm.activeTab === 'genome-browser'}"
                ng-click="vm.showTab('genome-browser')">Genome Browser</div>
-          <div class="gene__tab" 
-               ng-class="{active: vm.activeTab === 'safety'}"
-               ng-click="vm.showTab('safety')">Safety</div>
         </div>
 
         <div class="gene__tab-content">
-          <!-- Overview Tab -->
-          <div class="gene__tab-pane" ng-class="{active: vm.activeTab === 'overview'}">
+          <!-- Transcripts Tab -->
+          <div class="gene__tab-pane" ng-class="{active: vm.activeTab === 'transcripts'}">
             <div class="gene__widget">
-              <div class="gene__stats-grid">
-                <div class="gene__stat-item" ng-repeat="stat in vm.stats">
-                  <div class="gene__stat-value">{{ stat.value }}</div>
-                  <div class="gene__stat-label">{{ stat.label }}</div>
+              <div class="gene__widget-header">
+                <h2 class="gene__widget-title">Transcript Variants</h2>
+              </div>
+              <div class="gene__transcript-list" ng-if="vm.hasTranscripts()">
+                <div class="gene__transcript-item" 
+                     ng-repeat="transcript in vm.transcripts"
+                     ng-click="vm.onTranscriptClick(transcript)">
+                  <div class="gene__transcript-header">
+                    <span class="gene__transcript-id">{{ transcript.id }}</span>
+                    <span class="gene__transcript-type">{{ transcript.type }}</span>
+                  </div>
+                  <div class="gene__transcript-details" ng-if="transcript.expanded">
+                    <div ng-if="transcript.length"><strong>Length:</strong> {{ transcript.length }}</div>
+                    <div ng-if="transcript.exons"><strong>Exons:</strong> {{ transcript.exons }}</div>
+                    <div ng-if="transcript.cdsLength"><strong>CDS Length:</strong> {{ transcript.cdsLength }}</div>
+                    <div ng-if="transcript.protein"><strong>Protein:</strong> {{ transcript.protein }}</div>
+                    <div ng-if="transcript.uniProt"><strong>UniProt:</strong> {{ transcript.uniProt }}</div>
+                    <div ng-if="transcript.tsl"><strong>TSL:</strong> {{ transcript.tsl }}</div>
+                  </div>
                 </div>
+              </div>
+              <div ng-if="!vm.hasTranscripts()" class="gene__no-data">
+                <p>No transcript data available for this gene.</p>
               </div>
             </div>
 
-            <div class="gene__widget">
+            <!-- External Links -->
+            <div class="gene__widget" ng-if="vm.hasExternalLinks()">
               <div class="gene__widget-header">
                 <h2 class="gene__widget-title">External Links</h2>
               </div>
@@ -82,33 +100,6 @@
             </div>
           </div>
 
-          <!-- Transcripts Tab -->
-          <div class="gene__tab-pane" ng-class="{active: vm.activeTab === 'transcripts'}">
-            <div class="gene__widget">
-              <div class="gene__widget-header">
-                <h2 class="gene__widget-title">Transcript Variants</h2>
-              </div>
-              <div class="gene__transcript-list">
-                <div class="gene__transcript-item" 
-                     ng-repeat="transcript in vm.transcripts"
-                     ng-click="vm.onTranscriptClick(transcript)">
-                  <div class="gene__transcript-header">
-                    <span class="gene__transcript-id">{{ transcript.id }}</span>
-                    <span class="gene__transcript-type">{{ transcript.type }}</span>
-                  </div>
-                  <div class="gene__transcript-details">
-                    <div><strong>Length:</strong> {{ transcript.length }}</div>
-                    <div><strong>Exons:</strong> {{ transcript.exons }}</div>
-                    <div><strong>CDS Length:</strong> {{ transcript.cdsLength }}</div>
-                    <div><strong>Protein:</strong> {{ transcript.protein }}</div>
-                    <div><strong>UniProt:</strong> {{ transcript.uniProt }}</div>
-                    <div><strong>TSL:</strong> {{ transcript.tsl }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- Genome Browser Tab -->
           <div class="gene__tab-pane" ng-class="{active: vm.activeTab === 'genome-browser'}">
             <div class="gene__widget">
@@ -117,7 +108,9 @@
               </div>
               <div class="gene__genome-browser">
                 <div class="gene__browser-controls">
-                  <span><strong>Location:</strong> Chr17:43,044,295-43,170,245</span>
+                  <span ng-if="vm.hasValue(vm.geneData.chromosome) && vm.hasValue(vm.geneData.startPosition) && vm.hasValue(vm.geneData.endPosition)">
+                    <strong>Location:</strong> Chr{{ vm.geneData.chromosome }}:{{ vm.formatValue(vm.geneData.startPosition) }}-{{ vm.formatValue(vm.geneData.endPosition) }}
+                  </span>
                   <span><strong>Assembly:</strong> GRCh38</span>
                   <span><strong>Zoom:</strong> Gene View</span>
                 </div>
@@ -148,58 +141,23 @@
               </div>
             </div>
           </div>
-
-          <!-- Evidence Tab -->
-          <div class="gene__tab-pane" ng-class="{active: vm.activeTab === 'evidence'}">
-            <div class="gene__widget">
-              <div class="gene__widget-header">
-                <h2 class="gene__widget-title">Target-Disease Evidence</h2>
-              </div>
-              <div class="gene__evidence-grid">
-                <div class="gene__evidence-card" ng-repeat="card in vm.evidenceCards">
-                  <div class="gene__evidence-title">{{ card.title }}</div>
-                  <div class="gene__evidence-score">
-                    <div class="gene__score-bar">
-                      <div class="gene__score-fill {{ card.scoreClass }}" 
-                           ng-style="{'width': (vm.activeTab === 'evidence' ? card.score : 0) + '%'}"></div>
-                    </div>
-                    <span>{{ card.scoreText }}</span>
-                  </div>
-                  <p>{{ card.description }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Safety Tab -->
-          <div class="gene__tab-pane" ng-class="{active: vm.activeTab === 'safety'}">
-            <div class="gene__widget">
-              <div class="gene__widget-header">
-                <h2 class="gene__widget-title">Target Safety Assessment</h2>
-              </div>
-              
-              <div class="gene__safety-warning">
-                <div class="gene__safety-title">⚠️ Core Essential Gene</div>
-                <p>BRCA1 is classified as a core essential gene. Complete loss of function may cause severe adverse events or embryonic lethality.</p>
-              </div>
-              
-              <div class="gene__evidence-grid">
-                <div class="gene__evidence-card" ng-repeat="card in vm.safetyCards">
-                  <div class="gene__evidence-title">{{ card.title }}</div>
-                  <div class="gene__evidence-score">
-                    <div class="gene__score-bar">
-                      <div class="gene__score-fill {{ card.scoreClass }}" 
-                           ng-style="{'width': (vm.activeTab === 'safety' ? card.score : 0) + '%'}"></div>
-                    </div>
-                    <span>{{ card.scoreText }}</span>
-                  </div>
-                  <p>{{ card.description }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </main>
+  </div>
+</div>
+
+<!-- Error/Not Found State -->
+<div class="row" ng-if="vm.error">
+  <div class="col-md-12">
+    <div class="alert alert-warning" role="alert">
+      <h4 class="alert-heading">Gene Not Found</h4>
+      <p>{{ vm.error }}</p>
+      <hr>
+      <p class="mb-0">
+        <a href="/search?q={{ vm.geneName }}" class="btn btn-primary">Search for {{ vm.geneName }}</a>
+        <a href="/" class="btn btn-secondary">Go to Homepage</a>
+      </p>
+    </div>
   </div>
 </div>

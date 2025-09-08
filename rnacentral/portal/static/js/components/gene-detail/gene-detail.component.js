@@ -2,210 +2,200 @@ var geneDetail = {
     bindings: {
         geneName: '@?',
         geneVersion: '@?',
-        geneId: '@?'
+        geneData: '@?',
+        transcriptsData: '@?',
+        externalLinksData: '@?',
+        geneFound: '@?'
     },
-    controllerAs: 'vm',  // Add this line
-    controller: ['$http', '$interpolate', 'routes', '$timeout', '$element', '$compile', '$scope', function($http, $interpolate, routes, $timeout, $element, $compile, $scope) {
-        var vm = this;  // Use vm instead of ctrl
+    controllerAs: 'vm',
+    controller: ['$timeout', '$element', '$scope', '$http', function($timeout, $element, $scope, $http) {
+        var vm = this;
         
-        // State management - attach to vm instead of $scope
-        vm.activeTab = 'overview';
+        // State management
+        vm.activeTab = 'transcripts';  // Default to transcripts tab
         vm.isLoading = false;
         vm.error = null;
         
-        // Gene data - attach to vm
+        // Init empty data object
         vm.geneData = {
-            name: 'BRCA1',
-            symbol: 'ENSG00000012048',
-            chromosome: '17q21.31',
-            startPosition: '43,044,295',
-            endPosition: '43,170,245',
-            strand: 'Reverse (-)',
-            geneType: 'Protein Coding',
-            summary: 'BRCA1 (BRCA1 DNA Repair Associated) is a protein-coding gene that plays a critical role in DNA repair and genome stability. Mutations in BRCA1 are associated with increased risk of breast and ovarian cancers. The gene encodes a nuclear phosphoprotein that acts as a tumor suppressor.'
+            name: '',
+            symbol: '',
+            chromosome: '',
+            startPosition: '',
+            endPosition: '',
+            strand: '',
+            geneType: '',
+            summary: '',
+            length: 0
         };
 
-        vm.stats = [
-            { value: '24', label: 'Exons' },
-            { value: '8', label: 'Transcripts' },
-            { value: '125.9', label: 'kb Length' }
-        ];
-
-        vm.externalLinks = [
-            { name: 'Ensembl', url: 'https://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000012048' },
-            { name: 'NCBI Gene', url: 'https://www.ncbi.nlm.nih.gov/gene/672' },
-            { name: 'UniProt', url: 'https://www.uniprot.org/uniprot/P38398' },
-            { name: 'HGNC', url: 'https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:1100' },
-            { name: 'GeneCards', url: 'https://www.genecards.org/cgi-bin/carddisp.pl?gene=BRCA1' },
-            { name: 'OMIM', url: 'https://www.omim.org/entry/113705' },
-            { name: 'GTEx', url: 'https://www.gtexportal.org/home/gene/BRCA1' },
-            { name: 'gnomAD', url: 'https://gnomad.broadinstitute.org/gene/ENSG00000012048' }
-        ];
-
-        vm.transcripts = [
-            {
-                id: 'ENST00000012048',
-                type: 'Protein Coding',
-                length: '7,833 bp',
-                exons: 24,
-                cdsLength: '5,592 bp',
-                protein: 'ENSP00000350283',
-                uniProt: 'P38398',
-                tsl: '1 (best)'
-            },
-            {
-                id: 'ENST00000357654',
-                type: 'Protein Coding',
-                length: '8,048 bp',
-                exons: 22,
-                cdsLength: '5,592 bp',
-                protein: 'ENSP00000350283',
-                uniProt: 'P38398-2',
-                tsl: '1'
-            },
-            {
-                id: 'ENST00000468300',
-                type: 'Nonsense Mediated Decay',
-                length: '2,344 bp',
-                exons: 8,
-                cdsLength: 'N/A',
-                protein: 'N/A',
-                uniProt: 'N/A',
-                tsl: '2'
-            }
-        ];
-
-        vm.evidenceCards = [
-            {
-                title: 'Genetic Evidence',
-                score: 85,
-                scoreText: '0.85',
-                scoreClass: 'gene__score-high',
-                description: 'Strong GWAS associations with breast and ovarian cancer risk. Multiple rare variants with high penetrance.'
-            },
-            {
-                title: 'Literature Evidence',
-                score: 92,
-                scoreText: '0.92',
-                scoreClass: 'gene__score-high',
-                description: 'Extensive literature support across multiple cancer types. Over 15,000 publications in PubMed.'
-            },
-            {
-                title: 'Animal Models',
-                score: 68,
-                scoreText: '0.68',
-                scoreClass: 'gene__score-medium',
-                description: 'Mouse knockout models demonstrate embryonic lethality. Heterozygous mice show increased cancer susceptibility.'
-            },
-            {
-                title: 'Drug Evidence',
-                score: 45,
-                scoreText: '0.45',
-                scoreClass: 'gene__score-medium',
-                description: 'PARP inhibitors show efficacy in BRCA1-deficient tumors. Several clinical trials completed.'
-            }
-        ];
-
-        vm.safetyCards = [
-            {
-                title: 'Gene Essentiality',
-                scoreText: 'High Risk',
-                score: 85,
-                scoreClass: 'gene__score-low',
-                description: 'Essential for DNA repair and genomic stability. Knockout is embryonic lethal in multiple model organisms.'
-            },
-            {
-                title: 'Tissue Expression',
-                scoreText: 'Moderate Risk',
-                score: 70,
-                scoreClass: 'gene__score-medium',
-                description: 'Widely expressed across tissues with highest expression in breast, ovarian, and testicular tissues.'
-            },
-            {
-                title: 'Known ADRs',
-                scoreText: 'Moderate',
-                score: 40,
-                scoreClass: 'gene__score-medium',
-                description: 'PARP inhibitor therapies targeting BRCA-deficient tumors show manageable toxicity profile.'
-            }
-        ];
+        vm.transcripts = [];
+        vm.externalLinks = [];
 
         vm.$onInit = function() {
-            // Use bindings if provided
-            if (vm.geneName) {
-                vm.geneData.name = vm.geneName;
+        
+            
+            // Check if gene was found - read from global data
+            var globalData = window.geneDetailData || {};
+        
+            
+            var geneFound = globalData.geneFound !== undefined ? globalData.geneFound : vm.geneFound;
+            console.log('Final geneFound value:', geneFound);
+            
+            if (geneFound === 'false' || geneFound === false || geneFound === 'False') {
+                console.log('Gene not found, setting error');
+                vm.error = 'Gene "' + vm.geneName + '" not found in database';
+                vm.geneData = {
+                    name: vm.geneName || 'Unknown',
+                    symbol: vm.geneName || 'Unknown'
+                };
+                return;
             }
-            if (vm.geneVersion) {
-                vm.geneData.version = vm.geneVersion;
+
+            // Use global data if available
+            if (globalData.geneData) {
+                console.log('Using global gene data:', globalData.geneData);
+                console.log('Type of global gene data:', typeof globalData.geneData);
+                processGeneData(globalData.geneData);
+                
+                // Set transcripts and external links from global data
+                vm.transcripts = globalData.transcriptsData || [];
+                vm.externalLinks = globalData.externalLinksData || [];
+                console.log('Set transcripts:', vm.transcripts);
+                console.log('Set external links:', vm.externalLinks);
+                
+            } else {
+                console.log('No global gene data available');
+                console.log('Fallback - trying to use component attributes');
+                console.log('vm.geneData:', vm.geneData);
+                
+                // Fallback to parsing from attributes (for backwards compatibility)
+                if (vm.geneData) {
+                    try {
+                        var parsedData;
+                        if (typeof vm.geneData === 'string') {
+                            console.log('Parsing gene data string:', vm.geneData);
+                            parsedData = JSON.parse(vm.geneData);
+                        } else if (typeof vm.geneData === 'object') {
+                            console.log('Gene data is already an object:', vm.geneData);
+                            parsedData = vm.geneData;
+                        } else {
+                            throw new Error('Invalid data type: ' + typeof vm.geneData);
+                        }
+                        console.log('Parsed gene data:', parsedData);
+                        processGeneData(parsedData);
+                    } catch (e) {
+                        console.error('Error parsing gene data:', e);
+                        vm.error = 'Error loading gene data: ' + e.message;
+                        vm.geneData = {
+                            name: vm.geneName || 'Unknown',
+                            symbol: vm.geneName || 'Unknown'
+                        };
+                    }
+                } else {
+                    console.warn('No gene data provided to component');
+                    vm.geneData = {
+                        name: vm.geneName || 'Unknown',
+                        symbol: vm.geneName || 'Unknown'
+                    };
+                }
             }
             
-            // Could fetch gene data here if geneId is provided
-            if (vm.geneId) {
-                fetchGeneData();
-            }
-            
+            console.log('Final vm.geneData after processing:', vm.geneData);
+            console.log('=== END ANGULARJS COMPONENT DEBUG ===');
+                        
             initializeKeyboardNavigation();
         };
 
         vm.$postLink = function() {
-            // Initialize any DOM-dependent functionality
+            // Initialize DOM-dependent functionality
             $timeout(function() {
                 initializeInteractiveFeatures();
+                updateGenomeBrowserDisplay();
             }, 100);
         };
         
-        function fetchGeneData() {
-            if (!vm.geneId) return;
+        function processGeneData(data) {
+            console.log('Processing gene data:', data);
             
-            vm.isLoading = true;
+            if (!data) {
+                vm.error = 'No gene data available';
+                return;
+            }
+
+            // Check for errors in data
+            if (data.error) {
+                vm.error = data.error;
+                vm.geneData.name = data.name || vm.geneName || 'Unknown';
+                vm.geneData.symbol = data.symbol || data.name || 'Unknown';
+                return;
+            }
+
+            vm.geneData = {
+                name: data.name || vm.geneName,
+                symbol: data.symbol || data.name || '',
+                chromosome: data.chromosome || '',
+                startPosition: data.startPosition || '',
+                endPosition: data.endPosition || '',
+                strand: data.strand || '',
+                geneType: data.geneType || 'Unknown',
+                summary: data.summary || 'No summary available',
+                length: data.length || 0,
+                start: data.start || 0,
+                stop: data.stop || 0,
+                version: data.version || vm.geneVersion
+            };
+
+            // Calculate derived properties
+            if (!vm.geneData.length && vm.geneData.start && vm.geneData.stop) {
+                vm.geneData.length = Math.abs(vm.geneData.stop - vm.geneData.start) + 1;
+            }
+
+            console.log('Processed gene data:', vm.geneData);
             vm.error = null;
-            
-            // Example URL - adjust based on your API
-            var url = '/api/genes/' + vm.geneId + '/';
-            
-            $http.get(url).then(
-                function(response) {
-                    vm.geneData = angular.extend(vm.geneData, response.data);
-                    vm.isLoading = false;
-                },
-                function(error) {
-                    vm.error = 'Failed to load gene data';
-                    vm.isLoading = false;
-                    console.error('Gene data fetch error:', error);
-                }
-            );
         }
         
-        // Tab management - attach to vm
+        // Tab management
         vm.showTab = function(tabName) {
             vm.activeTab = tabName;
             
-            // Animate score bars if evidence or safety tab is shown
-            if (tabName === 'evidence' || tabName === 'safety') {
+            // Update genome browser display when switching to that tab
+            if (tabName === 'genome-browser') {
                 $timeout(function() {
-                    animateScoreBars();
-                }, 300);
+                    updateGenomeBrowserDisplay();
+                }, 50);
             }
         };
 
-        // Event handlers - attach to vm
+        // Event handlers
         vm.onExternalLinkClick = function(link) {
             console.log('External link clicked:', link.url);
-            // Analytics tracking will be handled by the main app's event delegation
+            // Track analytics if available
+            if (window.ga) {
+                window.ga('send', 'event', 'External Link', 'click', link.name);
+            }
         };
 
         vm.onTranscriptClick = function(transcript) {
             console.log('Transcript clicked:', transcript.id);
-            // Could expand to show more details or navigate to transcript view
+            // Could expand to show more details or navigate to transcript page
+            transcript.expanded = !transcript.expanded;
         };
 
         vm.onExonHover = function(index, isEntering) {
-            console.log('Exon ' + (index + 1) + (isEntering ? ' entered' : ' left'));
-            // Could show tooltip or highlight related elements
+            // Handle exon hover events
+            if (isEntering) {
+                console.log('Exon hover enter:', index);
+            } else {
+                console.log('Exon hover leave:', index);
+            }
         };
 
-        // Utility functions - attach to vm
+        // Utility functions
         vm.formatValue = function(value) {
+            if (value === null || value === undefined || value === '') {
+                return 'N/A';
+            }
             if (angular.isNumber(value)) {
                 return value.toLocaleString();
             }
@@ -213,43 +203,53 @@ var geneDetail = {
         };
 
         vm.hasValue = function(value) {
-            return value && value !== '' && value !== null && value !== undefined;
+            return value && value !== '' && value !== null && 
+                   value !== undefined && value !== 'N/A';
         };
 
-        function animateScoreBars() {
-            var scoreFills = $element.find('.gene__score-fill');
-            
-            scoreFills.each(function(index, fill) {
-                var $fill = angular.element(fill);
-                var targetWidth = $fill.css('width');
-                $fill.css('width', '0%');
-                
-                $timeout(function() {
-                    $fill.css('width', targetWidth);
-                }, 100 + (index * 50)); // Stagger animations
-            });
+        vm.hasTranscripts = function() {
+            return vm.transcripts && vm.transcripts.length > 0;
+        };
+
+        vm.hasExternalLinks = function() {
+            return vm.externalLinks && vm.externalLinks.length > 0;
+        };
+
+        function updateGenomeBrowserDisplay() {
+            // Update genome browser visualization based on gene data
+            if (vm.geneData.start && vm.geneData.stop) {
+                var geneLength = vm.geneData.stop - vm.geneData.start;
+                // Additional genome browser update logic can go here
+            }
         }
 
         function initializeInteractiveFeatures() {
-            // Add hover effects to evidence cards
-            var evidenceCards = $element.find('.gene__evidence-card');
-            evidenceCards.on('mouseenter', function() {
+            // Add hover effects to transcript items
+            var transcriptItems = $element.find('.gene__transcript-item');
+            transcriptItems.on('mouseenter', function() {
                 angular.element(this).addClass('hovered');
             }).on('mouseleave', function() {
                 angular.element(this).removeClass('hovered');
             });
 
-            // Add hover effects to exons
+            // Add hover effects to external links
+            var externalLinks = $element.find('.gene__external-link');
+            externalLinks.on('mouseenter', function() {
+                angular.element(this).addClass('hovered');
+            }).on('mouseleave', function() {
+                angular.element(this).removeClass('hovered');
+            });
+
+            // Add hover effects and tooltips to exons
             var exons = $element.find('.exon');
             exons.each(function(index) {
                 var $exon = angular.element(this);
                 $exon.on('mouseenter', function() {
-                    $exon.attr('title', 'Exon ' + (index + 1));
+                    var exonNum = index + 1;
+                    $exon.attr('title', 'Exon ' + exonNum);
                     $exon.addClass('exon-hover');
-                    vm.onExonHover(index, true);
                 }).on('mouseleave', function() {
                     $exon.removeClass('exon-hover');
-                    vm.onExonHover(index, false);
                 });
             });
         }
@@ -257,7 +257,7 @@ var geneDetail = {
         function initializeKeyboardNavigation() {
             vm.keydownHandler = function(event) {
                 if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
-                    var tabs = ['overview', 'transcripts', 'genome-browser', 'safety'];
+                    var tabs = ['transcripts', 'genome-browser'];
                     var currentIndex = tabs.indexOf(vm.activeTab);
                     var nextIndex;
 
@@ -284,10 +284,14 @@ var geneDetail = {
             
             // Remove any event listeners
             $element.off();
+            $element.find('.gene__transcript-item').off();
+            $element.find('.gene__external-link').off();
+            $element.find('.exon').off();
         };
         
     }],
     templateUrl: '/static/js/components/gene-detail/gene-detail.template.html' 
 };
 
-angular.module("geneDetail", []).component("geneDetail", geneDetail);
+// Register component to existing module
+angular.module("geneDetail").component("geneDetail", geneDetail);
