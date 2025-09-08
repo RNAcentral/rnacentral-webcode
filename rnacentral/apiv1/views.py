@@ -1273,3 +1273,75 @@ class Md5SequenceView(APIView):
 
         serializer = Md5Serializer(precomputed)
         return Response(serializer.data)
+
+
+class RnaGenesView(APIView):
+    """
+    List of genes associated with a specific RNA sequence in a specific species.
+
+    [API documentation](/api)
+    """
+    
+    permission_classes = (AllowAny,)
+    
+    def get(self, request, pk, taxid, **kwargs):
+        """Return gene information for a given URS and taxid"""
+        
+        urs_taxid = pk + "_" + taxid
+        
+        from django.db import connection
+        
+        try:
+            with connection.cursor() as cursor:
+                query = """
+                    SELECT DISTINCT
+                        rg.public_name,
+                        rg.chromosome,
+                        rg.start,
+                        rg.stop,
+                        rgm.description
+                    FROM rnc_genes rg
+                    LEFT JOIN rnc_gene_metadata rgm ON rg.id = rgm.rnc_gene_id
+                    INNER JOIN rnc_gene_members rgmb ON rg.id = rgmb.rnc_gene_id
+                    INNER JOIN rnc_sequence_regions rsr ON rgmb.locus_id = rsr.id
+                    WHERE rsr.urs_taxid = %s
+                    ORDER BY rg.chromosome, rg.start
+                """
+                
+                cursor.execute(query, [urs_taxid])
+                results = cursor.fetchall()
+                
+                if results:
+                    genes = []
+                    for row in results:
+                        gene_name = row[0] if row[0] else "Unknown Gene"
+                        chromosome = row[1] if row[1] else "Unknown"
+                        start = row[2] if row[2] else None
+                        end = row[3] if row[3] else None
+                        description = row[4] if row[4] else "No description available"
+                        
+                        genes.append({
+                            "chromosome": chromosome,
+                            "start": start,
+                            "end": end,
+                            "gene_name": gene_name,
+                            "description": description
+                        })
+                    
+                    return Response({
+                        "count": len(genes),
+                        "results": genes
+                    })
+                else:
+                    return Response({
+                        "count": 0,
+                        "results": [],
+                        "message": "No gene information available for this sequence"
+                    })
+                    
+        except Exception as e:
+            return Response({
+                "count": 0,
+                "results": [],
+                "message": "No gene information available for this sequence"
+            })

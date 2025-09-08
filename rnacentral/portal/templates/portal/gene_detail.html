@@ -1,0 +1,17 @@
+{% extends "portal/base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="Gene Details"/>
+    <meta name="twitter:description" content="Gene Details"/>
+{% endblock %}
+
+{% block title %}
+    Gene Details | {{gene_name}}
+{% endblock %}
+
+{% block content %}
+    <gene-detail gene-name="{{ gene_name|default:'BRCA1' }}" gene-version="{{ gene_version|default:'' }}"></gene-detail>
+{% endblock content %}
