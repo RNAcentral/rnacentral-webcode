@@ -114,29 +114,21 @@
                   <span><strong>Assembly:</strong> GRCh38</span>
                   <span><strong>Zoom:</strong> Gene View</span>
                 </div>
-                <div class="gene__browser-viewport">
-                  <div class="gene__chromosome-track"></div>
-                  <div class="gene-track">
-                    <!-- Exons with AngularJS event handling -->
-                    <div class="exon" 
-                         style="left: 5%; width: 3%;"
-                         ng-mouseenter="vm.onExonHover(0, true)"
-                         ng-mouseleave="vm.onExonHover(0, false)"></div>
-                    <div class="exon" style="left: 10%; width: 2%;"></div>
-                    <div class="exon" style="left: 15%; width: 4%;"></div>
-                    <div class="exon" style="left: 22%; width: 3%;"></div>
-                    <div class="exon" style="left: 30%; width: 2%;"></div>
-                    <div class="exon" style="left: 35%; width: 5%;"></div>
-                    <div class="exon" style="left: 45%; width: 3%;"></div>
-                    <div class="exon" style="left: 52%; width: 4%;"></div>
-                    <div class="exon" style="left: 60%; width: 3%;"></div>
-                    <div class="exon" style="left: 68%; width: 2%;"></div>
-                    <div class="exon" style="left: 75%; width: 6%;"></div>
-                    <div class="exon" style="left: 85%; width: 4%;"></div>
-                    
-                    <!-- Introns -->
-                    <div class="intron" style="left: 5%; width: 90%;"></div>
-                  </div>
+
+                <!-- Loading indicator -->
+                <div ng-if="vm.activeTab === 'genome-browser' && !vm.genomeBrowserLoaded" class="gene__browser-loading">
+                  <p>Loading genome browser...</p>
+                </div>
+
+                <!-- Genome browser container -->
+                <div ng-if="vm.activeTab === 'genome-browser'" 
+                     style="padding-left: 1rem; margin-top: -10px">
+                  <rnacentral-genome-browser></rnacentral-genome-browser>
+                </div>
+
+                <!-- Error message if script fails to load -->
+                <div ng-if="vm.activeTab === 'genome-browser' && vm.genomeBrowserError" class="gene__browser-error">
+                  <p>Failed to load genome browser. Please try refreshing the page.</p>
                 </div>
               </div>
             </div>
@@ -144,5 +136,20 @@
         </div>
       </div>
     </main>
+  </div>
+</div>
+
+<!-- Error/Not Found State -->
+<div class="row" ng-if="vm.error">
+  <div class="col-md-12">
+    <div class="alert alert-warning" role="alert">
+      <h4 class="alert-heading">Gene Not Found</h4>
+      <p>{{ vm.error }}</p>
+      <hr>
+      <p class="mb-0">
+        <a href="/search?q={{ vm.geneName }}" class="btn btn-primary">Search for {{ vm.geneName }}</a>
+        <a href="/" class="btn btn-secondary">Go to Homepage</a>
+      </p>
+    </div>
   </div>
 </div>
