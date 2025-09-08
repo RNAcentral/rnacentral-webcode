@@ -3,17 +3,18 @@
     <header class="gene__header">
       <div class="gene-container">
         <div class="gene-title">
-          <h1 class="gene-name">{{ vm.geneData.name.split(".")[0] }}</h1>
+          <h1 class="gene-name">{{ vm.geneData.name
+             }}</h1>
           <span class="gene-symbol" ng-if="vm.geneData.symbol && vm.geneData.symbol !== vm.geneData.name">{{ vm.geneData.symbol }}</span>
-          <span class="gene-version" ng-if="vm.geneData.version">.{{ vm.geneData.version }}</span>
+          <span class="gene-version" ng-if="vm.geneData.version">{{ vm.geneData.summary }}</span>
         </div>
         
-        <div class="gene__widget-header">
+        <!-- <div class="gene__widget-header">
           <h2 class="gene__widget-title">Gene Summary</h2>
         </div>
         <p class="gene__summary">
           <strong>{{ vm.geneData.name }}</strong> {{ vm.geneData.summary }}
-        </p>
+        </p> -->
         
         <div class="gene-info">
           <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.chromosome)">
@@ -28,9 +29,14 @@
             <span class="gene__info-label">End Position</span>
             <span class="gene__info-value">{{ vm.formatValue(vm.geneData.endPosition) }}</span>
           </div>
-          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.strand)">
+        <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.strand)">
             <span class="gene__info-label">Strand</span>
-            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.strand) }}</span>
+            <span class="gene__info-value">
+              {{ vm.formatValue(vm.geneData.strand) }}
+              <span ng-if="vm.hasValue(vm.geneData.strandDirection)">
+                ({{ vm.geneData.strandDirection }})
+              </span>
+            </span>
           </div>
           <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.geneType)">
             <span class="gene__info-label">Gene Type</span>
@@ -136,20 +142,5 @@
         </div>
       </div>
     </main>
-  </div>
-</div>
-
-<!-- Error/Not Found State -->
-<div class="row" ng-if="vm.error">
-  <div class="col-md-12">
-    <div class="alert alert-warning" role="alert">
-      <h4 class="alert-heading">Gene Not Found</h4>
-      <p>{{ vm.error }}</p>
-      <hr>
-      <p class="mb-0">
-        <a href="/search?q={{ vm.geneName }}" class="btn btn-primary">Search for {{ vm.geneName }}</a>
-        <a href="/" class="btn btn-secondary">Go to Homepage</a>
-      </p>
-    </div>
   </div>
 </div>
