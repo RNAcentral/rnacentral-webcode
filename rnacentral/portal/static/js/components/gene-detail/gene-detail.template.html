@@ -109,18 +109,7 @@
           <!-- Genome Browser Tab -->
           <div class="gene__tab-pane" ng-class="{active: vm.activeTab === 'genome-browser'}">
             <div class="gene__widget">
-              <div class="gene__widget-header">
-                <h2 class="gene__widget-title">Genome Browser</h2>
-              </div>
               <div class="gene__genome-browser">
-                <div class="gene__browser-controls">
-                  <span ng-if="vm.hasValue(vm.geneData.chromosome) && vm.hasValue(vm.geneData.startPosition) && vm.hasValue(vm.geneData.endPosition)">
-                    <strong>Location:</strong> Chr{{ vm.geneData.chromosome }}:{{ vm.formatValue(vm.geneData.startPosition) }}-{{ vm.formatValue(vm.geneData.endPosition) }}
-                  </span>
-                  <span><strong>Assembly:</strong> GRCh38</span>
-                  <span><strong>Zoom:</strong> Gene View</span>
-                </div>
-
                 <!-- Loading indicator -->
                 <div ng-if="vm.activeTab === 'genome-browser' && !vm.genomeBrowserLoaded" class="gene__browser-loading">
                   <p>Loading genome browser...</p>

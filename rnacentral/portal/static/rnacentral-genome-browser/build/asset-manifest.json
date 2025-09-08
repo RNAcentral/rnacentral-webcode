@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/genome-browser.js",
+    "index.html": "/index.html",
+    "genome-browser.js.map": "/genome-browser.js.map"
+  },
+  "entrypoints": [
+    "genome-browser.js"
+  ]
+}
