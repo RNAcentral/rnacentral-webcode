@@ -374,6 +374,10 @@
     padding-block-end: 20px;
 }
 
+.row.gene-not-found {
+    margin-block-start: 20px;
+}
+
 @media (max-width: 768px) {
     .gene-name {
         font-size: 2rem;

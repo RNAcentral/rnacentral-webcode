@@ -6,32 +6,28 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="gene-container">
     <div class="row">
-        <div class="col-md-12">
             <gene-detail 
                 gene-name="{{ geneName }}"
                 {% if geneVersion %}gene-version="{{ geneVersion }}"{% endif %}
                 gene-found="{{ geneFound|yesno:'true,false' }}">
             </gene-detail>
-        </div>
     </div>
     
     {% if not geneFound %}
-    <div class="row">
-        <div class="col-md-12">
+    <div class="row gene-not-found">
             <div class="alert alert-warning" role="alert">
                 <h4 class="alert-heading">Gene Not Found</h4>
-                <p>The gene <strong>{{ geneName }}</strong>{% if geneVersion %} version {{ geneVersion }}{% endif %} was not found in our database.</p>
+                <p>The gene <strong>{{ geneName }}</strong>{% if geneVersion %} version <strong>{{ geneVersion }}</strong> {% endif %} was not found in our database.</p>
                 <hr>
                 <p class="mb-0">
                     <a href="/search?q={{ geneName }}" class="btn btn-primary">Search for {{ geneName }}</a>
                     <a href="/" class="btn btn-secondary">Go to Homepage</a>
                 </p>
             </div>
-        </div>
-    </div>
-    {% endif %}
+    </div> 
+{% endif %}
 </div>
 
 <!-- Embed data for AngularJS component -->
