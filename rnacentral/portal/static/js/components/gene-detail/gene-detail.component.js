@@ -40,7 +40,6 @@ var geneDetail = {
         
             
             var geneFound = globalData.geneFound !== undefined ? globalData.geneFound : vm.geneFound;
-            console.log('Final geneFound value:', geneFound);
             
             if (geneFound === 'false' || geneFound === false || geneFound === 'False') {
                 console.log('Gene not found, setting error');
@@ -54,35 +53,25 @@ var geneDetail = {
 
             // Use global data if available
             if (globalData.geneData) {
-                console.log('Using global gene data:', globalData.geneData);
-                console.log('Type of global gene data:', typeof globalData.geneData);
                 processGeneData(globalData.geneData);
                 
                 // Set transcripts and external links from global data
                 vm.transcripts = globalData.transcriptsData || [];
                 vm.externalLinks = globalData.externalLinksData || [];
-                console.log('Set transcripts:', vm.transcripts);
-                console.log('Set external links:', vm.externalLinks);
+     
                 
             } else {
-                console.log('No global gene data available');
-                console.log('Fallback - trying to use component attributes');
-                console.log('vm.geneData:', vm.geneData);
-                
-                // Fallback to parsing from attributes (for backwards compatibility)
+                // Fallback to parsing from attributes 
                 if (vm.geneData) {
                     try {
                         var parsedData;
                         if (typeof vm.geneData === 'string') {
-                            console.log('Parsing gene data string:', vm.geneData);
                             parsedData = JSON.parse(vm.geneData);
                         } else if (typeof vm.geneData === 'object') {
-                            console.log('Gene data is already an object:', vm.geneData);
                             parsedData = vm.geneData;
                         } else {
                             throw new Error('Invalid data type: ' + typeof vm.geneData);
                         }
-                        console.log('Parsed gene data:', parsedData);
                         processGeneData(parsedData);
                     } catch (e) {
                         console.error('Error parsing gene data:', e);
@@ -100,9 +89,6 @@ var geneDetail = {
                     };
                 }
             }
-            
-            console.log('Final vm.geneData after processing:', vm.geneData);
-            console.log('=== END ANGULARJS COMPONENT DEBUG ===');
                         
             initializeKeyboardNavigation();
         };
@@ -116,7 +102,6 @@ var geneDetail = {
         };
         
         function processGeneData(data) {
-            console.log('Processing gene data:', data);
             
             if (!data) {
                 vm.error = 'No gene data available';
@@ -150,8 +135,6 @@ var geneDetail = {
             if (!vm.geneData.length && vm.geneData.start && vm.geneData.stop) {
                 vm.geneData.length = Math.abs(vm.geneData.stop - vm.geneData.start) + 1;
             }
-
-            console.log('Processed gene data:', vm.geneData);
             vm.error = null;
         }
         
@@ -177,7 +160,6 @@ var geneDetail = {
         };
 
         vm.onTranscriptClick = function(transcript) {
-            console.log('Transcript clicked:', transcript.id);
             // Could expand to show more details or navigate to transcript page
             transcript.expanded = !transcript.expanded;
         };

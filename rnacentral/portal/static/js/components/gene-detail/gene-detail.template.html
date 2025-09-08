@@ -3,7 +3,7 @@
     <header class="gene__header">
       <div class="gene-container">
         <div class="gene-title">
-          <h1 class="gene-name">{{ vm.geneData.name }}</h1>
+          <h1 class="gene-name">{{ vm.geneData.name.split(".")[0] }}</h1>
           <span class="gene-symbol" ng-if="vm.geneData.symbol && vm.geneData.symbol !== vm.geneData.name">{{ vm.geneData.symbol }}</span>
           <span class="gene-version" ng-if="vm.geneData.version">.{{ vm.geneData.version }}</span>
         </div>
@@ -146,18 +146,3 @@
     </main>
   </div>
 </div>
-
-<!-- Error/Not Found State -->
-<!-- <div class="row" ng-if="vm.error">
-  <div class="col-md-12">
-    <div class="alert alert-warning" role="alert">
-      <h4 class="alert-heading">Gene Not Found</h4>
-      <p>{{ vm.error }}</p>
-      <hr>
-      <p class="mb-0">
-        <a href="/search?q={{ vm.geneName }}" class="btn btn-primary">Search for {{ vm.geneName }}</a>
-        <a href="/" class="btn btn-secondary">Go to Homepage</a>
-      </p>
-    </div>
-  </div>
-</div> -->
