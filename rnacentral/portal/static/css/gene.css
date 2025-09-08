@@ -139,17 +139,6 @@
     overflow: hidden;
 }
 
-.gene__browser-controls {
-    background: white;
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 0.9rem;
-    flex-wrap: wrap;
-}
-
 .gene__browser-viewport {
     height: 250px;
     position: relative;
@@ -395,11 +384,6 @@
         grid-template-columns: 1fr;
     }
     
-    .gene__browser-controls {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
 }
 
 @media (max-width: 480px) {
