@@ -6,15 +6,13 @@
           <h1 class="gene-name">{{ vm.geneData.name
              }}</h1>
           <span class="gene-symbol" ng-if="vm.geneData.symbol && vm.geneData.symbol !== vm.geneData.name">{{ vm.geneData.symbol }}</span>
-          <span class="gene-version" ng-if="vm.geneData.version">{{ vm.geneData.summary }}</span>
+          <span class="gene-version" ng-if="vm.geneData.version">{{ vm.geneData.shortDescription }}</span>
         </div>
         
-        <!-- <div class="gene__widget-header">
+        <div class="gene__widget-header">
           <h2 class="gene__widget-title">Gene Summary</h2>
         </div>
-        <p class="gene__summary">
-          <strong>{{ vm.geneData.name }}</strong> {{ vm.geneData.summary }}
-        </p> -->
+        <p class="gene__summary">{{ vm.geneData.summary }}</p>
         
         <div class="gene-info">
           <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.chromosome)">

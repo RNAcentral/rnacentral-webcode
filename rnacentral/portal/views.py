@@ -424,6 +424,7 @@ def gene_detail(request, name):
         "strand": gene.strand,
         "strandDirection": "Reverse" if gene.strand == "-" else "Forward",
         "geneType": metadata.ontology_term.name if metadata and metadata.ontology_term else "Unknown",
+        "shortDescription": metadata.short_description if metadata else "",
         "summary": metadata.description if metadata else "No summary available",
         "length": abs(gene.stop - gene.start) + 1 if gene.start and gene.stop else 0,
         "version": version,

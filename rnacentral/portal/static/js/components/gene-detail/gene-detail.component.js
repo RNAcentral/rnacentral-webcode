@@ -27,6 +27,7 @@ var geneDetail = {
             strand: '',
             strandDirection:'',
             geneType: '',
+            shortDescription:'',
             summary: '',
             length: 0
         };
@@ -121,6 +122,7 @@ var geneDetail = {
                 strand: data.strand || '',
                 strandDirection: data.strandDirection || '',
                 geneType: data.geneType || 'Unknown',
+                shortDescription: data.shortDescription || '',
                 summary: data.summary || 'No summary available',
                 length: data.length || 0,
                 start: data.start || 0,
