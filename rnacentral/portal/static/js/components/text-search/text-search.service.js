@@ -1,7 +1,3 @@
-/**
- * Service for launching a text search.
- */
-
 var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     var self = this; // in case some event handler or constructor overrides "this"
 
@@ -381,12 +377,35 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             }
         });
 
-         // Use `hlfields` with highlighted matches instead of `fields`.
-        data.entries.forEach(function(entry) {
+        console.log('DEBUG: Starting entry processing, total entries:', data.entries.length);
+        
+        // Use `hlfields` with highlighted matches instead of `fields`.
+        // THIS IS THE CRITICAL SECTION THAT WAS CAUSING THE ERROR
+        data.entries.forEach(function(entry, index) {
+            console.log('DEBUG: Processing entry', index + 1, 'ID:', entry.id);
+            
             entry.fields = entry.highlights;
-            entry.fields.length[0] = entry.fields.length[0].replace(/<[^>]+>/gm, '');
-            entry.id_with_slash = entry.id.replace('_', '/');
+            
+            // DEFENSIVE FIX: Check if length field exists before processing
+            if (entry.fields && entry.fields.length && Array.isArray(entry.fields.length) && 
+                entry.fields.length.length > 0 && entry.fields.length[0] !== undefined && 
+                entry.fields.length[0] !== null && typeof entry.fields.length[0] === 'string') {
+                
+                console.log('DEBUG: Processing length field for entry', entry.id, 'value:', entry.fields.length[0]);
+                entry.fields.length[0] = entry.fields.length[0].replace(/<[^>]+>/gm, '');
+                
+            } else {
+                console.log('DEBUG: Skipping length processing for entry', entry.id, 
+                           'Has fields:', !!entry.fields,
+                           'Has length:', !!(entry.fields && entry.fields.length),
+                           'Is array:', entry.fields && entry.fields.length ? Array.isArray(entry.fields.length) : false,
+                           'Length value:', entry.fields && entry.fields.length ? entry.fields.length[0] : 'N/A');
+            }
+            
+            entry.id_with_slash = entry.id.replace(/_/, '/');
         });
+        
+        console.log('DEBUG: Entry processing completed successfully');
 
         return data;
     };

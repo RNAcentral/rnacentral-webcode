@@ -106,6 +106,7 @@ var textSearchResults = {
                     $timeout(function () { $scope.$broadcast('rzSliderForceRender'); }); // issue render just in case
                 },
                 function (failure) { // non-mission critical, let's fallback to sensible defaults
+                    console.log('Length slider failed to get floor/ceil, using defaults:', failure);
                     var floor = 10;
                     var ceil = 2147483647; // macrocosm constant - if length exceeds it, EBI search fails
 
@@ -427,7 +428,7 @@ var textSearchResults = {
          * @returns {boolean}
          */
         ctrl.expertDbHasStar = function(db) {
-            return ctrl.expertDbsObject[db].tags.indexOf('curated') != -1 && ctrl.expertDbsObject[db].tags.indexOf('automatic') == -1;
+            return ctrl.expertDbsObject[db] && ctrl.expertDbsObject[db].tags.indexOf('curated') != -1 && ctrl.expertDbsObject[db].tags.indexOf('automatic') == -1;
         };
 
         /**
@@ -437,52 +438,76 @@ var textSearchResults = {
          * @returns {{highlight: String, fieldName: String}}
          */
         ctrl.highlight = function(fields) {
-            var highlight;
-            var verboseFieldName;
-            var maxWeight = -1; // multiple fields can have highlights - pick the field with highest weight
+            try {
+                var highlight;
+                var verboseFieldName;
+                var maxWeight = -1; // multiple fields can have highlights - pick the field with highest weight
 
-            for (var fieldName in fields) {
-                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) { // description is quoted in hit's header, ignore it
-                    if (search.config.fieldWeights[fieldName] > maxWeight) {
+                for (var fieldName in fields) {
+                    if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) { // description is quoted in hit's header, ignore it
+                        if (search.config.fieldWeights[fieldName] > maxWeight) {
 
-                        // get highlight string with match
-                        var field = fields[fieldName];
-                        for (var i = 0; i < fields.length; i++) {
-                            if (field[i].indexOf('text-search-highlights') !== -1) {
-                                highlight = field[i];
-                                break;
+                            // get highlight string with match
+                            var field = fields[fieldName];
+                            for (var i = 0; i < field.length; i++) {
+                                if (field[i].indexOf('text-search-highlights') !== -1) {
+                                    highlight = field[i];
+                                    break;
+                                }
                             }
-                        }
 
-                        // assign the new weight and verboseFieldName
-                        maxWeight = search.config.fieldWeights[fieldName];
-                        verboseFieldName = search.config.fieldVerboseNames[fieldName];
+                            // assign the new weight and verboseFieldName
+                            maxWeight = search.config.fieldWeights[fieldName];
+                            verboseFieldName = search.config.fieldVerboseNames[fieldName];
+                        }
                     }
                 }
-            }
 
-            // use human-readable fieldName
-            return {highlight: highlight, fieldName: verboseFieldName};
+                // use human-readable fieldName
+                return {highlight: highlight, fieldName: verboseFieldName};
+            } catch (error) {
+                console.error('Error in highlight function:', error, 'Fields:', fields);
+                return {highlight: '', fieldName: ''};
+            }
         };
 
         /**
          * Are there any highlighted snippets in search results at all?
          */
         ctrl.anyHighlights = function(fields) {
-            return Object.keys(fields).some(function(fieldName) {
-                return (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName]));
-            });
+            try {
+                return Object.keys(fields).some(function(fieldName) {
+                    return (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName]));
+                });
+            } catch (error) {
+                console.error('Error checking highlights:', error, 'Fields:', fields);
+                return false;
+            }
         };
 
         /**
          * Does the given field contain any highlighted text snippets?
          */
         ctrl.anyHighlightsInField = function(field) {
-            return field.some(function(el) { return el.indexOf('text-search-highlights') !== -1 });
+            try {
+                if (!Array.isArray(field)) {
+                    console.warn('anyHighlightsInField: field is not an array:', field);
+                    return false;
+                }
+                return field.some(function(el) { return el && el.indexOf('text-search-highlights') !== -1 });
+            } catch (error) {
+                console.error('Error checking field highlights:', error, 'Field:', field);
+                return false;
+            }
         };
 
         ctrl.getURS = function(urs_taxid) {
-            return urs_taxid.replace(/_\d+/, '');
+            try {
+                return urs_taxid.replace(/_\d+/, '');
+            } catch (error) {
+                console.error('Error extracting URS from:', urs_taxid, 'Error:', error);
+                return urs_taxid || '';
+            }
         }
     }]
 };
