@@ -25,7 +25,9 @@ var geneDetail = {
             startPosition: '',
             endPosition: '',
             strand: '',
+            strandDirection:'',
             geneType: '',
+            shortDescription:'',
             summary: '',
             length: 0
         };
@@ -118,7 +120,9 @@ var geneDetail = {
                 startPosition: data.startPosition || '',
                 endPosition: data.endPosition || '',
                 strand: data.strand || '',
+                strandDirection: data.strandDirection || '',
                 geneType: data.geneType || 'Unknown',
+                shortDescription: data.shortDescription || '',
                 summary: data.summary || 'No summary available',
                 length: data.length || 0,
                 start: data.start || 0,

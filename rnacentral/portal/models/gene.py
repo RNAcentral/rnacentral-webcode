@@ -23,6 +23,7 @@ class GeneMetadata(models.Model):
     id = models.AutoField(primary_key=True, db_column='rnc_gene_metadata_id')
     gene = models.OneToOneField(Gene, on_delete=models.CASCADE, related_name='metadata', db_column='rnc_gene_id')
     description = models.TextField()
+    short_description = models.TextField()
     ontology_term = models.ForeignKey(
         OntologyTerm,  
         on_delete=models.CASCADE,
