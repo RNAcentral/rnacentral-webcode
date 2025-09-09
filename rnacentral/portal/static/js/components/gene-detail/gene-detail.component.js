@@ -15,6 +15,7 @@ var geneDetail = {
         vm.activeTab = 'transcripts';  // Default to transcripts tab
         vm.isLoading = false;
         vm.error = null;
+        vm.genomeBrowserLoaded = false;
         
         // Init empty data object
         vm.geneData = {
@@ -33,17 +34,13 @@ var geneDetail = {
         vm.externalLinks = [];
 
         vm.$onInit = function() {
-        
             
             // Check if gene was found - read from global data
             var globalData = window.geneDetailData || {};
         
-            
             var geneFound = globalData.geneFound !== undefined ? globalData.geneFound : vm.geneFound;
-            console.log('Final geneFound value:', geneFound);
             
             if (geneFound === 'false' || geneFound === false || geneFound === 'False') {
-                console.log('Gene not found, setting error');
                 vm.error = 'Gene "' + vm.geneName + '" not found in database';
                 vm.geneData = {
                     name: vm.geneName || 'Unknown',
@@ -54,38 +51,26 @@ var geneDetail = {
 
             // Use global data if available
             if (globalData.geneData) {
-                console.log('Using global gene data:', globalData.geneData);
-                console.log('Type of global gene data:', typeof globalData.geneData);
                 processGeneData(globalData.geneData);
                 
                 // Set transcripts and external links from global data
                 vm.transcripts = globalData.transcriptsData || [];
                 vm.externalLinks = globalData.externalLinksData || [];
-                console.log('Set transcripts:', vm.transcripts);
-                console.log('Set external links:', vm.externalLinks);
                 
             } else {
-                console.log('No global gene data available');
-                console.log('Fallback - trying to use component attributes');
-                console.log('vm.geneData:', vm.geneData);
-                
                 // Fallback to parsing from attributes (for backwards compatibility)
                 if (vm.geneData) {
                     try {
                         var parsedData;
                         if (typeof vm.geneData === 'string') {
-                            console.log('Parsing gene data string:', vm.geneData);
                             parsedData = JSON.parse(vm.geneData);
                         } else if (typeof vm.geneData === 'object') {
-                            console.log('Gene data is already an object:', vm.geneData);
                             parsedData = vm.geneData;
                         } else {
                             throw new Error('Invalid data type: ' + typeof vm.geneData);
                         }
-                        console.log('Parsed gene data:', parsedData);
                         processGeneData(parsedData);
                     } catch (e) {
-                        console.error('Error parsing gene data:', e);
                         vm.error = 'Error loading gene data: ' + e.message;
                         vm.geneData = {
                             name: vm.geneName || 'Unknown',
@@ -93,16 +78,12 @@ var geneDetail = {
                         };
                     }
                 } else {
-                    console.warn('No gene data provided to component');
                     vm.geneData = {
                         name: vm.geneName || 'Unknown',
                         symbol: vm.geneName || 'Unknown'
                     };
                 }
             }
-            
-            console.log('Final vm.geneData after processing:', vm.geneData);
-            console.log('=== END ANGULARJS COMPONENT DEBUG ===');
                         
             initializeKeyboardNavigation();
         };
@@ -116,7 +97,6 @@ var geneDetail = {
         };
         
         function processGeneData(data) {
-            console.log('Processing gene data:', data);
             
             if (!data) {
                 vm.error = 'No gene data available';
@@ -143,7 +123,10 @@ var geneDetail = {
                 length: data.length || 0,
                 start: data.start || 0,
                 stop: data.stop || 0,
-                version: data.version || vm.geneVersion
+                version: data.version || vm.geneVersion,
+                // Add genome browser specific fields
+                species: data.species || data.organism || null,
+                organism: data.organism || null
             };
 
             // Calculate derived properties
@@ -151,25 +134,114 @@ var geneDetail = {
                 vm.geneData.length = Math.abs(vm.geneData.stop - vm.geneData.start) + 1;
             }
 
-            console.log('Processed gene data:', vm.geneData);
             vm.error = null;
         }
+        
+        // Genome browser script loading function
+        vm.loadGenomeBrowser = function() {
+            // Check if script is already loaded
+            if (vm.genomeBrowserLoaded || 
+                window.RNACentralGenomeBrowser || 
+                document.querySelector('script[src*="genome-browser.js"]')) {
+                return Promise.resolve();
+            }
+            
+            return new Promise(function(resolve, reject) {
+                
+                const isLocalOrTest = window.location.hostname === 'localhost' || 
+                                     window.location.hostname.includes('test.rnacentral.org');
+                
+                const scriptSrc = isLocalOrTest 
+                    ? '/static/rnacentral-genome-browser/build/genome-browser.js'
+                    : 'https://rnacentral.github.io/rnacentral-genome-browser/build/genome-browser.js';
+                
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = scriptSrc;
+                
+                script.onload = function() {
+                    vm.genomeBrowserLoaded = true;
+                    $scope.$apply(); // Trigger digest cycle
+                    resolve();
+                };
+                
+                script.onerror = function(error) {
+                    reject(error);
+                };
+                
+                document.head.appendChild(script);
+            });
+        };
+        
+        // Get genome browser data based on gene data
+        vm.getGenomeBrowserData = function() {
+            var browserData = {};
+            
+            // Map gene data to browser parameters  
+            if (vm.geneData.species || vm.geneData.organism) {
+                browserData.species = vm.geneData.species || vm.geneData.organism;
+            }
+            
+            if (vm.geneData.chromosome) {
+                browserData.chromosome = vm.geneData.chromosome;
+            }
+            
+            if (vm.geneData.start || vm.geneData.startPosition) {
+                browserData.start = vm.geneData.start || vm.geneData.startPosition;
+            }
+            
+            if (vm.geneData.stop || vm.geneData.endPosition) {
+                browserData.end = vm.geneData.stop || vm.geneData.endPosition;
+            }
+            
+            // Pass the entire gene data object for the component to use
+            browserData.name = vm.geneData.name;
+            browserData.symbol = vm.geneData.symbol;
+            browserData.strand = vm.geneData.strand;
+            browserData.geneType = vm.geneData.geneType;
+            browserData.summary = vm.geneData.summary;
+            browserData.length = vm.geneData.length;
+            
+            return browserData;
+        };
         
         // Tab management
         vm.showTab = function(tabName) {
             vm.activeTab = tabName;
             
-            // Update genome browser display when switching to that tab
+            // Load genome browser script when switching to that tab
             if (tabName === 'genome-browser') {
+                
+                // Create the element with data immediately
                 $timeout(function() {
-                    updateGenomeBrowserDisplay();
+                    // Remove any existing element first
+                    var container = document.querySelector('.gene__genome-browser div[style*="padding-left"]');
+                    if (container) {
+                        var existingElement = container.querySelector('rnacentral-genome-browser');
+                        if (existingElement) {
+                            container.removeChild(existingElement);
+                        }
+                        
+                        // Load script and then create element with data
+                        vm.loadGenomeBrowser().then(function() {
+                            
+                            var genomeBrowserData = vm.getGenomeBrowserData();
+                            
+                            var newElement = document.createElement('rnacentral-genome-browser');
+                            newElement.setAttribute('data', JSON.stringify(genomeBrowserData));
+                            
+                            container.appendChild(newElement);
+                            
+                        }).catch(function(error) {
+                            // Error handled silently
+                        });
+                    }
                 }, 50);
             }
         };
 
         // Event handlers
         vm.onExternalLinkClick = function(link) {
-            console.log('External link clicked:', link.url);
             // Track analytics if available
             if (window.ga) {
                 window.ga('send', 'event', 'External Link', 'click', link.name);
@@ -177,18 +249,12 @@ var geneDetail = {
         };
 
         vm.onTranscriptClick = function(transcript) {
-            console.log('Transcript clicked:', transcript.id);
             // Could expand to show more details or navigate to transcript page
             transcript.expanded = !transcript.expanded;
         };
 
         vm.onExonHover = function(index, isEntering) {
             // Handle exon hover events
-            if (isEntering) {
-                console.log('Exon hover enter:', index);
-            } else {
-                console.log('Exon hover leave:', index);
-            }
         };
 
         // Utility functions
