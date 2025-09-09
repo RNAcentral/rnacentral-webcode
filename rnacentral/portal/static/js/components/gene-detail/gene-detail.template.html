@@ -3,8 +3,7 @@
     <header class="gene__header">
       <div class="gene-container">
         <div class="gene-title">
-          <h1 class="gene-name">{{ vm.geneData.name
-             }}</h1>
+          <h1 class="gene-name">{{ vm.geneData.name }}</h1>
           <span class="gene-symbol" ng-if="vm.geneData.symbol && vm.geneData.symbol !== vm.geneData.name">{{ vm.geneData.symbol }}</span>
           <span class="gene-version" ng-if="vm.geneData.version">{{ vm.geneData.shortDescription }}</span>
         </div>
@@ -27,7 +26,7 @@
             <span class="gene__info-label">End Position</span>
             <span class="gene__info-value">{{ vm.formatValue(vm.geneData.endPosition) }}</span>
           </div>
-        <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.strand)">
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.strand)">
             <span class="gene__info-label">Strand</span>
             <span class="gene__info-value">
               {{ vm.formatValue(vm.geneData.strand) }}
@@ -61,7 +60,9 @@
 
         <div class="gene__tab-content">
           <!-- Transcripts Tab -->
-          <div class="gene__tab-pane" ng-class="{active: vm.activeTab === 'transcripts'}">
+          <div class="gene__tab-pane" 
+               ng-class="{active: vm.activeTab === 'transcripts'}" 
+               ng-show="vm.activeTab === 'transcripts'">
             <div class="gene__widget">
               <div class="gene__widget-header">
                 <h2 class="gene__widget-title">Transcript Variants</h2>
@@ -105,22 +106,23 @@
           </div>
 
           <!-- Genome Browser Tab -->
-          <div class="gene__tab-pane" ng-class="{active: vm.activeTab === 'genome-browser'}">
+          <div class="gene__tab-pane" 
+               ng-class="{active: vm.activeTab === 'genome-browser'}" 
+               ng-show="vm.activeTab === 'genome-browser'">
             <div class="gene__widget">
               <div class="gene__genome-browser">
                 <!-- Loading indicator -->
-                <div ng-if="vm.activeTab === 'genome-browser' && !vm.genomeBrowserLoaded" class="gene__browser-loading">
+                <div ng-if="!vm.genomeBrowserLoaded" class="gene__browser-loading">
                   <p>Loading genome browser...</p>
                 </div>
 
                 <!-- Genome browser container -->
-                <div ng-if="vm.activeTab === 'genome-browser'" 
-                     style="padding-left: 1rem; margin-top: -10px">
-                  <rnacentral-genome-browser></rnacentral-genome-browser>
+                <div style="padding-left: 1rem; margin-top: -10px">
+                  <!-- Genome browser element will be dynamically created here -->
                 </div>
 
-                <!-- Error message if script fails to load -->
-                <div ng-if="vm.activeTab === 'genome-browser' && vm.genomeBrowserError" class="gene__browser-error">
+                <!-- Error message -->
+                <div ng-if="vm.genomeBrowserError" class="gene__browser-error">
                   <p>Failed to load genome browser. Please try refreshing the page.</p>
                 </div>
               </div>

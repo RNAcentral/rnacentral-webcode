@@ -12,12 +12,12 @@ var geneDetail = {
         var vm = this;
         
         // State management
-        vm.activeTab = 'transcripts';  // Default to transcripts tab
+        vm.activeTab = 'transcripts';
         vm.isLoading = false;
         vm.error = null;
         vm.genomeBrowserLoaded = false;
         
-        // Init empty data object
+        // Gene data object
         vm.geneData = {
             name: '',
             symbol: '',
@@ -36,10 +36,7 @@ var geneDetail = {
         vm.externalLinks = [];
 
         vm.$onInit = function() {
-            
-            // Check if gene was found - read from global data
             var globalData = window.geneDetailData || {};
-        
             var geneFound = globalData.geneFound !== undefined ? globalData.geneFound : vm.geneFound;
             
             if (geneFound === 'false' || geneFound === false || geneFound === 'False') {
@@ -51,16 +48,11 @@ var geneDetail = {
                 return;
             }
 
-            // Use global data if available
             if (globalData.geneData) {
                 processGeneData(globalData.geneData);
-                
-                // Set transcripts and external links from global data
                 vm.transcripts = globalData.transcriptsData || [];
                 vm.externalLinks = globalData.externalLinksData || [];
-                
             } else {
-                // Fallback to parsing from attributes (for backwards compatibility)
                 if (vm.geneData) {
                     try {
                         var parsedData;
@@ -91,7 +83,6 @@ var geneDetail = {
         };
 
         vm.$postLink = function() {
-            // Initialize DOM-dependent functionality
             $timeout(function() {
                 initializeInteractiveFeatures();
                 updateGenomeBrowserDisplay();
@@ -99,13 +90,11 @@ var geneDetail = {
         };
         
         function processGeneData(data) {
-            
             if (!data) {
                 vm.error = 'No gene data available';
                 return;
             }
 
-            // Check for errors in data
             if (data.error) {
                 vm.error = data.error;
                 vm.geneData.name = data.name || vm.geneName || 'Unknown';
@@ -128,12 +117,10 @@ var geneDetail = {
                 start: data.start || 0,
                 stop: data.stop || 0,
                 version: data.version || vm.geneVersion,
-                // Add genome browser specific fields
                 species: data.species || data.organism || null,
                 organism: data.organism || null
             };
 
-            // Calculate derived properties
             if (!vm.geneData.length && vm.geneData.start && vm.geneData.stop) {
                 vm.geneData.length = Math.abs(vm.geneData.stop - vm.geneData.start) + 1;
             }
@@ -141,9 +128,7 @@ var geneDetail = {
             vm.error = null;
         }
         
-        // Genome browser script loading function
         vm.loadGenomeBrowser = function() {
-            // Check if script is already loaded
             if (vm.genomeBrowserLoaded || 
                 window.RNACentralGenomeBrowser || 
                 document.querySelector('script[src*="genome-browser.js"]')) {
@@ -151,7 +136,6 @@ var geneDetail = {
             }
             
             return new Promise(function(resolve, reject) {
-                
                 const isLocalOrTest = window.location.hostname === 'localhost' || 
                                      window.location.hostname.includes('test.rnacentral.org');
                 
@@ -165,7 +149,7 @@ var geneDetail = {
                 
                 script.onload = function() {
                     vm.genomeBrowserLoaded = true;
-                    $scope.$apply(); // Trigger digest cycle
+                    $scope.$apply();
                     resolve();
                 };
                 
@@ -177,11 +161,9 @@ var geneDetail = {
             });
         };
         
-        // Get genome browser data based on gene data
         vm.getGenomeBrowserData = function() {
             var browserData = {};
             
-            // Map gene data to browser parameters  
             if (vm.geneData.species || vm.geneData.organism) {
                 browserData.species = vm.geneData.species || vm.geneData.organism;
             }
@@ -198,7 +180,6 @@ var geneDetail = {
                 browserData.end = vm.geneData.stop || vm.geneData.endPosition;
             }
             
-            // Pass the entire gene data object for the component to use
             browserData.name = vm.geneData.name;
             browserData.symbol = vm.geneData.symbol;
             browserData.strand = vm.geneData.strand;
@@ -209,36 +190,25 @@ var geneDetail = {
             return browserData;
         };
         
-        // Tab management
         vm.showTab = function(tabName) {
             vm.activeTab = tabName;
             
-            // Load genome browser script when switching to that tab
             if (tabName === 'genome-browser') {
-                
-                // Create the element with data immediately
                 $timeout(function() {
-                    // Remove any existing element first
                     var container = document.querySelector('.gene__genome-browser div[style*="padding-left"]');
                     if (container) {
                         var existingElement = container.querySelector('rnacentral-genome-browser');
-                        if (existingElement) {
-                            container.removeChild(existingElement);
-                        }
                         
-                        // Load script and then create element with data
-                        vm.loadGenomeBrowser().then(function() {
-                            
-                            var genomeBrowserData = vm.getGenomeBrowserData();
-                            
-                            var newElement = document.createElement('rnacentral-genome-browser');
-                            newElement.setAttribute('data', JSON.stringify(genomeBrowserData));
-                            
-                            container.appendChild(newElement);
-                            
-                        }).catch(function(error) {
-                            // Error handled silently
-                        });
+                        if (!existingElement) {
+                            vm.loadGenomeBrowser().then(function() {
+                                var genomeBrowserData = vm.getGenomeBrowserData();
+                                var newElement = document.createElement('rnacentral-genome-browser');
+                                newElement.setAttribute('data', JSON.stringify(genomeBrowserData));
+                                container.appendChild(newElement);
+                            }).catch(function(error) {
+                                console.error('Failed to load genome browser:', error);
+                            });
+                        }
                     }
                 }, 50);
             }
@@ -246,19 +216,17 @@ var geneDetail = {
 
         // Event handlers
         vm.onExternalLinkClick = function(link) {
-            // Track analytics if available
             if (window.ga) {
                 window.ga('send', 'event', 'External Link', 'click', link.name);
             }
         };
 
         vm.onTranscriptClick = function(transcript) {
-            // Could expand to show more details or navigate to transcript page
             transcript.expanded = !transcript.expanded;
         };
 
         vm.onExonHover = function(index, isEntering) {
-            // Handle exon hover events
+            // Handle exon hover events if needed
         };
 
         // Utility functions
@@ -286,7 +254,6 @@ var geneDetail = {
         };
 
         function updateGenomeBrowserDisplay() {
-            // Update genome browser visualization based on gene data
             if (vm.geneData.start && vm.geneData.stop) {
                 var geneLength = vm.geneData.stop - vm.geneData.start;
                 // Additional genome browser update logic can go here
@@ -294,7 +261,6 @@ var geneDetail = {
         }
 
         function initializeInteractiveFeatures() {
-            // Add hover effects to transcript items
             var transcriptItems = $element.find('.gene__transcript-item');
             transcriptItems.on('mouseenter', function() {
                 angular.element(this).addClass('hovered');
@@ -302,7 +268,6 @@ var geneDetail = {
                 angular.element(this).removeClass('hovered');
             });
 
-            // Add hover effects to external links
             var externalLinks = $element.find('.gene__external-link');
             externalLinks.on('mouseenter', function() {
                 angular.element(this).addClass('hovered');
@@ -310,7 +275,6 @@ var geneDetail = {
                 angular.element(this).removeClass('hovered');
             });
 
-            // Add hover effects and tooltips to exons
             var exons = $element.find('.exon');
             exons.each(function(index) {
                 var $exon = angular.element(this);
@@ -346,13 +310,11 @@ var geneDetail = {
             document.addEventListener('keydown', vm.keydownHandler);
         }
 
-        // Cleanup
         vm.$onDestroy = function() {
             if (vm.keydownHandler) {
                 document.removeEventListener('keydown', vm.keydownHandler);
             }
             
-            // Remove any event listeners
             $element.off();
             $element.find('.gene__transcript-item').off();
             $element.find('.gene__external-link').off();
@@ -363,5 +325,4 @@ var geneDetail = {
     templateUrl: '/static/js/components/gene-detail/gene-detail.template.html' 
 };
 
-// Register component to existing module
 angular.module("geneDetail").component("geneDetail", geneDetail);
