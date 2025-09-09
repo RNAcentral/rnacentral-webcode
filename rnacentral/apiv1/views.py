@@ -42,6 +42,7 @@ from apiv1.serializers import (
     RnaSpeciesSpecificSerializer,
     SequenceFeatureSerializer,
     XrefSerializer,
+    RelationshipSerializer
 )
 from colorhash import ColorHash
 from django.conf import settings
@@ -1217,4 +1218,43 @@ class RnaGenesView(APIView):
                 "count": 0,
                 "results": [],
                 "message": "No gene information available for this sequence"
+            })
+
+class RelationshipsView(APIView):
+    """
+    API endpoint for retrieving molecular relationships from RNA Knowledge Graph.
+
+    [API documentation](/api)
+    """
+
+    permission_classes = (AllowAny,)
+    
+    def get(self, request, pk, taxid, **kwargs):
+        """Return relationship data for a given URS and taxid from RNA-KG API"""
+        
+        node_id = f"{pk}_{taxid}"
+        
+        rna_kg_url = "https://rna-kg.biodata.di.unimi.it/api/v1/incoming/id"
+        
+        params = {
+            'node_id': node_id,
+            'node_id_scheme': 'RNAcentral',
+            'filter_rnacentral_rels': 'false'
+        }
+        
+        try:
+            response = requests.get(rna_kg_url, params=params, timeout=10)
+            data = response.json()
+            relationships = data.get('relationships', [])
+            serializer = RelationshipSerializer(relationships, many=True)
+            
+            return Response({
+                'count': len(relationships),
+                'results': serializer.data
+            })
+            
+        except Exception:
+            return Response({
+                'count': 0,
+                'results': []
             })

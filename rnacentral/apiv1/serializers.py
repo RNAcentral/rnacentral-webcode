@@ -991,3 +991,13 @@ class Md5Serializer(serializers.Serializer):
     rnacentral_id = serializers.CharField(source="id")
     description = serializers.CharField()
     sequence = serializers.CharField(source="get_sequence")
+
+class RelationshipSerializer(serializers.Serializer):
+    """Serializer class for RNA Knowledge Graph relationships"""
+    
+    relationship_type = serializers.CharField()
+    relationship_properties = serializers.DictField()
+    node_uri = serializers.CharField()
+    node_id = serializers.CharField()
+    node_labels = serializers.ListField(child=serializers.CharField())
+    node_properties = serializers.DictField()
