@@ -1,3 +1,4 @@
+// FIXED VERSION
 var geneDetail = {
     bindings: {
         geneName: '@?',
@@ -329,7 +330,7 @@ var geneDetail = {
             return browserData;
         };
         
-        // Tab management
+        // Tab management - FIXED: Only create element once, don't remove existing ones
         vm.showTab = function(tabName) {
             vm.activeTab = tabName;
             
@@ -338,27 +339,26 @@ var geneDetail = {
                 
                 // Create the element with data immediately
                 $timeout(function() {
-                    // Remove any existing element first
                     var container = document.querySelector('.gene__genome-browser div[style*="padding-left"]');
                     if (container) {
                         var existingElement = container.querySelector('rnacentral-genome-browser');
-                        if (existingElement) {
-                            container.removeChild(existingElement);
-                        }
                         
-                        // Load script and then create element with data
-                        vm.loadGenomeBrowser().then(function() {
-                            
-                            var genomeBrowserData = vm.getGenomeBrowserData();
-                            
-                            var newElement = document.createElement('rnacentral-genome-browser');
-                            newElement.setAttribute('data', JSON.stringify(genomeBrowserData));
-                            
-                            container.appendChild(newElement);
-                            
-                        }).catch(function(error) {
-                            // Error handled silently
-                        });
+                        // FIXED: Only create if it doesn't exist, don't remove existing ones
+                        if (!existingElement) {
+                            // Load script and then create element with data
+                            vm.loadGenomeBrowser().then(function() {
+                                
+                                var genomeBrowserData = vm.getGenomeBrowserData();
+                                
+                                var newElement = document.createElement('rnacentral-genome-browser');
+                                newElement.setAttribute('data', JSON.stringify(genomeBrowserData));
+                                
+                                container.appendChild(newElement);
+                                
+                            }).catch(function(error) {
+                                // Error handled silently
+                            });
+                        }
                     }
                 }, 50);
             }
