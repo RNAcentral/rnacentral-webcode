@@ -312,16 +312,8 @@ limitations under the License.
 
             </uib-tab>
 
-            <uib-tab index="2" id="relationships" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
-                <uib-tab-heading>
-                    Relationships <span class="label label-success">New</span>
-                </uib-tab-heading>
-                <h2>Molecular Relationships</h2>
-                <relationships upi="upi" taxid="taxid"></relationships>
-            </uib-tab>
-
             {% if rna.has_secondary_structure %}
-            <uib-tab index="3" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
+            <uib-tab index="2" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
                 <uib-tab-heading>
                   2D structure
                 </uib-tab-heading>
@@ -339,7 +331,7 @@ limitations under the License.
             {% endif %}
 
             {% if context.expression_atlas %}
-                <uib-tab index="4" id="expression-atlas" deselect="checkTab($event, $selectedIndex)" onclick="expressionAtlasWorkaround()">
+                <uib-tab index="3" id="expression-atlas" deselect="checkTab($event, $selectedIndex)" onclick="expressionAtlasWorkaround()">
                     <uib-tab-heading>
                         Expression <span class="label label-success">New</span>
                     </uib-tab-heading>
@@ -348,7 +340,7 @@ limitations under the License.
             {% endif %}
 
             {% if context.pub_count %}
-            <uib-tab index="5" id="publications" deselect="checkTab($event, $selectedIndex)">
+            <uib-tab index="4" id="publications" deselect="checkTab($event, $selectedIndex)">
                 <uib-tab-heading>
                   Publications
                 </uib-tab-heading>
@@ -365,7 +357,7 @@ limitations under the License.
             </uib-tab>
             {% endif %}
 
-            <uib-tab index="6" class="dropdown pull-right hidden-xs">
+            <uib-tab index="5" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>
                     <span uib-dropdown>
                         <a uib-dropdown-toggle>
@@ -410,9 +402,6 @@ limitations under the License.
 {% endif %}
 
 {% block extra_js_uncompressed %}
-    <!-- Load relationships component -->
-    <script type="text/javascript" src="{% static "js/components/sequence/relationships/relationships.js" %}"></script>
-
     {% if 'PDBe' in context.precomputed.get_databases %}
         <!-- MolStar cannot be installed from npm -->
         <script src="https://www.ebi.ac.uk/pdbe/pdb-component-library/js/pdbe-molstar-plugin-0.1.0.js"></script>
