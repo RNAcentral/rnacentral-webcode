@@ -24,28 +24,83 @@
             ctrl.relationships = [];
             ctrl.loading = false;
             ctrl.error = false;
+            ctrl.currentPage = 1;
+            ctrl.totalCount = 0;
+            ctrl.pageSize = 20;
+            ctrl.showPagination = false;
 
-            ctrl.loadRelationships = function() {
+            ctrl.loadRelationships = function(page, append) {
                 if (!ctrl.taxid || !ctrl.upi) {
                     return;
                 }
                 
+                page = page || 1;
+                append = append || false;
                 ctrl.loading = true;
                 ctrl.error = false;
                 
-                var relationshipsUrl = '/api/v1/rna/' + ctrl.upi + '/relationships/' + ctrl.taxid;
+                var relationshipsUrl = '/api/v1/rna/' + ctrl.upi + '/relationships/' + ctrl.taxid + '?page=' + page;
                 
                 $http.get(relationshipsUrl)
                     .then(function(response) {
-                        // API returns {count: X, results: [...]} format, not {relationships: [...]}
-                        ctrl.relationships = response.data.results || [];
+                        // API returns paginated format
+                        var newResults = response.data.results || [];
+                        if (append) {
+                            ctrl.relationships = ctrl.relationships.concat(newResults);
+                        } else {
+                            ctrl.relationships = newResults;
+                        }
+                        ctrl.totalCount = response.data.count || 0;
+                        ctrl.currentPage = page;
+                        ctrl.showPagination = ctrl.totalCount > ctrl.pageSize;
                         ctrl.loading = false;
                     })
                     .catch(function(error) {
                         ctrl.error = true;
                         ctrl.loading = false;
-                        ctrl.relationships = [];
+                        if (!append) {
+                            ctrl.relationships = [];
+                            ctrl.totalCount = 0;
+                            ctrl.showPagination = false;
+                        }
                     });
+            };
+
+            ctrl.goToPage = function(page) {
+                if (page >= 1 && page <= ctrl.getTotalPages()) {
+                    ctrl.loadRelationships(page);
+                }
+            };
+
+            ctrl.getTotalPages = function() {
+                return Math.ceil(ctrl.totalCount / ctrl.pageSize);
+            };
+
+            ctrl.getPageNumbers = function() {
+                var totalPages = ctrl.getTotalPages();
+                var currentPage = ctrl.currentPage;
+                var pages = [];
+                var start = Math.max(1, currentPage - 2);
+                var end = Math.min(totalPages, currentPage + 2);
+                
+                for (var i = start; i <= end; i++) {
+                    pages.push(i);
+                }
+                return pages;
+            };
+
+            ctrl.getStartRecord = function() {
+                return ((ctrl.currentPage - 1) * ctrl.pageSize) + 1;
+            };
+
+            ctrl.getEndRecord = function() {
+                return Math.min(ctrl.currentPage * ctrl.pageSize, ctrl.totalCount);
+            };
+
+            ctrl.loadMore = function() {
+                if (ctrl.relationships.length < ctrl.totalCount && !ctrl.loading) {
+                    ctrl.loadRelationships(ctrl.currentPage + 1, true);
+                }
             };
 
             // Watch for changes in upi or taxid
@@ -84,7 +139,8 @@
                 <div ng-if="!ctrl.loading && !ctrl.error && ctrl.relationships.length > 0">
                     <p class="text-muted">
                         <i class="fa fa-info-circle"></i>
-                        This RNA sequence has {{ctrl.relationships.length}} molecular relationships and interactions <a href="https://rna-kg.biodata.di.unimi.it/index.html" target="_blank">according to RNA-KG</a>.
+                        This RNA sequence has {{ctrl.totalCount}} molecular relationships and interactions <a href="https://rna-kg.biodata.di.unimi.it/index.html" target="_blank">according to RNA-KG</a>.
+                        <span ng-if="ctrl.showPagination">Showing {{ctrl.getStartRecord()}} - {{ctrl.getEndRecord()}} of {{ctrl.totalCount}} relationships.</span>
                     </p>
                     
                     <div class="table-responsive">
@@ -135,11 +191,38 @@
                         </table>
                     </div>
                     
-                    <div class="text-muted small">
-                        <p>
-                            <i class="fa fa-info-circle"></i>
-                            Relationship data is aggregated from multiple sources including experimental evidence and computational predictions.
-                            Click on external links to view detailed information about specific targets or publications.
+                    <!-- Pagination Controls -->
+                    <div ng-if="ctrl.showPagination" class="text-center" style="margin-top: 20px;">
+                        <nav aria-label="Relationships pagination">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{disabled: ctrl.currentPage <= 1}">
+                                    <a href="#" ng-click="ctrl.currentPage > 1 && ctrl.goToPage(1); $event.preventDefault()" aria-label="First">
+                                        <span aria-hidden="true">&laquo;&laquo;</span>
+                                    </a>
+                                </li>
+                                <li ng-class="{disabled: ctrl.currentPage <= 1}">
+                                    <a href="#" ng-click="ctrl.currentPage > 1 && ctrl.goToPage(ctrl.currentPage - 1); $event.preventDefault()" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li ng-repeat="page in ctrl.getPageNumbers()" ng-class="{active: page === ctrl.currentPage}">
+                                    <a href="#" ng-click="ctrl.goToPage(page); $event.preventDefault()">{{ page }}</a>
+                                </li>
+                                <li ng-class="{disabled: ctrl.currentPage >= ctrl.getTotalPages()}">
+                                    <a href="#" ng-click="ctrl.currentPage < ctrl.getTotalPages() && ctrl.goToPage(ctrl.currentPage + 1); $event.preventDefault()" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                                <li ng-class="{disabled: ctrl.currentPage >= ctrl.getTotalPages()}">
+                                    <a href="#" ng-click="ctrl.currentPage < ctrl.getTotalPages() && ctrl.goToPage(ctrl.getTotalPages()); $event.preventDefault()" aria-label="Last">
+                                        <span aria-hidden="true">&raquo;&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <p class="text-muted small">
+                            Page {{ctrl.currentPage}} of {{ctrl.getTotalPages()}} 
+                            <span ng-if="ctrl.totalCount > 0">({{ctrl.totalCount}} total relationships)</span>
                         </p>
                     </div>
                 </div>

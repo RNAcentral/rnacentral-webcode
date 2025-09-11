@@ -1220,7 +1220,7 @@ class RnaGenesView(APIView):
                 "message": "No gene information available for this sequence"
             })
 
-class RelationshipsView(APIView):
+class RelationshipsView(generics.ListAPIView):
     """
     API endpoint for retrieving molecular relationships from RNA Knowledge Graph.
 
@@ -1228,11 +1228,13 @@ class RelationshipsView(APIView):
     """
 
     permission_classes = (AllowAny,)
+    serializer_class = RelationshipSerializer
+    pagination_class = Pagination
     
-    def get(self, request, pk, taxid, **kwargs):
+    def get_queryset(self):
         """Return relationship data for a given URS and taxid from RNA-KG API"""
         
-        node_id = f"{pk}_{taxid}"
+        node_id = f"{self.kwargs['pk']}_{self.kwargs['taxid']}"
         
         rna_kg_url = "https://rna-kg.biodata.di.unimi.it/api/v1/incoming/id"
         
@@ -1246,15 +1248,35 @@ class RelationshipsView(APIView):
             response = requests.get(rna_kg_url, params=params, timeout=10)
             data = response.json()
             relationships = data.get('relationships', [])
-            serializer = RelationshipSerializer(relationships, many=True)
             
-            return Response({
-                'count': len(relationships),
-                'results': serializer.data
-            })
+            # Create a mock queryset-like object for pagination
+            class RelationshipQuerySet:
+                def __init__(self, data):
+                    self.data = data
+                    
+                def __iter__(self):
+                    return iter(self.data)
+                    
+                def __len__(self):
+                    return len(self.data)
+                    
+                def count(self):
+                    return len(self.data)
+                    
+                def __getitem__(self, key):
+                    return self.data[key]
+            
+            return RelationshipQuerySet(relationships)
             
         except Exception:
-            return Response({
-                'count': 0,
-                'results': []
-            })
+            class EmptyQuerySet:
+                def __iter__(self):
+                    return iter([])
+                def __len__(self):
+                    return 0
+                def count(self):
+                    return 0
+                def __getitem__(self, key):
+                    return []
+            
+            return EmptyQuerySet()
