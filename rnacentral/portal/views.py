@@ -452,8 +452,9 @@ def gene_detail(request, name):
     transcripts_data = []
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT 
+            SELECT DISTINCT ON (locus.urs_taxid)
                 locus.urs_taxid,
+                g.public_name,
                 pre.description
             FROM rnc_gene_members gm
             JOIN rnc_genes g ON(gm.rnc_gene_id=g.id)
@@ -467,9 +468,10 @@ def gene_detail(request, name):
         rows = cursor.fetchall()
         
         for row in rows:
-            urs_taxid, description = row
+            urs_taxid, name, description = row
             transcript_info = {
                 "id": urs_taxid,
+                "name": name,
                 "description": description or "No description available"
             }
             transcripts_data.append(transcript_info)

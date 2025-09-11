@@ -351,6 +351,13 @@
 
 .gene__transcript-id {
     font-family: monospace;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 12px;
+}
+
+.gene__transcript-name {
+    font-family: monospace;
     font-weight: bold;
     color: #2c3e50;
     font-size: 12px;
