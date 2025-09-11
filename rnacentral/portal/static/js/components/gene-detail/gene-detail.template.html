@@ -4,8 +4,7 @@
       <div class="gene-container">
         <div class="gene-title">
           <h1 class="gene-name">{{ vm.geneData.name }}</h1>
-          <span class="gene-symbol" ng-if="vm.geneData.symbol && vm.geneData.symbol !== vm.geneData.name">{{ vm.geneData.symbol }}</span>
-          <span class="gene-version" ng-if="vm.geneData.version">{{ vm.geneData.shortDescription }}</span>
+          <span class="gene__short-description">{{ vm.geneData.shortDescription }}</span>
         </div>
         
         <div class="gene__widget-header">
