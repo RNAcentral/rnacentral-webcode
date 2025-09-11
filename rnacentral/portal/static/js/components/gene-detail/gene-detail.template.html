@@ -64,9 +64,7 @@
                ng-class="{active: vm.activeTab === 'transcripts'}" 
                ng-show="vm.activeTab === 'transcripts'">
             <div class="gene__widget">
-              <div class="gene__widget-header">
-                <h2 class="gene__widget-title">Transcript Variants</h2>
-                
+              <div class="gene__widget-header">          
                 <!-- Pagination Info -->
                 <div class="gene__pagination-info" ng-if="vm.pagination.total_count > 0">
                   <span class="gene__pagination-text">
@@ -92,7 +90,7 @@
                     </p>
                   </div>
                   <div class="gene__transcript-details">
-                <!-- <p class="gene__transcript-description">{{ transcript.description }}</p> -->
+                <!-- TODO: add more info later -->
                   </div>
                 </div>
               </div>
