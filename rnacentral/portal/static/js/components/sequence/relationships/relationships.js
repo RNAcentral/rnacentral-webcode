@@ -28,6 +28,7 @@
             ctrl.totalCount = 0;
             ctrl.pageSize = 20;
             ctrl.showPagination = false;
+            ctrl.rnaSequenceRnakgId = null;
 
             ctrl.loadRelationships = function(page, append) {
                 if (!ctrl.taxid || !ctrl.upi) {
@@ -53,6 +54,7 @@
                         ctrl.totalCount = response.data.count || 0;
                         ctrl.currentPage = page;
                         ctrl.showPagination = ctrl.totalCount > ctrl.pageSize;
+                        ctrl.rnaSequenceRnakgId = response.data.rna_sequence_rnakg_id;
                         ctrl.loading = false;
                     })
                     .catch(function(error) {
@@ -139,7 +141,9 @@
                 <div ng-if="!ctrl.loading && !ctrl.error && ctrl.relationships.length > 0">
                     <p class="text-muted">
                         <i class="fa fa-info-circle"></i>
-                        This RNA sequence has {{ctrl.totalCount}} molecular relationships and interactions <a href="https://rna-kg.biodata.di.unimi.it/index.html" target="_blank">according to RNA-KG</a>.
+                        This RNA sequence has {{ctrl.totalCount}} molecular relationships and interactions 
+                        <a ng-if="ctrl.rnaSequenceRnakgId" href="https://rna-kg.biodata.di.unimi.it/entity/{{ctrl.rnaSequenceRnakgId}}" target="_blank">according to RNA-KG</a>
+                        <a ng-if="!ctrl.rnaSequenceRnakgId" href="https://rna-kg.biodata.di.unimi.it/index.html" target="_blank">according to RNA-KG</a>.
                         <span ng-if="ctrl.showPagination">Showing {{ctrl.getStartRecord()}} - {{ctrl.getEndRecord()}} of {{ctrl.totalCount}} relationships.</span>
                     </p>
                     
@@ -157,7 +161,10 @@
                             <tbody>
                                 <tr ng-repeat="rel in ctrl.relationships">
                                     <td>
-                                        <span class="label label-info">
+                                        <a ng-if="rel.rel_rnakg_id" href="https://rna-kg.biodata.di.unimi.it/relationship/{{rel.rel_rnakg_id}}" target="_blank" class="label label-info" style="text-decoration: none;">
+                                            {{ rel.relationship_type || "Unknown" }}
+                                        </a>
+                                        <span ng-if="!rel.rel_rnakg_id" class="label label-info">
                                             {{ rel.relationship_type || "Unknown" }}
                                         </span>
                                     </td>
