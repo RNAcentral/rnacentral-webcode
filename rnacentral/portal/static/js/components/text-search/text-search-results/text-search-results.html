@@ -320,20 +320,6 @@
     <div class="col-md-9 col-sm-8 col-xs-12 text-search-results">
       <ul class="list-unstyled">
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
-          <!-- DEBUG: Add this debug section to see available data -->
-          <div class="debug-info" style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace; font-size: 11px; border: 1px solid #ccc;">
-            <strong>DEBUG - Available fields for {{ rna.id }}:</strong><br>
-            Entry Type: {{ rna.fields.entry_type ? rna.fields.entry_type[0] : 'undefined' }}<br>
-            ID: {{ rna.id }}<br>
-            Standard Name: {{ rna.fields.standard_name ? rna.fields.standard_name[0] : 'undefined' }}<br>
-            Gene: {{ rna.fields.gene ? rna.fields.gene[0] : 'undefined' }}<br>
-            Description: {{ rna.fields.description ? rna.fields.description[0] : 'undefined' }}<br>
-            <details>
-              <summary>All Fields (click to expand)</summary>
-              <pre>{{ rna.fields | json }}</pre>
-            </details>
-          </div>
-          
           <div class="text-search-result">
             <h4 style="margin-bottom: 0; margin-top: 0;">
               <!-- DEFENSIVE CHECK: Only show description if it exists and has content -->
@@ -357,8 +343,8 @@
             </h4>
 
             <div class="media">
-              <!-- DEFENSIVE CHECK: Only show secondary structure image if field exists and is true -->
-              <div class="media-left media-middle" ng-if="rna.fields.has_secondary_structure && rna.fields.has_secondary_structure[0] && rna.fields.has_secondary_structure[0].toLowerCase().indexOf('true') !== -1">
+              <!-- UPDATED: Only show secondary structure image if it's not a Gene entry -->
+              <div class="media-left media-middle" ng-if="rna.fields.has_secondary_structure && rna.fields.has_secondary_structure[0] && rna.fields.has_secondary_structure[0].toLowerCase().indexOf('true') !== -1 && (!rna.fields.entry_type || rna.fields.entry_type[0] !== 'Gene')">
                 <a ng-href="{{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) + '?tab=2d' : '/rna/' + rna.id_with_slash + '?tab=2d'}}">
                   <img style="max-width:140px; max-height:100px;" class="media-object img-thumbnail" src="/api/v1/rna/{{$ctrl.getURS(rna.id)}}/2d/svg/">
                 </a>
