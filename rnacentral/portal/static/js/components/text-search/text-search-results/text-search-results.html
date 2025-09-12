@@ -320,21 +320,44 @@
     <div class="col-md-9 col-sm-8 col-xs-12 text-search-results">
       <ul class="list-unstyled">
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
+          <!-- DEBUG: Add this debug section to see available data -->
+          <div class="debug-info" style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace; font-size: 11px; border: 1px solid #ccc;">
+            <strong>DEBUG - Available fields for {{ rna.id }}:</strong><br>
+            Entry Type: {{ rna.fields.entry_type ? rna.fields.entry_type[0] : 'undefined' }}<br>
+            ID: {{ rna.id }}<br>
+            Standard Name: {{ rna.fields.standard_name ? rna.fields.standard_name[0] : 'undefined' }}<br>
+            Gene: {{ rna.fields.gene ? rna.fields.gene[0] : 'undefined' }}<br>
+            Description: {{ rna.fields.description ? rna.fields.description[0] : 'undefined' }}<br>
+            <details>
+              <summary>All Fields (click to expand)</summary>
+              <pre>{{ rna.fields | json }}</pre>
+            </details>
+          </div>
+          
           <div class="text-search-result">
             <h4 style="margin-bottom: 0; margin-top: 0;">
+              <!-- DEFENSIVE CHECK: Only show description if it exists and has content -->
+              <!-- Gene entries get /genes/<standard_name> URL, Sequence entries get /rna/ URL -->
               <a ng-href="{{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) : '/rna/' + rna.id_with_slash}}" 
                 ng-if="rna.fields.description && rna.fields.description[0]" 
                 ng-bind-html="rna.fields.description[0] | sanitize"></a>
               
+              <!-- FALLBACK: Show gene name or ID if description is missing -->
               <a ng-href="{{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) : '/rna/' + rna.id_with_slash}}" 
                 ng-if="!rna.fields.description || !rna.fields.description[0]">
                 <span ng-if="rna.fields.gene && rna.fields.gene[0]">{{ rna.fields.gene[0] }}</span>
                 <span ng-if="(!rna.fields.gene || !rna.fields.gene[0]) && rna.fields.standard_name && rna.fields.standard_name[0]">{{ rna.fields.standard_name[0] }}</span>
                 <span ng-if="(!rna.fields.gene || !rna.fields.gene[0]) && (!rna.fields.standard_name || !rna.fields.standard_name[0])">{{ rna.id }}</span>
               </a>
+              
+              <!-- DEBUG: Show what URL would be generated -->
+              <br><small style="color: #666;">
+                DEBUG URL: {{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) : '/rna/' + rna.id_with_slash}}
+              </small>
             </h4>
 
             <div class="media">
+              <!-- DEFENSIVE CHECK: Only show secondary structure image if field exists and is true -->
               <div class="media-left media-middle" ng-if="rna.fields.has_secondary_structure && rna.fields.has_secondary_structure[0] && rna.fields.has_secondary_structure[0].toLowerCase().indexOf('true') !== -1">
                 <a ng-href="{{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) + '?tab=2d' : '/rna/' + rna.id_with_slash + '?tab=2d'}}">
                   <img style="max-width:140px; max-height:100px;" class="media-object img-thumbnail" src="/api/v1/rna/{{$ctrl.getURS(rna.id)}}/2d/svg/">
