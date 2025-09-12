@@ -322,7 +322,6 @@
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
           <div class="text-search-result">
             <h4 style="margin-bottom: 0; margin-top: 0;">
-              <!-- DEFENSIVE CHECK: Only show description if it exists and has content -->
               <!-- Gene entries get /genes/<standard_name> URL, Sequence entries get /rna/ URL -->
               <a ng-href="{{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) : '/rna/' + rna.id_with_slash}}" 
                 ng-if="rna.fields.description && rna.fields.description[0]" 
@@ -336,14 +335,8 @@
                 <span ng-if="(!rna.fields.gene || !rna.fields.gene[0]) && (!rna.fields.standard_name || !rna.fields.standard_name[0])">{{ rna.id }}</span>
               </a>
               
-              <!-- DEBUG: Show what URL would be generated -->
-              <br><small style="color: #666;">
-                DEBUG URL: {{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) : '/rna/' + rna.id_with_slash}}
-              </small>
-            </h4>
-
             <div class="media">
-              <!-- UPDATED: Only show secondary structure image if it's not a Gene entry -->
+              <!-- Only show secondary structure image if it's not a Gene entry -->
               <div class="media-left media-middle" ng-if="rna.fields.has_secondary_structure && rna.fields.has_secondary_structure[0] && rna.fields.has_secondary_structure[0].toLowerCase().indexOf('true') !== -1 && (!rna.fields.entry_type || rna.fields.entry_type[0] !== 'Gene')">
                 <a ng-href="{{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) + '?tab=2d' : '/rna/' + rna.id_with_slash + '?tab=2d'}}">
                   <img style="max-width:140px; max-height:100px;" class="media-object img-thumbnail" src="/api/v1/rna/{{$ctrl.getURS(rna.id)}}/2d/svg/">
@@ -358,7 +351,6 @@
               </span>
             </div>
             <ul class="list-inline small" ng-if="$ctrl.expertDbsObject" style="margin-left: 0;">
-              <!-- DEFENSIVE CHECK: Only show length if it exists -->
               <li style="padding-right: 20px;" ng-if="rna.fields.length && rna.fields.length[0]">
                 {{rna.fields.length[0] | number}} nucleotides
               </li>
@@ -366,9 +358,7 @@
               <li style="padding-right: 20px;" ng-if="!rna.fields.length || !rna.fields.length[0]">
                 Gene entry
               </li>
-              <!-- DEFENSIVE CHECK: Only show genomic coordinates indicator if field exists -->
               <li style="padding-right: 20px;" ng-if="rna.fields.has_genomic_coordinates && rna.fields.has_genomic_coordinates[0] && rna.fields.has_genomic_coordinates[0].toLowerCase().indexOf('true') !== -1"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome</li>
-              <!-- DEFENSIVE CHECK: Only show QC warnings if field exists and is not 'none' -->
               <li style="padding-right: 20px; cursor: help;" ng-if="rna.fields.qc_warning && (rna.fields.qc_warning | plaintext) != 'none'" tooltip-popup-close-delay="2000" uib-tooltip-template="'/static/js/components/text-search/text-search-results/qc-warning-tooltip.html'" tooltip-placement="bottom"><i class="fa fa-warning text-danger" aria-hidden="true"></i>
                 <span ng-repeat="warning in rna.fields.qc_warning | plaintext">
                   <span ng-if="warning==='has_issue'"></span>
@@ -378,9 +368,7 @@
                   <span ng-if="warning==='missing_rfam_match'">missing Rfam hit</span>{{$last || warning==='has_issue' ? '' : ', '}}
                 </span>
               </li>
-              <!-- DEFENSIVE CHECK: Only show obsolete status if field exists -->
               <li style="padding-right: 20px;" ng-if="rna.fields.active && rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
-              <!-- DEFENSIVE CHECK: Only show expert database logos if field exists -->
               <li style="display: inline-block;" ng-repeat="expert_db in rna.fields.expert_db | plaintext | orderBy:expert_db:false:$ctrl.expertDbHasStarComparator" ng-if="rna.fields.expert_db"><img class="desaturate" style="cursor: help; height: 16px; vertical-align: top;" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.normalizeExpertDbName.nameToImageUrl(expert_db) }}">&nbsp;&nbsp;</li>
             </ul>
           </div>
