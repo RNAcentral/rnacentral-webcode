@@ -1,7 +1,3 @@
-/**
- * Service for launching a text search.
- */
-
 var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     var self = this; // in case some event handler or constructor overrides "this"
 

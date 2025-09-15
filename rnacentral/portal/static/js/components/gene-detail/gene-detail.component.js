@@ -1,3 +1,4 @@
+// FIXED VERSION
 var geneDetail = {
     bindings: {
         geneName: '@?',
@@ -16,6 +17,19 @@ var geneDetail = {
         vm.isLoading = false;
         vm.error = null;
         vm.genomeBrowserLoaded = false;
+        
+        // Pagination state
+        vm.transcriptsLoading = false;
+        vm.pagination = {
+            current_page: 1,
+            total_pages: 1,
+            total_count: 0,
+            page_size: 10,
+            has_previous: false,
+            has_next: false,
+            start_index: 0,
+            end_index: 0
+        };
         
         // Init empty data object
         vm.geneData = {
@@ -58,6 +72,14 @@ var geneDetail = {
                 // Set transcripts and external links from global data
                 vm.transcripts = globalData.transcriptsData || [];
                 vm.externalLinks = globalData.externalLinksData || [];
+                
+                // Set pagination data
+                if (globalData.transcriptsPagination) {
+                    vm.pagination = angular.extend({}, vm.pagination, globalData.transcriptsPagination);
+                    // Convert string booleans to actual booleans
+                    vm.pagination.has_previous = vm.pagination.has_previous === 'true' || vm.pagination.has_previous === true;
+                    vm.pagination.has_next = vm.pagination.has_next === 'true' || vm.pagination.has_next === true;
+                }
                 
             } else {
                 // Fallback to parsing from attributes (for backwards compatibility)
@@ -141,6 +163,105 @@ var geneDetail = {
             vm.error = null;
         }
         
+        // Pagination methods
+        vm.loadPage = function(page) {
+            if (vm.transcriptsLoading || page < 1 || page > vm.pagination.total_pages) {
+                return;
+            }
+            
+            vm.transcriptsLoading = true;
+            
+            var url = window.location.pathname;
+            var params = {
+                page: page,
+                page_size: vm.pagination.page_size
+            };
+            
+            $http.get(url, { params: params }).then(function(response) {
+                // Parse the response to extract the new data
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(response.data, 'text/html');
+                var scriptTag = doc.querySelector('script');
+                
+                if (scriptTag) {
+                    // Extract the JavaScript object from the script tag
+                    var scriptContent = scriptTag.textContent;
+                    var dataMatch = scriptContent.match(/window\.geneDetailData\s*=\s*({.*?});/s);
+                    
+                    if (dataMatch) {
+                        try {
+                            var newData = JSON.parse(dataMatch[1]);
+                            vm.transcripts = newData.transcriptsData || [];
+                            vm.pagination = angular.extend({}, vm.pagination, newData.transcriptsPagination);
+                            // Convert string booleans to actual booleans
+                            vm.pagination.has_previous = vm.pagination.has_previous === 'true' || vm.pagination.has_previous === true;
+                            vm.pagination.has_next = vm.pagination.has_next === 'true' || vm.pagination.has_next === true;
+                        } catch (e) {
+                            vm.error = 'Error loading page data';
+                        }
+                    }
+                }
+                
+                vm.transcriptsLoading = false;
+            }).catch(function(error) {
+                vm.error = 'Failed to load page data';
+                vm.transcriptsLoading = false;
+            });
+        };
+        
+        vm.goToPage = function(page) {
+            vm.loadPage(page);
+        };
+        
+        vm.previousPage = function() {
+            if (vm.pagination.has_previous) {
+                vm.loadPage(vm.pagination.current_page - 1);
+            }
+        };
+        
+        vm.nextPage = function() {
+            if (vm.pagination.has_next) {
+                vm.loadPage(vm.pagination.current_page + 1);
+            }
+        };
+        
+        vm.getVisiblePages = function() {
+            var pages = [];
+            var current = vm.pagination.current_page || 1;
+            var total = vm.pagination.total_pages || 1;
+            var delta = 2; // Show 2 pages on each side of current
+            
+            if (total <= 1) {
+                return [1];
+            }
+            
+            var start = Math.max(1, current - delta);
+            var end = Math.min(total, current + delta);
+            
+            // Add first page and ellipsis if needed
+            if (start > 1) {
+                pages.push(1);
+                if (start > 2) {
+                    pages.push('...');
+                }
+            }
+            
+            // Add visible pages
+            for (var i = start; i <= end; i++) {
+                pages.push(i);
+            }
+            
+            // Add ellipsis and last page if needed
+            if (end < total) {
+                if (end < total - 1) {
+                    pages.push('...');
+                }
+                pages.push(total);
+            }
+            
+            return pages;
+        };
+        
         // Genome browser script loading function
         vm.loadGenomeBrowser = function() {
             // Check if script is already loaded
@@ -209,7 +330,7 @@ var geneDetail = {
             return browserData;
         };
         
-        // Tab management
+        // Tab management - FIXED: Only create element once, don't remove existing ones
         vm.showTab = function(tabName) {
             vm.activeTab = tabName;
             
@@ -218,27 +339,26 @@ var geneDetail = {
                 
                 // Create the element with data immediately
                 $timeout(function() {
-                    // Remove any existing element first
                     var container = document.querySelector('.gene__genome-browser div[style*="padding-left"]');
                     if (container) {
                         var existingElement = container.querySelector('rnacentral-genome-browser');
-                        if (existingElement) {
-                            container.removeChild(existingElement);
-                        }
                         
-                        // Load script and then create element with data
-                        vm.loadGenomeBrowser().then(function() {
-                            
-                            var genomeBrowserData = vm.getGenomeBrowserData();
-                            
-                            var newElement = document.createElement('rnacentral-genome-browser');
-                            newElement.setAttribute('data', JSON.stringify(genomeBrowserData));
-                            
-                            container.appendChild(newElement);
-                            
-                        }).catch(function(error) {
-                            // Error handled silently
-                        });
+                        // FIXED: Only create if it doesn't exist, don't remove existing ones
+                        if (!existingElement) {
+                            // Load script and then create element with data
+                            vm.loadGenomeBrowser().then(function() {
+                                
+                                var genomeBrowserData = vm.getGenomeBrowserData();
+                                
+                                var newElement = document.createElement('rnacentral-genome-browser');
+                                newElement.setAttribute('data', JSON.stringify(genomeBrowserData));
+                                
+                                container.appendChild(newElement);
+                                
+                            }).catch(function(error) {
+                                // Error handled silently
+                            });
+                        }
                     }
                 }, 50);
             }
@@ -253,8 +373,7 @@ var geneDetail = {
         };
 
         vm.onTranscriptClick = function(transcript) {
-            // Could expand to show more details or navigate to transcript page
-            transcript.expanded = !transcript.expanded;
+            // Handle transcript click events if needed
         };
 
         vm.onExonHover = function(index, isEntering) {

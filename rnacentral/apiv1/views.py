@@ -43,6 +43,7 @@ from apiv1.serializers import (
     RnaSpeciesSpecificSerializer,
     SequenceFeatureSerializer,
     XrefSerializer,
+    RelationshipSerializer
 )
 from colorhash import ColorHash
 from django.conf import settings
@@ -1345,3 +1346,111 @@ class RnaGenesView(APIView):
                 "results": [],
                 "message": "No gene information available for this sequence"
             })
+
+class RelationshipsView(generics.ListAPIView):
+    """
+    API endpoint for retrieving molecular relationships from RNA Knowledge Graph.
+    
+    [API documentation](/api)
+    """
+    
+    permission_classes = (AllowAny,)
+    serializer_class = RelationshipSerializer
+    pagination_class = Pagination
+    
+    def get_queryset(self):
+        """Return relationship data for a given URS and taxid from RNA-KG API"""
+        
+        node_id = f"{self.kwargs['pk']}_{self.kwargs['taxid']}"
+        
+        # Get the relationships using the original endpoint
+        rna_kg_url = "https://rna-kg.biodata.di.unimi.it/api/v1/incoming/id"
+        relationships_params = {
+            'node_id': node_id,
+            'node_id_scheme': 'RNAcentral',
+            'filter_rnacentral_rels': 'false'
+        }
+        
+        try:
+            relationships_response = requests.get(rna_kg_url, params=relationships_params, timeout=10)
+            relationships_response.raise_for_status()
+            relationships_data = relationships_response.json()
+            relationships = relationships_data.get('relationships', [])
+            
+            # Create a mock queryset-like object for pagination
+            class RelationshipQuerySet:
+                def __init__(self, data):
+                    self.data = data
+                
+                def __iter__(self):
+                    return iter(self.data)
+                
+                def __len__(self):
+                    return len(self.data)
+                
+                def count(self):
+                    return len(self.data)
+                
+                def __getitem__(self, key):
+                    return self.data[key]
+            
+            return RelationshipQuerySet(relationships)
+            
+        except Exception as e:
+            # Log the error if you have logging set up
+            # print(f"Error fetching RNA-KG relationships data: {e}")
+            return self._empty_queryset()
+    
+    def get_rna_sequence_rnakg_id(self):
+        """Get the rnakg_id for the queried RNA sequence"""
+        node_id = f"{self.kwargs['pk']}_{self.kwargs['taxid']}"
+        node_id_url = "https://rna-kg.biodata.di.unimi.it/api/v1/node/id"
+        node_id_params = {
+            'node_id': node_id,
+            'node_id_scheme': 'RNAcentral'
+        }
+        
+        try:
+            node_response = requests.get(node_id_url, params=node_id_params, timeout=10)
+            if node_response.status_code == 200:
+                node_data = node_response.json()
+                return node_data.get('node_rnakg_id')
+        except Exception:
+            pass
+        return None
+    
+    def list(self, request, *args, **kwargs):
+        """Override list method to include RNA sequence rnakg_id in response"""
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            paginated_response = self.get_paginated_response(serializer.data)
+            
+            # Add the RNA sequence rnakg_id to the response
+            rna_sequence_rnakg_id = self.get_rna_sequence_rnakg_id()
+            paginated_response.data['rna_sequence_rnakg_id'] = rna_sequence_rnakg_id
+            
+            return paginated_response
+        
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'rna_sequence_rnakg_id': self.get_rna_sequence_rnakg_id()
+        }
+        return Response(response_data)
+    
+    def _empty_queryset(self):
+        """Return an empty queryset-like object"""
+        class EmptyQuerySet:
+            def __iter__(self):
+                return iter([])
+            def __len__(self):
+                return 0
+            def count(self):
+                return 0
+            def __getitem__(self, key):
+                return []
+        
+        return EmptyQuerySet()

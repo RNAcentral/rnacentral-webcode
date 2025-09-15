@@ -49,10 +49,12 @@ from portal.models import (
     Taxonomy,
     Xref,
     Gene,
-    GeneMetadata
+    GeneMetadata,
 )
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.rna_summary import RnaSummary
+from portal.models.gene import GeneMember
+from django.db import connection
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -299,7 +301,6 @@ def rna_view(request, upi, taxid=None):
     # we also need gene and species to use the Expression Atlas widget
     if (
         expression_atlas
-        and summary.species
         and [item for item in summary.genes if item.startswith("ENS")]
     ):
         expression_atlas = True
@@ -392,9 +393,8 @@ def gene_detail(request, name):
                     if gene_version > highest_version:
                         highest_version = gene_version
                         latest_gene = g
-                        version = gene_version  # Set version for template
+                        version = gene_version 
                 except (ValueError, IndexError):
-                    # TODO: handle exception (log it/print stacktrace?) 
                     continue
             
             gene = latest_gene
@@ -410,10 +410,9 @@ def gene_detail(request, name):
             "geneData": {},
             "transcriptsData": [],
             "externalLinksData": [],
+            "transcriptsPagination": {},
         })
-
     
-    # TODO: Get metadata
     metadata = getattr(gene, "metadata", None)
 
     gene_data = {
@@ -424,17 +423,72 @@ def gene_detail(request, name):
         "strand": gene.strand,
         "strandDirection": "Reverse" if gene.strand == "-" else "Forward",
         "geneType": metadata.ontology_term.name if metadata and metadata.ontology_term else "Unknown",
-        "shortDescription": metadata.short_description if metadata else "",
         "summary": metadata.description if metadata else "No summary available",
+        "shortDescription": metadata.short_description if metadata else "",
         "length": abs(gene.stop - gene.start) + 1 if gene.start and gene.stop else 0,
         "version": version,
     }
 
-
-    # TODO: Add transcript data 
-    transcripts_data = []
+    # Get pagination params
+    page = int(request.GET.get('page', 1))
+    page_size = int(request.GET.get('page_size', 10))  # Default 10 transcripts per page
+  
+    # Total count
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM rnc_gene_members gm
+            JOIN rnc_genes g ON(gm.rnc_gene_id=g.id)
+            JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
+            JOIN rnc_rna_precomputed pre ON pre.id = locus.urs_taxid
+            WHERE g.public_name = %s
+        """, [gene.name])
+        total_count = cursor.fetchone()[0]
+    # Calculate pagination
+    total_pages = (total_count + page_size - 1) // page_size 
+    offset = (page - 1) * page_size
     
-    # TODO: Add external links (if needed)
+    # Get current page transcript data
+    transcripts_data = []
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT DISTINCT ON (locus.urs_taxid)
+                locus.urs_taxid,
+                pre.description
+            FROM rnc_gene_members gm
+            JOIN rnc_genes g ON(gm.rnc_gene_id=g.id)
+            JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
+            JOIN rnc_rna_precomputed pre ON pre.id = locus.urs_taxid
+            WHERE g.public_name = %s
+            ORDER BY locus.urs_taxid
+            LIMIT %s OFFSET %s
+        """, [gene.name, page_size, offset])
+        
+        rows = cursor.fetchall()
+        
+        for row in rows:
+            urs_taxid, description = row
+            transcript_info = {
+                "id": urs_taxid,
+                "description": description or "No description available"
+            }
+            transcripts_data.append(transcript_info)
+
+    # Pagination metadata - convert Python booleans to strings for JavaScript
+    pagination = {
+        "current_page": page,
+        "total_pages": total_pages,
+        "total_count": total_count,
+        "page_size": page_size,
+        "has_previous": "true" if page > 1 else "false",
+        "has_next": "true" if page < total_pages else "false",
+        "previous_page": page - 1 if page > 1 else None,
+        "next_page": page + 1 if page < total_pages else None,
+        "start_index": offset + 1 if total_count > 0 else 0,
+        "end_index": min(offset + page_size, total_count),
+    }
+
+    # External links data 
     external_links_data = []
 
     return render(request, "portal/gene_detail.html", {
@@ -443,6 +497,7 @@ def gene_detail(request, name):
         "geneVersion": version,
         "geneFound": True,
         "transcriptsData": transcripts_data,
+        "transcriptsPagination": pagination,
         "externalLinksData": external_links_data,
     })
 
