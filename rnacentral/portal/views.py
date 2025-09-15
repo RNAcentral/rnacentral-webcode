@@ -301,7 +301,6 @@ def rna_view(request, upi, taxid=None):
     # we also need gene and species to use the Expression Atlas widget
     if (
         expression_atlas
-        and summary.species
         and [item for item in summary.genes if item.startswith("ENS")]
     ):
         expression_atlas = True
