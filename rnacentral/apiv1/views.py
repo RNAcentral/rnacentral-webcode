@@ -365,6 +365,7 @@ class RnaSpeciesSpecificView(APIView):
     This endpoint is used by Protein2GO.
     Contact person: Tony Sawford.
     """
+    permission_classes = (AllowAny,)  # Add explicit permission class
     queryset = RnaPrecomputed.objects.all()
 
     def get_object(self, pk):
@@ -378,17 +379,23 @@ class RnaSpeciesSpecificView(APIView):
         rna = self.get_object(urs)
 
         # queries on the xref table make the API very slow.
-        # get gene from Search Index
+        # get genes from Search Index
         search_index = settings.EBI_SEARCH_ENDPOINT
+        genes = []
         try:
             response = requests.get(
                 f"{search_index}/entry/{urs}?format=json&fields=gene", timeout=3
             )
             response.raise_for_status()
             data = json.loads(response.text)
-            gene = data["entries"][0]["fields"]["gene"]
+
+            if (data.get("entries")
+                and len(data["entries"]) > 0
+                and data["entries"][0].get("fields")
+                and data["entries"][0]["fields"].get("gene")):
+                genes = data["entries"][0]["fields"]["gene"]
         except Exception:
-            gene = ""
+            genes = []
 
         try:
             species = Taxonomy.objects.get(id=taxid).name
@@ -422,7 +429,7 @@ class RnaSpeciesSpecificView(APIView):
         serializer = RnaSpeciesSpecificSerializer(
             rna,
             context={
-                "gene": gene,
+                "genes": genes,  # now plural, list
                 "pub_count": pub_count,
                 "request": request,
                 "species": species,
@@ -430,7 +437,6 @@ class RnaSpeciesSpecificView(APIView):
             },
         )
         return Response(serializer.data)
-
 
 class XrefList(generics.ListAPIView):
     """

@@ -447,8 +447,9 @@ class RnaSpeciesSpecificSerializer(serializers.Serializer):
     distinct_databases = serializers.ReadOnlyField(source="databases")
 
     def get_genes(self, obj):
-        """Get a species-specific list of genes associated with the sequence in this particular sequence."""
-        return self.context["gene"]
+        genes = self.context.get("genes", [])
+        return genes
+
 
     def get_species(self, obj):
         """Get the name of the species based on taxid."""
