@@ -467,7 +467,7 @@ def gene_detail(request, name):
     # Total count
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT COUNT(*)
+         SELECT COUNT(DISTINCT locus.urs_taxid)
             FROM rnc_gene_members gm
             JOIN rnc_genes g ON(gm.rnc_gene_id=g.id)
             JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
@@ -475,16 +475,11 @@ def gene_detail(request, name):
             WHERE g.public_name = %s
         """, [gene.name])
         total_count = cursor.fetchone()[0]
-        # DEBUG
-        # TODO: Remove debug
-        print(f"Total transcripts found for gene {gene.name}: {total_count}")
+
     # Calculate pagination
     total_pages = (total_count + page_size - 1) // page_size 
     offset = (page - 1) * page_size
 
-    # DEBUG
-    # TODO: Remove debug
-    print(f"Total pages: {total_pages} and offset : {offset}")
     
     # Get current page transcript data
     transcripts_data = []
@@ -525,9 +520,7 @@ def gene_detail(request, name):
         "start_index": offset + 1 if total_count > 0 else 0,
         "end_index": min(offset + page_size, total_count),
     }
-    # DEBUG
-    # TODO: Remove debug
-    print(f"Pagination data: {pagination}")
+
 
     # External links data 
     external_links_data = []

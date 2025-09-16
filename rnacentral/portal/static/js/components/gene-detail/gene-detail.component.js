@@ -193,6 +193,15 @@ var geneDetail = {
                 page: page,
                 page_size: vm.pagination.page_size
             };
+
+            var queryString = Object.keys(params)
+            .map(key => key + '=' + params[key])
+            .join('&');
+
+            var newUrl = url + '?' + queryString;
+              // Add params to the URL and reload the page
+                window.location.href = newUrl
+
             
             $http.get(url, { params: params }).then(function(response) {
                 // Parse the response to extract the new data
