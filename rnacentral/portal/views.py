@@ -64,6 +64,38 @@ XREF_PAGE_SIZE = 1000
 ########################
 
 
+def get_ensembl_genes(upi, taxid=None):
+    """
+    Get Ensembl gene IDs associated with an RNA sequence.
+    Returns a list of gene IDs that start with 'ENS'.
+    """
+    with connection.cursor() as cursor:
+        if taxid:
+            # Query for specific taxid
+            cursor.execute("""
+                SELECT DISTINCT x.ac
+                FROM rnacen.xref x
+                WHERE x.upi = %s 
+                AND x.taxid = %s
+                AND x.deleted = 'N'
+                AND x.ac LIKE 'ENS%%'
+                ORDER BY x.ac
+            """, [upi, taxid])
+        else:
+            # Query for all taxids
+            cursor.execute("""
+                SELECT DISTINCT x.ac
+                FROM rnacen.xref x
+                WHERE x.upi = %s 
+                AND x.deleted = 'N'
+                AND x.ac LIKE 'ENS%%'
+                ORDER BY x.ac
+            """, [upi])
+        
+        results = cursor.fetchall()
+        return [row[0] for row in results]
+
+
 @cache_page(CACHE_TIMEOUT)
 def get_sequence_lineage(request, upi):
     """
@@ -299,10 +331,9 @@ def rna_view(request, upi, taxid=None):
         pass
 
     # we also need gene and species to use the Expression Atlas widget
-    if (
-        expression_atlas
-        and [item for item in summary.genes if item.startswith("ENS")]
-    ):
+    # Replace the old summary.genes logic with direct database query
+    ensembl_genes = get_ensembl_genes(upi, taxid)
+    if expression_atlas and ensembl_genes:
         expression_atlas = True
     else:
         expression_atlas = False
