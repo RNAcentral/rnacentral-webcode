@@ -475,9 +475,16 @@ def gene_detail(request, name):
             WHERE g.public_name = %s
         """, [gene.name])
         total_count = cursor.fetchone()[0]
+        # DEBUG
+        # TODO: Remove debug
+        print(f"Total transcripts found for gene {gene.name}: {total_count}")
     # Calculate pagination
     total_pages = (total_count + page_size - 1) // page_size 
     offset = (page - 1) * page_size
+
+    # DEBUG
+    # TODO: Remove debug
+    print(f"Total pages: {total_pages} and offset : {offset}")
     
     # Get current page transcript data
     transcripts_data = []
@@ -518,18 +525,21 @@ def gene_detail(request, name):
         "start_index": offset + 1 if total_count > 0 else 0,
         "end_index": min(offset + page_size, total_count),
     }
+    # DEBUG
+    # TODO: Remove debug
+    print(f"Pagination data: {pagination}")
 
     # External links data 
     external_links_data = []
 
     return render(request, "portal/gene_detail.html", {
-        "geneData": gene_data,
         "geneName": base_name,
         "geneVersion": version,
         "geneFound": True,
-        "transcriptsData": transcripts_data,
-        "transcriptsPagination": pagination,
-        "externalLinksData": external_links_data,
+        'geneData': json.dumps(gene_data),
+        'transcriptsData': json.dumps(transcripts_data),
+        'externalLinksData': json.dumps(external_links_data),
+        'transcriptsPagination': json.dumps(pagination),
     })
 
 

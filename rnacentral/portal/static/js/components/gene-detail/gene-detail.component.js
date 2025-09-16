@@ -107,6 +107,23 @@ var geneDetail = {
                         symbol: vm.geneName || 'Unknown'
                     };
                 }
+
+                if(vm.transcriptsPagination) {
+                    try {
+                        var parsedPaginationData;
+                        if (typeof vm.transcriptsPagination === 'string') {
+                            parsedPaginationData = JSON.parse(vm.transcriptsPagination);
+                        } else if (typeof vm.transcriptsPagination === 'object') {
+                            parsedPaginationData = vm.transcriptsPagination
+                        } else {
+                            throw new Error("Invalid data type (for transcripts pagination): " + typeof vm.transcriptsPagination)
+                        }
+                        vm.pagination = parsedPaginationData
+                        
+                    } catch(e) {
+                            vm.error = 'Error loading pagination data: ' + e.message;
+                    }
+                }
             }
                         
             initializeKeyboardNavigation();
@@ -373,11 +390,7 @@ var geneDetail = {
         };
 
         vm.onTranscriptClick = function(transcript) {
-            // Handle transcript click events if needed
-        };
-
-        vm.onExonHover = function(index, isEntering) {
-            // Handle exon hover events
+            // Handle transcript click events 
         };
 
         // Utility functions
@@ -429,18 +442,6 @@ var geneDetail = {
                 angular.element(this).removeClass('hovered');
             });
 
-            // Add hover effects and tooltips to exons
-            var exons = $element.find('.exon');
-            exons.each(function(index) {
-                var $exon = angular.element(this);
-                $exon.on('mouseenter', function() {
-                    var exonNum = index + 1;
-                    $exon.attr('title', 'Exon ' + exonNum);
-                    $exon.addClass('exon-hover');
-                }).on('mouseleave', function() {
-                    $exon.removeClass('exon-hover');
-                });
-            });
         }
 
         function initializeKeyboardNavigation() {
@@ -475,7 +476,6 @@ var geneDetail = {
             $element.off();
             $element.find('.gene__transcript-item').off();
             $element.find('.gene__external-link').off();
-            $element.find('.exon').off();
         };
         
     }],
