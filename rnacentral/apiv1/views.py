@@ -351,6 +351,8 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
             return rna
 
 
+from django.db import connection
+
 class RnaSpeciesSpecificView(APIView):
     """
     API endpoint for retrieving species-specific details
@@ -359,13 +361,31 @@ class RnaSpeciesSpecificView(APIView):
     [API documentation](/api)
     """
 
-    # the above docstring appears on the API website
-
     """
     This endpoint is used by Protein2GO.
     Contact person: Tony Sawford.
     """
+    permission_classes = (AllowAny,)  # Add explicit permission class
     queryset = RnaPrecomputed.objects.all()
+
+    def get_ensembl_genes(self, upi, taxid):
+        """
+        Get Ensembl gene IDs associated with an RNA sequence.
+        Returns a list of gene IDs from Ensembl databases.
+        """
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT xref.upi, xref.taxid, acc.gene 
+                FROM rnc_accessions acc 
+                JOIN xref ON xref.ac = acc.accession 
+                WHERE xref.deleted = 'N' 
+                AND xref.upi = %s 
+                AND xref.taxid = %s 
+                AND acc.database IN ('ENSEMBL', 'ENSEMBL_GENCODE', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS', 'ENSEMBL_METAZOA', 'ENSEMBL_PLANTS')
+            """, [upi, taxid])
+            
+            results = cursor.fetchall()
+            return [row[2] for row in results]  # Return the gene column (index 2)
 
     def get_object(self, pk):
         try:
@@ -377,18 +397,8 @@ class RnaSpeciesSpecificView(APIView):
         urs = pk + "_" + taxid
         rna = self.get_object(urs)
 
-        # queries on the xref table make the API very slow.
-        # get gene from Search Index
-        search_index = settings.EBI_SEARCH_ENDPOINT
-        try:
-            response = requests.get(
-                f"{search_index}/entry/{urs}?format=json&fields=gene", timeout=3
-            )
-            response.raise_for_status()
-            data = json.loads(response.text)
-            gene = data["entries"][0]["fields"]["gene"]
-        except Exception:
-            gene = ""
+        # Get genes from SQL query instead of search index
+        genes = self.get_ensembl_genes(pk, int(taxid))
 
         try:
             species = Taxonomy.objects.get(id=taxid).name
@@ -397,6 +407,7 @@ class RnaSpeciesSpecificView(APIView):
 
         # LitScan data - get related IDs
         pub_list = [urs]
+        search_index = settings.EBI_SEARCH_ENDPOINT
         query_jobs = (
             f'?query=entry_type:metadata%20AND%20primary_id:"{urs}"%20AND%20database:rnacentral&'
             f"fields=job_id&format=json"
@@ -422,7 +433,7 @@ class RnaSpeciesSpecificView(APIView):
         serializer = RnaSpeciesSpecificSerializer(
             rna,
             context={
-                "gene": gene,
+                "genes": genes,  # now from SQL query
                 "pub_count": pub_count,
                 "request": request,
                 "species": species,
