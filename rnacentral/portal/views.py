@@ -331,7 +331,7 @@ def rna_view(request, upi, taxid=None):
     if tab == "2d":
         active_tab = 2
     elif tab == "pub":
-        active_tab = 4
+        active_tab = 5
     else:
         active_tab = 0
 
