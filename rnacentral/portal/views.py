@@ -64,36 +64,24 @@ XREF_PAGE_SIZE = 1000
 ########################
 
 
-def get_ensembl_genes(upi, taxid=None):
-    """
-    Get Ensembl gene IDs associated with an RNA sequence.
-    Returns a list of gene IDs that start with 'ENS'.
-    """
-    with connection.cursor() as cursor:
-        if taxid:
-            # Query for specific taxid
+def get_ensembl_genes(upi, taxid):
+        """
+        Get Ensembl gene IDs associated with an RNA sequence.
+        Returns a list of gene IDs from Ensembl databases.
+        """
+        with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT DISTINCT x.ac
-                FROM rnacen.xref x
-                WHERE x.upi = %s 
-                AND x.taxid = %s
-                AND x.deleted = 'N'
-                AND x.ac LIKE 'ENS%%'
-                ORDER BY x.ac
+                SELECT xref.upi, xref.taxid, acc.gene 
+                FROM rnc_accessions acc 
+                JOIN xref ON xref.ac = acc.accession 
+                WHERE xref.deleted = 'N' 
+                AND xref.upi = %s 
+                AND xref.taxid = %s 
+                AND acc.database IN ('ENSEMBL', 'ENSEMBL_GENCODE', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS', 'ENSEMBL_METAZOA', 'ENSEMBL_PLANTS')
             """, [upi, taxid])
-        else:
-            # Query for all taxids
-            cursor.execute("""
-                SELECT DISTINCT x.ac
-                FROM rnacen.xref x
-                WHERE x.upi = %s 
-                AND x.deleted = 'N'
-                AND x.ac LIKE 'ENS%%'
-                ORDER BY x.ac
-            """, [upi])
-        
-        results = cursor.fetchall()
-        return [row[0] for row in results]
+            
+            results = cursor.fetchall()
+            return [row[2] for row in results] 
 
 
 @cache_page(CACHE_TIMEOUT)
