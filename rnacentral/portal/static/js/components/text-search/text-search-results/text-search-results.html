@@ -359,7 +359,7 @@
                 Gene entry
               </li>
               <li style="padding-right: 20px;" ng-if="rna.fields.has_genomic_coordinates && rna.fields.has_genomic_coordinates[0] && rna.fields.has_genomic_coordinates[0].toLowerCase().indexOf('true') !== -1"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome</li>
-              <li style="padding-right: 20px; cursor: help;" ng-if="rna.fields.qc_warning && (rna.fields.qc_warning | plaintext) != 'none'" tooltip-popup-close-delay="2000" uib-tooltip-template="'/static/js/components/text-search/text-search-results/qc-warning-tooltip.html'" tooltip-placement="bottom"><i class="fa fa-warning text-danger" aria-hidden="true"></i>
+              <li style="padding-right: 20px; cursor: help;" ng-if="rna.fields.qc_warning && (rna.fields.qc_warning | plaintext) != 'none' && (!rna.fields.entry_type || rna.fields.entry_type[0] !== 'Gene')" tooltip-popup-close-delay="2000" uib-tooltip-template="'/static/js/components/text-search/text-search-results/qc-warning-tooltip.html'" tooltip-placement="bottom"><i class="fa fa-warning text-danger" aria-hidden="true"></i>
                 <span ng-repeat="warning in rna.fields.qc_warning | plaintext">
                   <span ng-if="warning==='has_issue'"></span>
                   <span ng-if="warning==='possible_contamination'">possible contamination</span>
