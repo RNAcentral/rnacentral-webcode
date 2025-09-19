@@ -514,7 +514,7 @@ class Rna(models.Model):
         Returns 400 if none is available, otherwise returns the SVG data.
         """
         # Construct the new API endpoint URL
-        url = f"/api/v1/rna/{self.upi}/2d/svg/"
+        url = f"https://rnacentral.org/api/v1/rna/{self.upi}/2d/svg/"
         
         try:
             response = requests.get(url)
