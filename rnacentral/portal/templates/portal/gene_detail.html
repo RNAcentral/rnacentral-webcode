@@ -6,17 +6,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
             <gene-detail 
                 gene-name="{{ geneName }}"
                 {% if geneVersion %}gene-version="{{ geneVersion }}"{% endif %}
                 gene-found="{{ geneFound|yesno:'true,false' }}">
             </gene-detail>
-        </div>
-    </div>
-    
     {% if not geneFound %}
     <div class="row">
         <div class="col-md-12">
@@ -32,7 +26,6 @@
         </div>
     </div>
     {% endif %}
-</div>
 
 <!-- Embed data as JavaScript variables for AngularJS component -->
 <script>
