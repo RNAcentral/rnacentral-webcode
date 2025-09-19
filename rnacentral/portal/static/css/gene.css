@@ -6,7 +6,9 @@
 .gene-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding-block: 0;
+    padding-inline-start: 30px;
+    padding-inline-end: 20px;
 }
 
 .gene-title {
