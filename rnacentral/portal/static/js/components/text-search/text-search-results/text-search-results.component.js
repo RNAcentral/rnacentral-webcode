@@ -106,7 +106,6 @@ var textSearchResults = {
                     $timeout(function () { $scope.$broadcast('rzSliderForceRender'); }); // issue render just in case
                 },
                 function (failure) { // non-mission critical, let's fallback to sensible defaults
-                    console.log('Length slider failed to get floor/ceil, using defaults:', failure);
                     var floor = 10;
                     var ceil = 2147483647; // macrocosm constant - if length exceeds it, EBI search fails
 
@@ -466,7 +465,6 @@ var textSearchResults = {
                 // use human-readable fieldName
                 return {highlight: highlight, fieldName: verboseFieldName};
             } catch (error) {
-                console.error('Error in highlight function:', error, 'Fields:', fields);
                 return {highlight: '', fieldName: ''};
             }
         };
@@ -480,7 +478,6 @@ var textSearchResults = {
                     return (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName]));
                 });
             } catch (error) {
-                console.error('Error checking highlights:', error, 'Fields:', fields);
                 return false;
             }
         };
@@ -491,12 +488,10 @@ var textSearchResults = {
         ctrl.anyHighlightsInField = function(field) {
             try {
                 if (!Array.isArray(field)) {
-                    console.warn('anyHighlightsInField: field is not an array:', field);
                     return false;
                 }
                 return field.some(function(el) { return el && el.indexOf('text-search-highlights') !== -1 });
             } catch (error) {
-                console.error('Error checking field highlights:', error, 'Field:', field);
                 return false;
             }
         };
@@ -505,7 +500,6 @@ var textSearchResults = {
             try {
                 return urs_taxid.replace(/_\d+/, '');
             } catch (error) {
-                console.error('Error extracting URS from:', urs_taxid, 'Error:', error);
                 return urs_taxid || '';
             }
         }
