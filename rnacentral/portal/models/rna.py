@@ -15,6 +15,7 @@ import itertools as it
 import operator as op
 import zlib
 from collections import Counter, defaultdict
+from django.contrib.sites.models import Site
 
 import boto3
 import requests
@@ -28,6 +29,7 @@ from django.utils.functional import cached_property
 from portal.config.expert_databases import expert_dbs
 from portal.rfam_matches import check_issues
 from portal.utils import descriptions as desc
+
 
 from .accession import Accession
 from .modification import Modification
@@ -513,8 +515,15 @@ class Rna(models.Model):
         Check if a secondary structure is available by querying the 2D SVG endpoint.
         Returns 400 if none is available, otherwise returns the SVG data.
         """
-        # Construct the new API endpoint URL
-        url = f"https://rnacentral.org/api/v1/rna/{self.upi}/2d/svg/"
+        # Determine the base URL based on the current site
+        current_site = Site.objects.get_current()
+        if current_site.domain == 'rnacentral.org':
+            base_url = 'https://rnacentral.org'
+        else:
+            base_url = 'https://test.rnacentral.org'
+        
+        # Construct the API endpoint URL
+        url = f"{base_url}/api/v1/rna/{self.upi}/2d/svg/"
         
         try:
             response = requests.get(url)
