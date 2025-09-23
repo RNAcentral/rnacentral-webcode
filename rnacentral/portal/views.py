@@ -64,36 +64,24 @@ XREF_PAGE_SIZE = 1000
 ########################
 
 
-def get_ensembl_genes(upi, taxid=None):
-    """
-    Get Ensembl gene IDs associated with an RNA sequence.
-    Returns a list of gene IDs that start with 'ENS'.
-    """
-    with connection.cursor() as cursor:
-        if taxid:
-            # Query for specific taxid
+def get_ensembl_genes(upi, taxid):
+        """
+        Get Ensembl gene IDs associated with an RNA sequence.
+        Returns a list of gene IDs from Ensembl databases.
+        """
+        with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT DISTINCT x.ac
-                FROM rnacen.xref x
-                WHERE x.upi = %s 
-                AND x.taxid = %s
-                AND x.deleted = 'N'
-                AND x.ac LIKE 'ENS%%'
-                ORDER BY x.ac
+                SELECT xref.upi, xref.taxid, acc.gene 
+                FROM rnc_accessions acc 
+                JOIN xref ON xref.ac = acc.accession 
+                WHERE xref.deleted = 'N' 
+                AND xref.upi = %s 
+                AND xref.taxid = %s 
+                AND acc.database IN ('ENSEMBL', 'ENSEMBL_GENCODE', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS', 'ENSEMBL_METAZOA', 'ENSEMBL_PLANTS')
             """, [upi, taxid])
-        else:
-            # Query for all taxids
-            cursor.execute("""
-                SELECT DISTINCT x.ac
-                FROM rnacen.xref x
-                WHERE x.upi = %s 
-                AND x.deleted = 'N'
-                AND x.ac LIKE 'ENS%%'
-                ORDER BY x.ac
-            """, [upi])
-        
-        results = cursor.fetchall()
-        return [row[0] for row in results]
+            
+            results = cursor.fetchall()
+            return [row[2] for row in results] 
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -343,7 +331,7 @@ def rna_view(request, upi, taxid=None):
     if tab == "2d":
         active_tab = 2
     elif tab == "pub":
-        active_tab = 4
+        active_tab = 5
     else:
         active_tab = 0
 
@@ -467,7 +455,7 @@ def gene_detail(request, name):
     # Total count
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT COUNT(*)
+         SELECT COUNT(DISTINCT locus.urs_taxid)
             FROM rnc_gene_members gm
             JOIN rnc_genes g ON(gm.rnc_gene_id=g.id)
             JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
@@ -475,9 +463,11 @@ def gene_detail(request, name):
             WHERE g.public_name = %s
         """, [gene.name])
         total_count = cursor.fetchone()[0]
+
     # Calculate pagination
     total_pages = (total_count + page_size - 1) // page_size 
     offset = (page - 1) * page_size
+
     
     # Get current page transcript data
     transcripts_data = []
@@ -519,17 +509,18 @@ def gene_detail(request, name):
         "end_index": min(offset + page_size, total_count),
     }
 
+
     # External links data 
     external_links_data = []
 
     return render(request, "portal/gene_detail.html", {
-        "geneData": gene_data,
         "geneName": base_name,
         "geneVersion": version,
         "geneFound": True,
-        "transcriptsData": transcripts_data,
-        "transcriptsPagination": pagination,
-        "externalLinksData": external_links_data,
+        'geneData': json.dumps(gene_data),
+        'transcriptsData': json.dumps(transcripts_data),
+        'externalLinksData': json.dumps(external_links_data),
+        'transcriptsPagination': json.dumps(pagination),
     })
 
 

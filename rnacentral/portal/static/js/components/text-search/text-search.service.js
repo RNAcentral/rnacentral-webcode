@@ -299,6 +299,42 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     };
 
     /**
+     * Consolidate facet values with same semantic meaning but different cases
+     */
+    this.consolidateFacetValues = function(facetValues) {
+        var trueCount = 0;
+        var falseCount = 0;
+        var consolidatedValues = [];
+
+        // Sum up counts for true/false values regardless of case
+        facetValues.forEach(function(facetValue) {
+            if (facetValue.value.toLowerCase() === 'true') {
+                trueCount += facetValue.count;
+            } else if (facetValue.value.toLowerCase() === 'false') {
+                falseCount += facetValue.count;
+            }
+        });
+
+        // Create consolidated entries using the capitalized version for consistency
+        if (trueCount > 0) {
+            consolidatedValues.push({
+                label: 'true', // will be updated in the main processing
+                value: 'True', // use capitalized version for search consistency
+                count: trueCount
+            });
+        }
+        if (falseCount > 0) {
+            consolidatedValues.push({
+                label: 'false', // will be updated in the main processing  
+                value: 'False', // use capitalized version for search consistency
+                count: falseCount
+            });
+        }
+
+        return consolidatedValues;
+    };
+
+    /**
      * Preprocess data received from the server.
      */
     this.preprocessResults = function (data) {
@@ -327,33 +363,20 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             return self.config.facetfields.indexOf(a.id) - self.config.facetfields.indexOf(b.id);
         });
 
-        // update qc_warning_found labels from True/False to Yes/No
+        // update facet labels and values
         data.facets.forEach(function(facet) {
             if (facet.id === 'qc_warning_found') {
+                facet.label = 'QC warnings';
                 facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'True') { facetValue.label = 'Yes'; }
-                    else if (facetValue.label === 'False') { facetValue.label = 'No'; }
+                    if (facetValue.label === 'True') { facetValue.label = 'Warnings found'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'No warnings'; }
                 });
             }
-            // if (facet.id === 'has_conserved_structure') {
-            //     facet.label = 'Sequence features';
-            //     facet.facetValues.forEach(function(facetValue) {
-            //         if (facetValue.label === 'True') { facetValue.label = 'Conserved structures'; }
-            //         else if (facetValue.label === 'False') { facetValue.label = 'No conserved structures'; }
-            //     });
-            // }
             if (facet.id === 'has_go_annotations') {
                 facet.label = 'GO annotations';
                 facet.facetValues.forEach(function(facetValue) {
                     if (facetValue.label === 'True') { facetValue.label = 'Found'; }
                     else if (facetValue.label === 'False') { facetValue.label = 'Not found'; }
-                });
-            }
-            if (facet.id === 'qc_warning_found') {
-                facet.label = 'QC warnings';
-                facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'Yes') { facetValue.label = 'Warnings found'; }
-                    else if (facetValue.label === 'No') { facetValue.label = 'No warnings'; }
                 });
             }
             if (facet.id === 'has_secondary_structure') {
@@ -363,26 +386,37 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
                     else if (facetValue.label === 'False') { facetValue.label = 'Not available'; }
                 });
             }
+            // Fixed literature facet processing - consolidate duplicate case values
             if (facet.id === 'has_litsumm') {
                 facet.label = 'LitSumm';
+                // Consolidate facet values with different cases
+                facet.facetValues = self.consolidateFacetValues(facet.facetValues);
+                // Update labels
                 facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'True') { facetValue.label = 'AI generated summaries'; }
+                    if (facetValue.value === 'True') { 
+                        facetValue.label = 'AI generated summaries';
+                    } else if (facetValue.value === 'False') { 
+                        facetValue.label = 'No AI summaries';
+                    }
                 });
             }
             if (facet.id === 'has_lit_scan') {
                 facet.label = 'LitScan';
+                // Consolidate facet values with different cases
+                facet.facetValues = self.consolidateFacetValues(facet.facetValues);
+                // Update labels
                 facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'True') { facetValue.label = 'Publications'; }
+                    if (facetValue.value === 'True') { 
+                        facetValue.label = 'Publications available';
+                    } else if (facetValue.value === 'False') { 
+                        facetValue.label = 'No publications';
+                    }
                 });
             }
         });
-
-        console.log('DEBUG: Starting entry processing, total entries:', data.entries.length);
         
         // Use `hlfields` with highlighted matches instead of `fields`.
-        // THIS IS THE CRITICAL SECTION THAT WAS CAUSING THE ERROR
         data.entries.forEach(function(entry, index) {
-            console.log('DEBUG: Processing entry', index + 1, 'ID:', entry.id);
             
             entry.fields = entry.highlights;
             
@@ -391,22 +425,11 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
                 entry.fields.length.length > 0 && entry.fields.length[0] !== undefined && 
                 entry.fields.length[0] !== null && typeof entry.fields.length[0] === 'string') {
                 
-                console.log('DEBUG: Processing length field for entry', entry.id, 'value:', entry.fields.length[0]);
                 entry.fields.length[0] = entry.fields.length[0].replace(/<[^>]+>/gm, '');
                 
-            } else {
-                console.log('DEBUG: Skipping length processing for entry', entry.id, 
-                           'Has fields:', !!entry.fields,
-                           'Has length:', !!(entry.fields && entry.fields.length),
-                           'Is array:', entry.fields && entry.fields.length ? Array.isArray(entry.fields.length) : false,
-                           'Length value:', entry.fields && entry.fields.length ? entry.fields.length[0] : 'N/A');
-            }
-            
+            } 
             entry.id_with_slash = entry.id.replace(/_/, '/');
         });
-        
-        console.log('DEBUG: Entry processing completed successfully');
-
         return data;
     };
 
