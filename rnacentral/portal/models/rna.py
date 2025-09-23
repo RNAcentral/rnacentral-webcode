@@ -708,11 +708,8 @@ class Rna(models.Model):
         if not taxid:
             return 0
         urs_taxid = f"{self.upi}_{taxid}"
-        
         return Interactions.objects.filter(
             urs_taxid=urs_taxid
         ).exclude(
             interacting_id='mgd/mgi:MGI' #TODO: confirm if other values containing 'mgi:' don't exist
         ).values('interacting_id').distinct().count()
-
-
