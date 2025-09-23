@@ -9,14 +9,18 @@ class Interactions(models.Model):
         db_column="urs_taxid",
         related_name="urs_taxid_precomputed",
         on_delete=models.CASCADE,
+        db_index=True
     )
-    interacting_id = models.CharField(max_length=255)
+    interacting_id = models.CharField(max_length=255, db_index=True)
     names = models.JSONField()
     taxid = models.IntegerField()
 
     class Meta:
         db_table = "rnc_interactions"
         ordering = ["interacting_id"]
+        indexes = [
+            models.Index(fields=['urs_taxid', 'interacting_id']),
+        ]
 
     def __str__(self):
         return self.intact_id
