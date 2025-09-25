@@ -54,7 +54,7 @@ from portal.models import (
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.rna_summary import RnaSummary
 from portal.models.gene import GeneMember
-from django.db import connection
+from django.db import connection, DatabaseError
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -556,15 +556,15 @@ def website_status_view(request):
     """
     This view will be used by Traffic Manager to check for the presence of the
     text "All systems operational". Traffic will be redirected to the HX
-    cluster if this function returns a problem. For more information, see the
-    vtm-terraform-config project on GitLab (monitors.tf file).
+    cluster if this function returns a problem.
     """
 
     def _is_database_up():
         try:
             Database.objects.get(id=1)
             return True
-        except Database.DoesNotExist:
+        except (Database.DoesNotExist, DatabaseError, Exception):
+            # Catch all database-related exceptions
             return False
 
     def _is_api_up():
@@ -580,6 +580,13 @@ def website_status_view(request):
     context["overall_status"] = (
         context["is_database_up"] and context["is_api_up"] and context["is_search_up"]
     )
+    
+    # Return 503 if any system is down
+    if not context["overall_status"]:
+        response = render(request, "portal/website-status.html", {"context": context})
+        response.status_code = 503
+        return response
+    
     return render(request, "portal/website-status.html", {"context": context})
 
 
