@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------------------------------------
 
-FROM python:3.11.9-slim
+FROM python:3.8.15-slim
 
 RUN apt-get update && apt-get install -y \
     g++ \
@@ -57,11 +57,10 @@ RUN \
     LOCAL_DEV="${LOCAL_DEVELOPMENT:-False}" && \
     if [ "$LOCAL_DEV" = "True" ] ; then \
         pip3 install -r rnacentral/requirements_dev.txt ; \
-        # sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
-        # sed -i "30 a \ \ \ \ re_path(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
-        # sed -i "126 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
-        # sed -i "188 a \ \ \ \ 'debug_toolbar'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
-        
+        sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
+        sed -i "30 a \ \ \ \ re_path(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
+        sed -i "126 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
+        sed -i "188 a \ \ \ \ 'debug_toolbar'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
     fi
 
 # Set user
@@ -70,9 +69,5 @@ USER rnacentral
 # Run entrypoint
 COPY ./entrypoint.sh $RNACENTRAL_HOME
 ENTRYPOINT ["/srv/rnacentral/rnacentral-webcode/entrypoint.sh"]
-
-#ENTRYPOINT FOR LOCAL DEV WITH DOCKER
-# COPY ./entrypoint-dev.sh $RNACENTRAL_HOME
-# ENTRYPOINT ["/srv/rnacentral/rnacentral-webcode/entrypoint-dev.sh"]
 
 CMD ["gunicorn", "--chdir", "/srv/rnacentral/rnacentral-webcode/rnacentral", "--bind", "0.0.0.0:8000", "rnacentral.wsgi:application", "--workers", "4", "--threads", "2", "--timeout", "120", "--graceful-timeout", "60",  "--keep-alive", "10", "--max-requests", "1000", "--max-requests-jitter", "100", "--log-level=debug", "--access-logfile", "/dev/stdout", "--error-logfile", "/dev/stderr"]
