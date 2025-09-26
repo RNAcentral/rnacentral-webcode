@@ -512,41 +512,29 @@ class Rna(models.Model):
 
     def has_secondary_structure(self):
         """
-        Check if a secondary structure is available by querying the 2D SVG endpoint.
-        Returns 400 if none is available, otherwise returns the SVG data.
+        Use EBI search index to determine if a secondary structure is available.
+        The API request is used instead of an SQL query because the 2D tables
+        are subject to frequent updates.
         """
-        # Determine the base URL based on the current site
-        current_site = Site.objects.get_current()
-        if current_site.domain == 'rnacentral.org':
-            base_url = 'https://rnacentral.org'
+        url = (
+            settings.EBI_SEARCH_ENDPOINT
+            + "?query={upi}_*&fields=has_secondary_structure&format=json".format(
+                upi=self.upi
+            )
+        )
+        request = requests.get(url)
+        data = request.json()
+        if "hitCount" in data and data["hitCount"] > 0:
+            try:
+                if data["entries"][0]["fields"]["has_secondary_structure"][0] == "True":
+                    return True
+                else:
+                    return False
+            except:
+                return False
         else:
-            base_url = 'https://test.rnacentral.org'
-        
-        # Construct the API endpoint URL
-        url = f"{base_url}/api/v1/rna/{self.upi}/2d/svg/"
-        
-        try:
-            response = requests.get(url)
-            
-            # If we get a 400 status code, no secondary structure is available
-            if response.status_code == 400:
-                return False
-            
-            # If we get a successful response (200), secondary structure is available
-            elif response.status_code == 200:
-                return True
-            
-            # Handle other potential status codes
-            else:
-                # Log unexpected status code for debugging
-                print(f"Unexpected status code {response.status_code} for UPI {self.upi}")
-                return False
-                
-        except requests.exceptions.RequestException as e:
-            # Handle network errors, timeouts, etc.
-            print(f"Request failed for UPI {self.upi}: {e}")
             return False
-
+        
     def get_secondary_structures(self):
         return {
             self.get_layout_secondary(),
