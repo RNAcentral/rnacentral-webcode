@@ -72,6 +72,23 @@ var geneDetail = {
                 // Set transcripts and external links from global data
                 vm.transcripts = globalData.transcriptsData || [];
                 vm.externalLinks = globalData.externalLinksData || [];
+
+                // parse urs and taxid for each transcript
+
+                if(vm.transcripts && vm.transcripts.length > 0) {
+                    vm.transcripts = vm.transcripts.map(t => {
+                    const [urs, taxid] = t.id.split('_')
+                    const sequence_page = `/rna/${urs}/${taxid}`
+                    
+                    return {
+                        ...t, 
+                        sequence_page
+                    }
+
+                    })
+
+                    
+                }
                 
                 // Set pagination data
                 if (globalData.transcriptsPagination) {
@@ -400,6 +417,7 @@ var geneDetail = {
 
         vm.onTranscriptClick = function(transcript) {
             // Handle transcript click events 
+
         };
 
         // Utility functions

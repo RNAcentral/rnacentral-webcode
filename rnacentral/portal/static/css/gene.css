@@ -358,6 +358,10 @@
     font-size: 12px;
 }
 
+a.gene__transcript-sequence {
+text-decoration: none;
+}
+
 .gene__transcript-name {
     font-family: monospace;
     font-weight: bold;

@@ -82,10 +82,12 @@
                 <div class="gene__transcript-item" 
                      ng-repeat="transcript in vm.transcripts">
                   <div class="gene__transcript-header">
+                    <a href="{{transcript.sequence_page}}" target="_blank" class="gene__transcript-sequence">
                     <p>
-                    <span class="gene__transcript-id">{{ transcript.id }}</span>
-                    <span class="gene__transcript-description">{{ transcript.description }}</span>
-                    </p>
+                        <span class="gene__transcript-id">{{ transcript.id }}</span>
+                        <span class="gene__transcript-description">{{ transcript.description }}</span>
+                      </p>
+                    </a>
                   </div>
                   <div class="gene__transcript-details">
                 <!-- TODO: add more info later -->
