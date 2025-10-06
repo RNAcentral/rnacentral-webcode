@@ -324,19 +324,15 @@ var geneDetail = {
             });
         };
         
-        // Get genome browser data based on gene data
-        vm.getGenomeBrowserData = function() {
+       vm.getGenomeBrowserData = function() {
             var browserData = {};
             
-            // Map gene data to browser parameters  
-            if (vm.geneData.species || vm.geneData.organism) {
-                browserData.species = vm.geneData.species || vm.geneData.organism;
-            }
-            
+            browserData.species = vm.geneData.species;
+
             if (vm.geneData.chromosome) {
                 browserData.chromosome = vm.geneData.chromosome;
             }
-            
+
             if (vm.geneData.start || vm.geneData.startPosition) {
                 browserData.start = vm.geneData.start || vm.geneData.startPosition;
             }
@@ -345,13 +341,14 @@ var geneDetail = {
                 browserData.end = vm.geneData.stop || vm.geneData.endPosition;
             }
             
-            // Pass the entire gene data object for the component to use
-            browserData.name = vm.geneData.name;
-            browserData.symbol = vm.geneData.symbol;
-            browserData.strand = vm.geneData.strand;
-            browserData.geneType = vm.geneData.geneType;
-            browserData.summary = vm.geneData.summary;
-            browserData.length = vm.geneData.length;
+            browserData.geneData = {
+                name: vm.geneData.name,
+                symbol: vm.geneData.symbol,
+                chromosome: vm.geneData.chromosome,
+                start: vm.geneData.start || vm.geneData.startPosition,
+                end: vm.geneData.stop || vm.geneData.endPosition,
+                strand: vm.geneData.strand
+            };
             
             return browserData;
         };
