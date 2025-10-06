@@ -43,7 +43,8 @@ var geneDetail = {
             geneType: '',
             shortDescription:'',
             summary: '',
-            length: 0
+            length: 0,
+            species:'',
         };
 
         vm.transcripts = [];
@@ -352,6 +353,7 @@ var geneDetail = {
             browserData.geneType = vm.geneData.geneType;
             browserData.summary = vm.geneData.summary;
             browserData.length = vm.geneData.length;
+            browserData.species = vm.geneData.species
             
             return browserData;
         };
