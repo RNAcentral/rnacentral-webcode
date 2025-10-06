@@ -2,7 +2,8 @@ from django.db import models
 from . import (
     OntologyTerm,
     SequenceRegion,
-    RnaPrecomputed
+    RnaPrecomputed,
+    Taxonomy
     )  
 
 class Gene(models.Model):
@@ -13,6 +14,7 @@ class Gene(models.Model):
     start = models.IntegerField()
     stop = models.IntegerField()
     strand = models.CharField(max_length=1)
+    taxonomy = models.OneToOneField(Taxonomy, on_delete=models.CASCADE, db_column='taxid', to_field='id')
 
     class Meta:
         db_table = 'rnc_genes'
@@ -35,6 +37,7 @@ class GeneMetadata(models.Model):
         db_column='so_rna_type',
         related_name='gene_metadata'
     )
+    
 
     def __str__(self):
         return self.description

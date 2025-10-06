@@ -43,7 +43,8 @@ var geneDetail = {
             geneType: '',
             shortDescription:'',
             summary: '',
-            length: 0
+            length: 0,
+            species:'',
         };
 
         vm.transcripts = [];

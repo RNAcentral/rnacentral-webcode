@@ -433,6 +433,7 @@ def gene_detail(request, name):
         })
     
     metadata = getattr(gene, "metadata", None)
+    species_name = gene.taxonomy.name if gene.taxonomy else None
 
     gene_data = {
         "name": gene.name,
@@ -446,7 +447,10 @@ def gene_detail(request, name):
         "shortDescription": metadata.short_description if metadata else "",
         "length": abs(gene.stop - gene.start) + 1 if gene.start and gene.stop else 0,
         "version": version,
+        "species": species_name.lower().replace(" ", "_")
     }
+
+    print(f'Gene: {gene_data}')
 
     # Get pagination params
     page = int(request.GET.get('page', 1))
