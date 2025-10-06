@@ -39,4 +39,5 @@ from .sequence_regions import *
 from .sequence_regions_active import *
 from .taxonomy import *
 from .xref import *
+from .gene import *
 from .goflow_results import GoflowResults

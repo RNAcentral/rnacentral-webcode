@@ -42,6 +42,7 @@ from apiv1.serializers import (
     RnaSpeciesSpecificSerializer,
     SequenceFeatureSerializer,
     XrefSerializer,
+    RelationshipSerializer
 )
 from colorhash import ColorHash
 from django.conf import settings
@@ -350,6 +351,8 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
             return rna
 
 
+from django.db import connection
+
 class RnaSpeciesSpecificView(APIView):
     """
     API endpoint for retrieving species-specific details
@@ -358,13 +361,31 @@ class RnaSpeciesSpecificView(APIView):
     [API documentation](/api)
     """
 
-    # the above docstring appears on the API website
-
     """
     This endpoint is used by Protein2GO.
     Contact person: Tony Sawford.
     """
+    permission_classes = (AllowAny,)  # Add explicit permission class
     queryset = RnaPrecomputed.objects.all()
+
+    def get_ensembl_genes(self, upi, taxid):
+        """
+        Get Ensembl gene IDs associated with an RNA sequence.
+        Returns a list of gene IDs from Ensembl databases.
+        """
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT xref.upi, xref.taxid, acc.gene 
+                FROM rnc_accessions acc 
+                JOIN xref ON xref.ac = acc.accession 
+                WHERE xref.deleted = 'N' 
+                AND xref.upi = %s 
+                AND xref.taxid = %s 
+                AND acc.database IN ('ENSEMBL', 'ENSEMBL_GENCODE', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS', 'ENSEMBL_METAZOA', 'ENSEMBL_PLANTS')
+            """, [upi, taxid])
+            
+            results = cursor.fetchall()
+            return [row[2] for row in results]  # Return the gene column (index 2)
 
     def get_object(self, pk):
         try:
@@ -376,18 +397,8 @@ class RnaSpeciesSpecificView(APIView):
         urs = pk + "_" + taxid
         rna = self.get_object(urs)
 
-        # queries on the xref table make the API very slow.
-        # get gene from Search Index
-        search_index = settings.EBI_SEARCH_ENDPOINT
-        try:
-            response = requests.get(
-                f"{search_index}/entry/{urs}?format=json&fields=gene", timeout=3
-            )
-            response.raise_for_status()
-            data = json.loads(response.text)
-            gene = data["entries"][0]["fields"]["gene"]
-        except Exception:
-            gene = ""
+        # Get genes from SQL query instead of search index
+        genes = self.get_ensembl_genes(pk, int(taxid))
 
         try:
             species = Taxonomy.objects.get(id=taxid).name
@@ -396,6 +407,7 @@ class RnaSpeciesSpecificView(APIView):
 
         # LitScan data - get related IDs
         pub_list = [urs]
+        search_index = settings.EBI_SEARCH_ENDPOINT
         query_jobs = (
             f'?query=entry_type:metadata%20AND%20primary_id:"{urs}"%20AND%20database:rnacentral&'
             f"fields=job_id&format=json"
@@ -421,7 +433,7 @@ class RnaSpeciesSpecificView(APIView):
         serializer = RnaSpeciesSpecificSerializer(
             rna,
             context={
-                "gene": gene,
+                "genes": genes,  # now from SQL query
                 "pub_count": pub_count,
                 "request": request,
                 "species": species,
@@ -1146,3 +1158,183 @@ class Md5SequenceView(APIView):
 
         serializer = Md5Serializer(precomputed)
         return Response(serializer.data)
+
+
+class RnaGenesView(APIView):
+    """
+    List of genes associated with a specific RNA sequence in a specific species.
+
+    [API documentation](/api)
+    """
+    
+    permission_classes = (AllowAny,)
+    
+    def get(self, request, pk, taxid, **kwargs):
+        """Return gene information for a given URS and taxid"""
+        
+        urs_taxid = pk + "_" + taxid
+        
+        from django.db import connection
+        
+        try:
+            with connection.cursor() as cursor:
+                query = """
+                    SELECT DISTINCT
+                        rg.public_name,
+                        rg.chromosome,
+                        rg.start,
+                        rg.stop,
+                        rgm.description
+                    FROM rnc_genes rg
+                    LEFT JOIN rnc_gene_metadata rgm ON rg.id = rgm.rnc_gene_id
+                    INNER JOIN rnc_gene_members rgmb ON rg.id = rgmb.rnc_gene_id
+                    INNER JOIN rnc_sequence_regions rsr ON rgmb.locus_id = rsr.id
+                    WHERE rsr.urs_taxid = %s
+                    ORDER BY rg.chromosome, rg.start
+                """
+                
+                cursor.execute(query, [urs_taxid])
+                results = cursor.fetchall()
+                
+                if results:
+                    genes = []
+                    for row in results:
+                        gene_name = row[0] if row[0] else "Unknown Gene"
+                        chromosome = row[1] if row[1] else "Unknown"
+                        start = row[2] if row[2] else None
+                        end = row[3] if row[3] else None
+                        description = row[4] if row[4] else "No description available"
+                        
+                        genes.append({
+                            "chromosome": chromosome,
+                            "start": start,
+                            "end": end,
+                            "gene_name": gene_name,
+                            "description": description
+                        })
+                    
+                    return Response({
+                        "count": len(genes),
+                        "results": genes
+                    })
+                else:
+                    return Response({
+                        "count": 0,
+                        "results": [],
+                        "message": "No gene information available for this sequence"
+                    })
+                    
+        except Exception as e:
+            return Response({
+                "count": 0,
+                "results": [],
+                "message": "No gene information available for this sequence"
+            })
+
+class RelationshipsView(generics.ListAPIView):
+    """
+    API endpoint for retrieving molecular relationships from RNA Knowledge Graph.
+    
+    [API documentation](/api)
+    """
+    
+    permission_classes = (AllowAny,)
+    serializer_class = RelationshipSerializer
+    pagination_class = Pagination
+    
+    def get_queryset(self):
+        """Return relationship data for a given URS and taxid from RNA-KG API"""
+        
+        node_id = f"{self.kwargs['pk']}_{self.kwargs['taxid']}"
+        
+        # Get the relationships using the original endpoint
+        rna_kg_url = "https://rna-kg.biodata.di.unimi.it/api/v1/incoming/id"
+        relationships_params = {
+            'node_id': node_id,
+            'node_id_scheme': 'RNAcentral',
+            'filter_rnacentral_rels': 'false'
+        }
+        
+        try:
+            relationships_response = requests.get(rna_kg_url, params=relationships_params, timeout=10)
+            relationships_response.raise_for_status()
+            relationships_data = relationships_response.json()
+            relationships = relationships_data.get('relationships', [])
+            
+            # Create a mock queryset-like object for pagination
+            class RelationshipQuerySet:
+                def __init__(self, data):
+                    self.data = data
+                
+                def __iter__(self):
+                    return iter(self.data)
+                
+                def __len__(self):
+                    return len(self.data)
+                
+                def count(self):
+                    return len(self.data)
+                
+                def __getitem__(self, key):
+                    return self.data[key]
+            
+            return RelationshipQuerySet(relationships)
+            
+        except Exception as e:
+            # Log the error if you have logging set up
+            # print(f"Error fetching RNA-KG relationships data: {e}")
+            return self._empty_queryset()
+    
+    def get_rna_sequence_rnakg_id(self):
+        """Get the rnakg_id for the queried RNA sequence"""
+        node_id = f"{self.kwargs['pk']}_{self.kwargs['taxid']}"
+        node_id_url = "https://rna-kg.biodata.di.unimi.it/api/v1/node/id"
+        node_id_params = {
+            'node_id': node_id,
+            'node_id_scheme': 'RNAcentral'
+        }
+        
+        try:
+            node_response = requests.get(node_id_url, params=node_id_params, timeout=10)
+            if node_response.status_code == 200:
+                node_data = node_response.json()
+                return node_data.get('node_rnakg_id')
+        except Exception:
+            pass
+        return None
+    
+    def list(self, request, *args, **kwargs):
+        """Override list method to include RNA sequence rnakg_id in response"""
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            paginated_response = self.get_paginated_response(serializer.data)
+            
+            # Add the RNA sequence rnakg_id to the response
+            rna_sequence_rnakg_id = self.get_rna_sequence_rnakg_id()
+            paginated_response.data['rna_sequence_rnakg_id'] = rna_sequence_rnakg_id
+            
+            return paginated_response
+        
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'rna_sequence_rnakg_id': self.get_rna_sequence_rnakg_id()
+        }
+        return Response(response_data)
+    
+    def _empty_queryset(self):
+        """Return an empty queryset-like object"""
+        class EmptyQuerySet:
+            def __iter__(self):
+                return iter([])
+            def __len__(self):
+                return 0
+            def count(self):
+                return 0
+            def __getitem__(self, key):
+                return []
+        
+        return EmptyQuerySet()

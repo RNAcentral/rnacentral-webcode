@@ -447,8 +447,9 @@ class RnaSpeciesSpecificSerializer(serializers.Serializer):
     distinct_databases = serializers.ReadOnlyField(source="databases")
 
     def get_genes(self, obj):
-        """Get a species-specific list of genes associated with the sequence in this particular sequence."""
-        return self.context["gene"]
+        genes = self.context.get("genes", [])
+        return genes
+
 
     def get_species(self, obj):
         """Get the name of the species based on taxid."""
@@ -976,9 +977,34 @@ class RnaGenomeLocationsSerializer(serializers.Serializer):
         }
 
 
+class RnaGenesSerializer(serializers.Serializer):
+    """Serializer class for Gene Information"""
+    
+    chromosome = serializers.ReadOnlyField()
+    start = serializers.ReadOnlyField()
+    end = serializers.ReadOnlyField()
+    gene_name = serializers.ReadOnlyField()
+
+
 class Md5Serializer(serializers.Serializer):
     """Serializer class to fetch sequence using md5"""
 
     rnacentral_id = serializers.CharField(source="id")
     description = serializers.CharField()
     sequence = serializers.CharField(source="get_sequence")
+
+
+class RelationshipSerializer(serializers.Serializer):
+    """Serializer class for RNA Knowledge Graph relationships"""
+    
+    relationship_type = serializers.CharField()
+    rel_rnakg_id = serializers.IntegerField()
+    relationship_properties = serializers.DictField()
+    node_uri = serializers.CharField()
+    node_id = serializers.CharField()
+    node_rnakg_id = serializers.IntegerField()
+    node_labels = serializers.ListField(child=serializers.CharField())
+    node_properties = serializers.DictField()
+    
+    # Add the queried RNA sequence's rnakg_id for context
+    rna_sequence_rnakg_id = serializers.IntegerField(required=False)

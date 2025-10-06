@@ -1,0 +1,184 @@
+<div class="row" ng-if="!vm.error">
+    <header class="gene__header">
+      <div class="gene-container">
+        <div class="gene-title">
+          <h1 class="gene-name">{{ vm.geneData.name }}</h1>
+          <span class="gene__short-description">{{ vm.geneData.shortDescription }}</span>
+        </div>
+        
+        <div class="gene__widget-header">
+          <h2 class="gene__widget-title">Gene Summary</h2>
+        </div>
+        <p class="gene__summary">{{ vm.geneData.summary }}</p>
+        
+        <div class="gene-info">
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.chromosome)">
+            <span class="gene__info-label">Chromosome</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.chromosome) }}</span>
+          </div>
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.startPosition)">
+            <span class="gene__info-label">Start Position</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.startPosition) }}</span>
+          </div>
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.endPosition)">
+            <span class="gene__info-label">End Position</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.endPosition) }}</span>
+          </div>
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.strand)">
+            <span class="gene__info-label">Strand</span>
+            <span class="gene__info-value">
+              {{ vm.formatValue(vm.geneData.strand) }}
+              <span ng-if="vm.hasValue(vm.geneData.strandDirection)">
+                ({{ vm.geneData.strandDirection }})
+              </span>
+            </span>
+          </div>
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.geneType)">
+            <span class="gene__info-label">Gene Type</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.geneType) }}</span>
+          </div>
+          <div class="gene__info-item" ng-if="vm.hasValue(vm.geneData.length)">
+            <span class="gene__info-label">Length</span>
+            <span class="gene__info-value">{{ vm.formatValue(vm.geneData.length) }} bp</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="gene__main-content">
+      <div class="gene-container">
+        <div class="gene__tabs">
+          <div class="gene__tab" 
+               ng-class="{active: vm.activeTab === 'transcripts'}"
+               ng-click="vm.showTab('transcripts')">Transcripts</div>
+          <div class="gene__tab" 
+               ng-class="{active: vm.activeTab === 'genome-browser'}"
+               ng-click="vm.showTab('genome-browser')">Genome Browser</div>
+        </div>
+
+        <div class="gene__tab-content">
+          <!-- Transcripts Tab -->
+          <div class="gene__tab-pane" 
+               ng-class="{active: vm.activeTab === 'transcripts'}" 
+               ng-show="vm.activeTab === 'transcripts'">
+            <div class="gene__widget">
+              <div class="gene__widget-header">          
+                <!-- Pagination Info -->
+                <div class="gene__pagination-info" ng-if="vm.pagination.total_count > 0">
+                  <span class="gene__pagination-text">
+                    Showing {{ vm.pagination.start_index }} - {{ vm.pagination.end_index }} 
+                    of {{ vm.pagination.total_count }} transcripts
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Loading indicator -->
+              <div ng-if="vm.transcriptsLoading" class="gene__loading">
+                <div class="gene__loading-spinner"></div>
+                <span>Loading transcripts...</span>
+              </div>
+              
+              <div class="gene__transcript-list" ng-if="vm.hasTranscripts() && !vm.transcriptsLoading">
+                <div class="gene__transcript-item" 
+                     ng-repeat="transcript in vm.transcripts">
+                  <div class="gene__transcript-header">
+                    <a href="{{transcript.sequence_page}}" target="_blank" class="gene__transcript-sequence">
+                    <p>
+                        <span class="gene__transcript-id">{{ transcript.id }}</span>
+                        <span class="gene__transcript-description">{{ transcript.description }}</span>
+                      </p>
+                    </a>
+                  </div>
+                  <div class="gene__transcript-details">
+                <!-- TODO: add more info later -->
+                  </div>
+                </div>
+              </div>
+              
+              <div ng-if="!vm.hasTranscripts() && !vm.transcriptsLoading" class="gene__no-data">
+                <p>No transcript data available for this gene.</p>
+              </div>
+
+              <!-- Pagination Controls -->
+              <div class="gene__pagination" ng-if="vm.pagination.total_pages > 1">
+                <div class="gene__pagination-controls">
+                  <!-- Previous button -->
+                  <button class="gene__pagination-btn gene__pagination-btn--prev" 
+                          ng-click="vm.previousPage()"
+                          ng-disabled="!vm.pagination.has_previous">
+                    <span class="gene__pagination-arrow">‹</span>
+                    Previous
+                  </button>
+                  
+                  <!-- Page numbers -->
+                  <div class="gene__pagination-pages">
+                    <button ng-repeat="page in vm.getVisiblePages()" 
+                            class="gene__pagination-btn gene__pagination-btn--page"
+                            ng-class="{
+                              'gene__pagination-btn--current': page === vm.pagination.current_page,
+                              'gene__pagination-btn--ellipsis': page === '...'
+                            }"
+                            ng-click="page !== '...' && vm.goToPage(page)"
+                            ng-disabled="page === '...' || page === vm.pagination.current_page">
+                      {{ page }}
+                    </button>
+                  </div>
+                  
+                  <!-- Next button -->
+                  <button class="gene__pagination-btn gene__pagination-btn--next" 
+                          ng-click="vm.nextPage()"
+                          ng-disabled="!vm.pagination.has_next">
+                    Next
+                    <span class="gene__pagination-arrow">›</span>
+                  </button>
+                </div>
+                
+                <!-- Page info -->
+                <div class="gene__pagination-summary">
+                  Page {{ vm.pagination.current_page }} of {{ vm.pagination.total_pages }}
+                </div>
+              </div>
+            </div>
+
+            <!-- External Links -->
+            <div class="gene__widget" ng-if="vm.hasExternalLinks()">
+              <div class="gene__widget-header">
+                <h2 class="gene__widget-title">External Links</h2>
+              </div>
+              <div class="gene__external-links">
+                <a ng-repeat="link in vm.externalLinks" 
+                   ng-href="{{ link.url }}" 
+                   class="gene__external-link"
+                   target="_blank"
+                   ng-click="vm.onExternalLinkClick(link)">{{ link.name }}</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Genome Browser Tab -->
+          <div class="gene__tab-pane" 
+               ng-class="{active: vm.activeTab === 'genome-browser'}" 
+               ng-show="vm.activeTab === 'genome-browser'">
+            <div class="gene__widget">
+              <div class="gene__genome-browser">
+                <!-- Loading indicator -->
+                <div ng-if="!vm.genomeBrowserLoaded" class="gene__browser-loading">
+                  <p>Loading genome browser...</p>
+                </div>
+
+                <!-- Genome browser container -->
+                <div style="padding-left: 1rem; margin-top: -10px">
+                  <!-- Genome browser element will be dynamically created here -->
+                </div>
+
+                <!-- Error message -->
+                <div ng-if="vm.genomeBrowserError" class="gene__browser-error">
+                  <p>Failed to load genome browser. Please try refreshing the page.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+</div>
