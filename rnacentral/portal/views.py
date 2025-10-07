@@ -50,6 +50,7 @@ from portal.models import (
     Xref,
     Gene,
     GeneMetadata,
+    GoflowResults
 )
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.rna_summary import RnaSummary
@@ -334,6 +335,76 @@ def rna_view(request, upi, taxid=None):
         active_tab = 5
     else:
         active_tab = 0
+    goflow_results = None
+    if taxid:
+        try:
+            urs_taxid = f"{upi}_{taxid}"
+            goflow_results = GoflowResults.objects.filter(urs_taxid=urs_taxid).first()
+
+            if goflow_results:
+                goflow_data = {
+                    'urs_taxid': goflow_results.urs_taxid,
+                    'rna_id': goflow_results.rna_id,
+                    'pmcid': goflow_results.pmcid,
+                    'mirna_binding_filter_result': goflow_results.mirna_binding_filter_result,
+                    'mirna_cluster_result': goflow_results.mirna_cluster_result,
+                    'binding_type_filter_result': goflow_results.binding_type_filter_result,
+                    'experimental_evidence_result': goflow_results.experimental_evidence_result,
+                    'functional_interaction_result': goflow_results.functional_interaction_result,
+                    'mirna_mrna_binding_result': goflow_results.mirna_mrna_binding_result,
+                    'effect_endogenous_2_result': goflow_results.effect_endogenous_2_result,
+                    'computational_prediction_result': goflow_results.computational_prediction_result,
+                    'validated_binding_only_result': goflow_results.validated_binding_only_result,
+                    'mrna_expression_assay_result': goflow_results.mrna_expression_assay_result,
+                    
+                    # Reasoning
+                    'mirna_binding_filter_reasoning': goflow_results.mirna_binding_filter_reasoning,
+                    'mirna_cluster_reasoning': goflow_results.mirna_cluster_reasoning,
+                    'binding_type_filter_reasoning': goflow_results.binding_type_filter_reasoning,
+                    'experimental_evidence_reasoning': goflow_results.experimental_evidence_reasoning,
+                    'functional_interaction_reasoning': goflow_results.functional_interaction_reasoning,
+                    'mirna_mrna_binding_reasoning': goflow_results.mirna_mrna_binding_reasoning,
+                    'effect_endogenous_2_reasoning': goflow_results.effect_endogenous_2_reasoning,
+                    'computational_prediction_reasoning': goflow_results.computational_prediction_reasoning,
+                    'validated_binding_only_reasoning': goflow_results.validated_binding_only_reasoning,
+                    'mrna_expression_assay_reasoning': goflow_results.mrna_expression_assay_reasoning,
+                    
+                    # Evidence
+                    'mirna_binding_filter_evidence': goflow_results.mirna_binding_filter_evidence,
+                    'mirna_cluster_evidence': goflow_results.mirna_cluster_evidence,
+                    'binding_type_filter_evidence': goflow_results.binding_type_filter_evidence,
+                    'experimental_evidence_evidence': goflow_results.experimental_evidence_evidence,
+                    'functional_interaction_evidence': goflow_results.functional_interaction_evidence,
+                    'mirna_mrna_binding_evidence': goflow_results.mirna_mrna_binding_evidence,
+                    'effect_endogenous_2_evidence': goflow_results.effect_endogenous_2_evidence,
+                    'computational_prediction_evidence': goflow_results.computational_prediction_evidence,
+                    'validated_binding_only_evidence': goflow_results.validated_binding_only_evidence,
+                    'mrna_expression_assay_evidence': goflow_results.mrna_expression_assay_evidence,
+                    
+                    # Targets and annotation
+                    'targets': goflow_results.targets,
+                    'target': goflow_results.target,
+                    'target_list': goflow_results.get_target_list(),
+                    'annotation': goflow_results.annotation
+                }
+
+                # Clean up None values for JSON serialization
+                goflow_data = {
+                    k: v for k, v in goflow_data.items() 
+                    if v is not None and v != ''
+                }
+            else:
+                goflow_data = None
+        except GoflowResults.DoesNotExist:
+            goflow_data = None
+        except Exception as e:
+            print(f"Error fetching GoFlow data: {e}")
+            goflow_data = None
+    else:
+        goflow_data = None
+
+
+
 
     context = {
         "upi": upi,
@@ -358,6 +429,9 @@ def rna_view(request, upi, taxid=None):
         "expression_atlas": expression_atlas,
         "interactions": rna.get_intact(taxid),
         "litsumm_summary": litsumm_summary,
+        "goflow_results": goflow_results,  # Keep for backward compatibility
+        "goflow_data": goflow_data,        # Enhanced data for component
+        "goflow_data_json": json.dumps(goflow_data) if goflow_data else None,
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google

@@ -347,6 +347,51 @@ limitations under the License.
                 </uib-tab>
             {% endif %}
 
+              {% if context.goflow_results %}
+              <link rel="stylesheet" href="{% static "css/goflow-reasoning.css" %}">
+              <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+                <uib-tab index="7" id="goflow-reasoning" deselect="checkTab($event, $selectedIndex)">
+                    <uib-tab-heading>
+                        GoFlow Results
+                    </uib-tab-heading>
+                 <goflow-reasoning 
+                   upi="{{ context.upi }}" 
+                  taxid="{{ context.taxid }}"
+                  results="goflowData"
+                  ng-if="goflowData">
+                  </goflow-reasoning>     
+                </uib-tab>
+          
+                 <script type="text/javascript">
+                (function() {
+                    // Wait for Angular to be ready
+                    angular.element(document).ready(function() {
+                        // Get the existing controller scope or create initialization
+                        var scope = angular.element('[ng-controller="rnaSequenceController"]').scope();
+                        if (scope) {
+                            scope.$apply(function() {
+                                {% if context.goflow_data_json %}
+                                scope.goflowData = {{ context.goflow_data_json|safe }};
+                                {% else %}
+                                scope.goflowData = null;
+                                {% endif %}
+                            });
+                        } else {
+                            // Fallback: add to rootScope
+                            angular.element(document).injector().invoke(function($rootScope) {
+                                $rootScope.$apply(function() {
+                                    {% if context.goflow_data_json %}
+                                    $rootScope.goflowData = {{ context.goflow_data_json|safe }};
+                                    {% else %}
+                                    $rootScope.goflowData = null;
+                                    {% endif %}
+                                });
+                            });
+                        }
+                    });
+                })();
+                </script>
+            {% endif %}
             {% if context.pub_count %}
             <uib-tab index="5" id="publications" deselect="checkTab($event, $selectedIndex)">
                 <uib-tab-heading>
