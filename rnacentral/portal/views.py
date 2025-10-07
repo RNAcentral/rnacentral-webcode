@@ -450,8 +450,6 @@ def gene_detail(request, name):
         "species": species_name.lower().replace(" ", "_")
     }
 
-    print(f'Gene: {gene_data}')
-
     # Get pagination params
     page = int(request.GET.get('page', 1))
     page_size = int(request.GET.get('page_size', 10))  # Default 10 transcripts per page
