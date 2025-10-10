@@ -85,9 +85,9 @@ Exporting search results
     <div class="row" ng-show="export.progress >= 0">
       <div class="col-md-12">
         <ul>
-          <li ng-if="export.data_type" class="margin-top-5px">Exporting <strong>{{ export.hits | number }}</strong> sequences in <strong>{{ export.data_type }}</strong> format</li>
+          <li ng-if="export.data_type" class="margin-top-5px">Exporting <strong>{{ export.hits | number }}</strong> sequences in <strong>{{ export.data_type }}</strong> format (genes will be excluded from fasta format)</li>
           <li ng-if="export.query" class="margin-top-5px">
-            Query: <code>{{ export.query }}</code>
+            Query (genes will be excluded by query if exporting to fasta): <code>{{ export.query }}</code>
             <small><a href="/search?q={{ export.query }}" target="_blank">Modify</a> <span class="text-muted">(in a new window)</span></small>
           </li>
           <li class="margin-top-5px">Status: <strong ng-class="{'text-danger': export.status === 'failed', 'text-info': export.status === 'running', 'text-info': export.status === 'pending', 'text-success': export.status === 'finished'}">{{ export.status }}</strong></li>

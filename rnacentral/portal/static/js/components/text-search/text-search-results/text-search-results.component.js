@@ -374,7 +374,20 @@ var textSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
-            var queryParam = encodeURIComponent(`(${search.preprocessQuery(ctrl.search.query)})`);
+            var query = ctrl.search.query;
+            
+            // Exclude genes when exporting FASTA format - genes don't have sequence data
+            if (format === 'fasta') {
+                // If query already contains entry_type:"Gene", replace it with NOT entry_type:"Gene"
+                if (query.match(/entry_type:"Gene"/i)) {
+                    query = query.replace(/entry_type:"Gene"/gi, 'NOT entry_type:"Gene"');
+                } else {
+                    // Otherwise, just add the exclusion
+                    query = query + ' AND NOT entry_type:"Gene"';
+                }
+            }
+            
+            var queryParam = encodeURIComponent(`(${search.preprocessQuery(query)})`);
             var apiUrl = `https://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=${queryParam}&size=1000&sort=id&format=json`;
 
             var payload = {
