@@ -374,7 +374,14 @@ var textSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
-            var queryParam = encodeURIComponent(`(${search.preprocessQuery(ctrl.search.query)})`);
+            var query = ctrl.search.query;
+            
+            // Exclude genes when exporting FASTA format - genes don't have sequence data
+            if (format === 'fasta') {
+                query = query + ' AND entry_type:"Sequence"';
+            }
+            
+            var queryParam = encodeURIComponent(`(${search.preprocessQuery(query)})`);
             var apiUrl = `https://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=${queryParam}&size=1000&sort=id&format=json`;
 
             var payload = {
