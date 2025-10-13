@@ -67,6 +67,26 @@ var textSearchResults = {
             return facetValue ? facetValue.count : 0;
         };
 
+        /**
+         * Check if search results contain only Gene entries
+         * @returns {boolean} - true if all results are Gene entries
+         */
+        ctrl.isGeneOnlyResults = function() {
+            if (!ctrl.search.result.facets) return false;
+            
+            var entryTypeFacet = ctrl.search.result.facets.find(function(facet) {
+                return facet.label === 'Entry type';
+            });
+            
+            if (!entryTypeFacet) return false;
+            
+            var geneCount = ctrl.getEntryTypeCount('Gene');
+            var sequenceCount = ctrl.getEntryTypeCount('Sequence');
+            
+            // Return true only if there are Gene entries and no Sequence entries
+            return geneCount > 0 && sequenceCount === 0;
+        };
+
         // Length slider-related code
         // --------------------------
 
