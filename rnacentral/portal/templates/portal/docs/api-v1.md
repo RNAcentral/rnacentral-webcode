@@ -225,7 +225,7 @@ The genome location should be in the `chromosome:start-end` format and may conta
 
 #### Examples
 
--[{{ BASE_URL }}/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679](/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679)
+* [{{ BASE_URL }}/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679](/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679)
 
 ## Example script <a style="cursor: pointer" id="v1-example-script" ng-click="scrollTo('v1-example-script')" name="v1-example-script" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
@@ -280,4 +280,4 @@ These requests should return the same results, both in the browser and when retr
 
 * [{{ BASE_URL }}/api/v1](/api/v1)
 * [{{ BASE_URL }}/api/v1/](/api/v1/)
-<p>
+</p>
