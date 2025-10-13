@@ -61,7 +61,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  final-notification:
+  # final-notification:
     # runs-on: ubuntu-latest
     # needs: push_image_to_github
     # steps:
