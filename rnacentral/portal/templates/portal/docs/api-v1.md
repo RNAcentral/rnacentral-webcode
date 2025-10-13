@@ -173,7 +173,7 @@ curl -H "Accept: application/yaml" http://127.0.0.1:8000/api/v1/?format=json
   "detail": "Could not satisfy the request's Accept header"
 }
 ```
-
+<p>
 ## Filtering <a style="cursor: pointer" id="v1-filtering" ng-click="scrollTo('v1-filtering')" name="v1-filtering" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The API supports several filtering operations that complement the main RNAcentral search functionality.
@@ -212,6 +212,7 @@ which acts as the logical `AND` operator. More logical operators will be support
 
 * [{{ BASE_URL }}/api/v1/rna/?min_length=10&max_length=100](/api/v1/rna/?min_length=10&max_length=100)
 
+
 ## Genome annotations <a style="cursor: pointer" id="v1-genome-annotations" ng-click="scrollTo('v1-genome-annotations')" name="v1-genome-annotations" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The API provides an endpoint for retrieving annotations based on genomic coordinates for a [number of species](/help/genomic-mapping).
@@ -224,7 +225,7 @@ The genome location should be in the `chromosome:start-end` format and may conta
 
 #### Examples
 
-* [{{ BASE_URL }}/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679](/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679)
+-[{{ BASE_URL }}/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679](/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679)
 
 ## Example script <a style="cursor: pointer" id="v1-example-script" ng-click="scrollTo('v1-example-script')" name="v1-example-script" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
@@ -241,8 +242,9 @@ for each sequence. Using md5 saves traffic and decreases the response time.
 Internally RNAcentral uses the [Digest::MD5](http://search.cpan.org/dist/Digest-MD5/MD5.pm)
 Perl module for computing the md5 values. Additional notes:
 
-* all sequences are uppercase
-* md5 is computed for DNA sequences (so all U's should be replaced with T's).
+
+* all sequences are uppercase 
+* md5 is computed for DNA sequences (so all Us should be replaced with Ts).
 
 {# embedded GitHub gist #}
 <script src="https://gist.github.com/rnacentralAdmin/b5aa714af3688e1eb49bc11d9ab032f8.js"></script>
@@ -252,6 +254,7 @@ Perl module for computing the md5 values. Additional notes:
 To use the API in a javascript application, please use jsonp requests.
 
 #### Example using jQuery <a style="cursor: pointer" id="v1-example-using-jquery" ng-click="scrollTo('v1-example-using-jquery')" name="v1-example-using-jquery" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
 
 ```
 $.ajax({
@@ -266,6 +269,7 @@ $.ajax({
 });
 ```
 
+
 ## Trailing slash <a style="cursor: pointer" id="v1-trailing-slash" ng-click="scrollTo('v1-trailing-slash')" name="v1-trailing-slash" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The trailing slash in all urls used in the API is **optional**.
@@ -276,3 +280,4 @@ These requests should return the same results, both in the browser and when retr
 
 * [{{ BASE_URL }}/api/v1](/api/v1)
 * [{{ BASE_URL }}/api/v1/](/api/v1/)
+<p>
