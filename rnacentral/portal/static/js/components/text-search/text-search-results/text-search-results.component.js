@@ -58,7 +58,6 @@ var textSearchResults = {
                 return facet.label === 'Entry type';
             });
             
-            if (!entryTypeFacet) return 0;
             
             var facetValue = entryTypeFacet.facetValues.find(function(fv) {
                 return fv.value === entryType;
