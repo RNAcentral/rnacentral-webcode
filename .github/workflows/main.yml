@@ -18,17 +18,17 @@ on:
   pull_request:
 
 jobs:
-  initial-notification:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+  # initial-notification:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Initial notification
-        uses: rtCamp/action-slack-notify@12e36fc18b0689399306c2e0b3e0f2978b7f1ee7
-        env:
-          SLACK_MESSAGE: 'Publishing image to GitHub Packages'
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          MSG_MINIMAL: true
+  #     - name: Initial notification
+  #       uses: rtCamp/action-slack-notify@12e36fc18b0689399306c2e0b3e0f2978b7f1ee7
+  #       env:
+  #         SLACK_MESSAGE: 'Publishing image to GitHub Packages'
+  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  #         MSG_MINIMAL: true
 
   push_image_to_github:
     runs-on: ubuntu-latest
@@ -62,14 +62,14 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   final-notification:
-    runs-on: ubuntu-latest
-    needs: push_image_to_github
-    steps:
-      - uses: actions/checkout@v3
+    # runs-on: ubuntu-latest
+    # needs: push_image_to_github
+    # steps:
+    #   - uses: actions/checkout@v3
 
-      - name: Final notification
-        uses: rtCamp/action-slack-notify@12e36fc18b0689399306c2e0b3e0f2978b7f1ee7
-        env:
-          SLACK_MESSAGE: 'New image pushed to GitHub Packages'
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          MSG_MINIMAL: true
+    #   - name: Final notification
+    #     uses: rtCamp/action-slack-notify@12e36fc18b0689399306c2e0b3e0f2978b7f1ee7
+    #     env:
+    #       SLACK_MESSAGE: 'New image pushed to GitHub Packages'
+    #       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    #       MSG_MINIMAL: true
