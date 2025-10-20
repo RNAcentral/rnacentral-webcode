@@ -20,7 +20,7 @@
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu pull-right" role="menu">
-          <li><a href="" ng-click="$ctrl.exportResults('fasta')">FASTA</a></li>
+          <li ng-if="!$ctrl.isGeneOnlyResults()"><a href="" ng-click="$ctrl.exportResults('fasta')">FASTA</a></li>
           <li><a href="" ng-click="$ctrl.exportResults('json')">JSON</a></li>
           <li><a href="" ng-click="$ctrl.exportResults('txt')">RNAcentral ids</a></li>
         </ul>
@@ -156,6 +156,32 @@
         </li>
         <hr />
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
+          <div ng-if="facet.label === 'Entry type'">
+            <h3>
+              Entry type
+            </h3>
+            <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
+              <!-- Hard-coded Sequence option -->
+              <li>
+                <input type="checkbox" name="entry_type" ng-checked="$ctrl.isFacetApplied('entry_type', 'Sequence')" ng-click="$ctrl.facetSearch('entry_type', 'Sequence')">
+                <a href="" ng-click="$ctrl.facetSearch('entry_type', 'Sequence')" class="text-search-facet-link">
+                  Sequence 
+                  <small>({{ $ctrl.getEntryTypeCount('Sequence') | number }})</small>
+                </a>
+              </li>
+              <!-- Hard-coded Gene option -->
+              <li>
+                <input type="checkbox" name="entry_type" ng-checked="$ctrl.isFacetApplied('entry_type', 'Gene')" ng-click="$ctrl.facetSearch('entry_type', 'Gene')">
+                <a href="" ng-click="$ctrl.facetSearch('entry_type', 'Gene')" class="text-search-facet-link">
+                  Gene 
+                  <small>({{ $ctrl.getEntryTypeCount('Gene') | number }})</small>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        
+        <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
           <div ng-if="facet.label === 'SO RNA types'">
             <h3>
               RNA types
@@ -270,7 +296,7 @@
                     <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
                     <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
                   </li>
-                  <small ng-if="facet.id === 'qc_warning_found'">
+                  <small ng-if="facet.id === 'qc_warning_found' && (!rna.fields.entry_type || rna.fields.entry_type[0] !== 'Gene')">
                     <a class="text-search-facet-help text-muted" ng-href="{{ $ctrl.rfamHelp }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about Rfam annotations in RNAcentral &rarr;</a>
                   </small>
                   <small ng-if="facet.id === 'has_go_annotations'">
@@ -295,12 +321,23 @@
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
           <div class="text-search-result">
             <h4 style="margin-bottom: 0; margin-top: 0;">
-              <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
-            </h4>
-
+              <!-- Gene entries get /genes/<standard_name> URL, Sequence entries get /rna/ URL -->
+              <a ng-href="{{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) : '/rna/' + rna.id_with_slash}}" 
+                ng-if="rna.fields.description && rna.fields.description[0]" 
+                ng-bind-html="rna.fields.description[0] | sanitize"></a>
+              
+              <!-- FALLBACK: Show gene name or ID if description is missing -->
+              <a ng-href="{{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) : '/rna/' + rna.id_with_slash}}" 
+                ng-if="!rna.fields.description || !rna.fields.description[0]">
+                <span ng-if="rna.fields.gene && rna.fields.gene[0]">{{ rna.fields.gene[0] }}</span>
+                <span ng-if="(!rna.fields.gene || !rna.fields.gene[0]) && rna.fields.standard_name && rna.fields.standard_name[0]">{{ rna.fields.standard_name[0] }}</span>
+                <span ng-if="(!rna.fields.gene || !rna.fields.gene[0]) && (!rna.fields.standard_name || !rna.fields.standard_name[0])">{{ rna.id }}</span>
+              </a>
+              
             <div class="media">
-              <div class="media-left media-middle" ng-if="rna.fields.has_secondary_structure[0].toLowerCase().indexOf('true') !== -1">
-                <a href="/rna/{{rna.id_with_slash}}?tab=2d">
+              <!-- Only show secondary structure image if it's not a Gene entry -->
+              <div class="media-left media-middle" ng-if="rna.fields.has_secondary_structure && rna.fields.has_secondary_structure[0] && rna.fields.has_secondary_structure[0].toLowerCase().indexOf('true') !== -1 && (!rna.fields.entry_type || rna.fields.entry_type[0] !== 'Gene')">
+                <a ng-href="{{rna.fields.entry_type && rna.fields.entry_type[0] === 'Gene' ? '/genes/' + (rna.fields.standard_name && rna.fields.standard_name[0] ? rna.fields.standard_name[0] : rna.id) + '?tab=2d' : '/rna/' + rna.id_with_slash + '?tab=2d'}}">
                   <img style="max-width:140px; max-height:100px;" class="media-object img-thumbnail" src="/api/v1/rna/{{$ctrl.getURS(rna.id)}}/2d/svg/">
                 </a>
               </div>
@@ -313,11 +350,15 @@
               </span>
             </div>
             <ul class="list-inline small" ng-if="$ctrl.expertDbsObject" style="margin-left: 0;">
-              <li style="padding-right: 20px;">
+              <li style="padding-right: 20px;" ng-if="rna.fields.length && rna.fields.length[0]">
                 {{rna.fields.length[0] | number}} nucleotides
               </li>
-              <li style="padding-right: 20px;" ng-show="rna.fields.has_genomic_coordinates[0].toLowerCase().indexOf('true') !== -1"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
-              <li style="padding-right: 20px; cursor: help;" ng-if="(rna.fields.qc_warning | plaintext) != 'none'" tooltip-popup-close-delay="2000" uib-tooltip-template="'/static/js/components/text-search/text-search-results/qc-warning-tooltip.html'" tooltip-placement="bottom"><i class="fa fa-warning text-danger" aria-hidden="true"></i>
+              <!-- Show "Gene entry" label for entries without length -->
+              <li style="padding-right: 20px;" ng-if="!rna.fields.length || !rna.fields.length[0]">
+                Gene entry
+              </li>
+              <li style="padding-right: 20px;" ng-if="rna.fields.has_genomic_coordinates && rna.fields.has_genomic_coordinates[0] && rna.fields.has_genomic_coordinates[0].toLowerCase().indexOf('true') !== -1"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome</li>
+              <li style="padding-right: 20px; cursor: help;" ng-if="rna.fields.qc_warning && (rna.fields.qc_warning | plaintext) != 'none' && (!rna.fields.entry_type || rna.fields.entry_type[0] !== 'Gene')" tooltip-popup-close-delay="2000" uib-tooltip-template="'/static/js/components/text-search/text-search-results/qc-warning-tooltip.html'" tooltip-placement="bottom"><i class="fa fa-warning text-danger" aria-hidden="true"></i>
                 <span ng-repeat="warning in rna.fields.qc_warning | plaintext">
                   <span ng-if="warning==='has_issue'"></span>
                   <span ng-if="warning==='possible_contamination'">possible contamination</span>
@@ -326,8 +367,8 @@
                   <span ng-if="warning==='missing_rfam_match'">missing Rfam hit</span>{{$last || warning==='has_issue' ? '' : ', '}}
                 </span>
               </li>
-              <li style="padding-right: 20px;" ng-show="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
-              <li style="display: inline-block;" ng-repeat="expert_db in rna.fields.expert_db | plaintext | orderBy:expert_db:false:$ctrl.expertDbHasStarComparator"><img class="desaturate" style="cursor: help; height: 16px; vertical-align: top;" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.normalizeExpertDbName.nameToImageUrl(expert_db) }}">&nbsp;&nbsp;</li>
+              <li style="padding-right: 20px;" ng-if="rna.fields.active && rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
+              <li style="display: inline-block;" ng-repeat="expert_db in rna.fields.expert_db | plaintext | orderBy:expert_db:false:$ctrl.expertDbHasStarComparator" ng-if="rna.fields.expert_db"><img class="desaturate" style="cursor: help; height: 16px; vertical-align: top;" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.normalizeExpertDbName.nameToImageUrl(expert_db) }}">&nbsp;&nbsp;</li>
             </ul>
           </div>
           </div>

@@ -15,6 +15,7 @@ import itertools as it
 import operator as op
 import zlib
 from collections import Counter, defaultdict
+from django.contrib.sites.models import Site
 
 import boto3
 import requests
@@ -29,6 +30,7 @@ from portal.config.expert_databases import expert_dbs
 from portal.rfam_matches import check_issues
 from portal.utils import descriptions as desc
 
+
 from .accession import Accession
 from .modification import Modification
 from .reference import Reference
@@ -36,13 +38,13 @@ from .related_sequences import RelatedSequence
 from .rfam import RfamAnalyzedSequences, RfamHit
 from .rna_precomputed import RnaPrecomputed
 from .xref import Xref
+from .interactions import Interactions
 
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
-
 
 class Rna(models.Model):
     id = models.IntegerField(db_column="id")
@@ -532,7 +534,7 @@ class Rna(models.Model):
                 return False
         else:
             return False
-
+        
     def get_secondary_structures(self):
         return {
             self.get_layout_secondary(),
@@ -702,14 +704,9 @@ class Rna(models.Model):
     def get_intact(self, taxid):
         if not taxid:
             return 0
-        query = """
-        SELECT count(distinct("interacting_id"))
-        FROM rnc_interactions
-        WHERE urs_taxid = '{urs_taxid}' AND interacting_id NOT LIKE '%mgi%'
-        """.format(
-            urs_taxid=self.upi + "_" + taxid
-        )
-        with connection.cursor() as cursor:
-            cursor.execute(query)
-            data = dictfetchall(cursor)
-        return data[0]["count"]
+        urs_taxid = f"{self.upi}_{taxid}"
+        return Interactions.objects.filter(
+            urs_taxid=urs_taxid
+        ).exclude(
+            interacting_id='mgd/mgi:MGI' #TODO: confirm if other values containing 'mgi:' don't exist
+        ).values('interacting_id').distinct().count()

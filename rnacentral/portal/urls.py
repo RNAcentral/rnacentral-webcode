@@ -235,6 +235,15 @@ urlpatterns = [
     re_path(
         r"^license/?$", views.StaticView.as_view(), {"page": "license"}, name="license"
     ),
+    # gene detail
+    re_path(
+    r"^genes/(?P<name>[A-Za-z0-9_.-]+)/?$",
+    views.gene_detail,
+    name="gene-detail"
+
+    )
+
+
 
 ]
 

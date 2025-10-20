@@ -1,7 +1,3 @@
-/**
- * Service for launching a text search.
- */
-
 var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     var self = this; // in case some event handler or constructor overrides "this"
 
@@ -10,6 +6,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'author',
             'common_name',
             'description',
+            'entry_type',
             'expert_db',
             'function',
             'gene',
@@ -64,7 +61,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name',
             'tax_string': 'Taxonomy'
         },
-        facetfields: ['rna_type', 'so_rna_type', 'has_litsumm', 'has_lit_scan', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        facetfields: ['entry_type','rna_type', 'so_rna_type', 'has_litsumm', 'has_lit_scan', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         foldableFacets: ['rna_type', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates'],
         sortableFields: [
             { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
@@ -287,7 +284,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         query = '(' + query + ')'
 
         if (!query.match(/entry_type\:/i)) {
-          query += ' AND entry_type:"Sequence"'
+          query += ' AND (entry_type:"Sequence" OR entry_type:"Gene")'
         }
         return query;
 
@@ -299,6 +296,42 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         function escapeSearchTerm (searchTerm) {
             return searchTerm.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\\/]/g, "\\$&");
         }
+    };
+
+    /**
+     * Consolidate facet values with same semantic meaning but different cases
+     */
+    this.consolidateFacetValues = function(facetValues) {
+        var trueCount = 0;
+        var falseCount = 0;
+        var consolidatedValues = [];
+
+        // Sum up counts for true/false values regardless of case
+        facetValues.forEach(function(facetValue) {
+            if (facetValue.value.toLowerCase() === 'true') {
+                trueCount += facetValue.count;
+            } else if (facetValue.value.toLowerCase() === 'false') {
+                falseCount += facetValue.count;
+            }
+        });
+
+        // Create consolidated entries using the capitalized version for consistency
+        if (trueCount > 0) {
+            consolidatedValues.push({
+                label: 'true', // will be updated in the main processing
+                value: 'True', // use capitalized version for search consistency
+                count: trueCount
+            });
+        }
+        if (falseCount > 0) {
+            consolidatedValues.push({
+                label: 'false', // will be updated in the main processing  
+                value: 'False', // use capitalized version for search consistency
+                count: falseCount
+            });
+        }
+
+        return consolidatedValues;
     };
 
     /**
@@ -330,33 +363,20 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             return self.config.facetfields.indexOf(a.id) - self.config.facetfields.indexOf(b.id);
         });
 
-        // update qc_warning_found labels from True/False to Yes/No
+        // update facet labels and values
         data.facets.forEach(function(facet) {
             if (facet.id === 'qc_warning_found') {
+                facet.label = 'QC warnings';
                 facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'True') { facetValue.label = 'Yes'; }
-                    else if (facetValue.label === 'False') { facetValue.label = 'No'; }
+                    if (facetValue.label === 'True') { facetValue.label = 'Warnings found'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'No warnings'; }
                 });
             }
-            // if (facet.id === 'has_conserved_structure') {
-            //     facet.label = 'Sequence features';
-            //     facet.facetValues.forEach(function(facetValue) {
-            //         if (facetValue.label === 'True') { facetValue.label = 'Conserved structures'; }
-            //         else if (facetValue.label === 'False') { facetValue.label = 'No conserved structures'; }
-            //     });
-            // }
             if (facet.id === 'has_go_annotations') {
                 facet.label = 'GO annotations';
                 facet.facetValues.forEach(function(facetValue) {
                     if (facetValue.label === 'True') { facetValue.label = 'Found'; }
                     else if (facetValue.label === 'False') { facetValue.label = 'Not found'; }
-                });
-            }
-            if (facet.id === 'qc_warning_found') {
-                facet.label = 'QC warnings';
-                facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'Yes') { facetValue.label = 'Warnings found'; }
-                    else if (facetValue.label === 'No') { facetValue.label = 'No warnings'; }
                 });
             }
             if (facet.id === 'has_secondary_structure') {
@@ -366,27 +386,50 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
                     else if (facetValue.label === 'False') { facetValue.label = 'Not available'; }
                 });
             }
+            // Fixed literature facet processing - consolidate duplicate case values
             if (facet.id === 'has_litsumm') {
                 facet.label = 'LitSumm';
+                // Consolidate facet values with different cases
+                facet.facetValues = self.consolidateFacetValues(facet.facetValues);
+                // Update labels
                 facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'True') { facetValue.label = 'AI generated summaries'; }
+                    if (facetValue.value === 'True') { 
+                        facetValue.label = 'AI generated summaries';
+                    } else if (facetValue.value === 'False') { 
+                        facetValue.label = 'No AI summaries';
+                    }
                 });
             }
             if (facet.id === 'has_lit_scan') {
                 facet.label = 'LitScan';
+                // Consolidate facet values with different cases
+                facet.facetValues = self.consolidateFacetValues(facet.facetValues);
+                // Update labels
                 facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'True') { facetValue.label = 'Publications'; }
+                    if (facetValue.value === 'True') { 
+                        facetValue.label = 'Publications available';
+                    } else if (facetValue.value === 'False') { 
+                        facetValue.label = 'No publications';
+                    }
                 });
             }
         });
-
-         // Use `hlfields` with highlighted matches instead of `fields`.
-        data.entries.forEach(function(entry) {
+        
+        // Use `hlfields` with highlighted matches instead of `fields`.
+        data.entries.forEach(function(entry, index) {
+            
             entry.fields = entry.highlights;
-            entry.fields.length[0] = entry.fields.length[0].replace(/<[^>]+>/gm, '');
-            entry.id_with_slash = entry.id.replace('_', '/');
+            
+            // DEFENSIVE FIX: Check if length field exists before processing
+            if (entry.fields && entry.fields.length && Array.isArray(entry.fields.length) && 
+                entry.fields.length.length > 0 && entry.fields.length[0] !== undefined && 
+                entry.fields.length[0] !== null && typeof entry.fields.length[0] === 'string') {
+                
+                entry.fields.length[0] = entry.fields.length[0].replace(/<[^>]+>/gm, '');
+                
+            } 
+            entry.id_with_slash = entry.id.replace(/_/, '/');
         });
-
         return data;
     };
 

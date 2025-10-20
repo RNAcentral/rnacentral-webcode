@@ -1,0 +1,222 @@
+<div class="step__container" ng-show="goflowData">
+  
+  <!-- Loading state -->
+  <div ng-show="isLoading" class="loading-container">
+    <p>Loading GoFlow data...</p>
+  </div>
+  
+  <!-- Error state -->
+  <div ng-show="error" class="error-container">
+    <p>{{ error }}</p>
+  </div>
+  
+  <!-- Results -->
+  <div ng-show="goflowData && !isLoading && !error">
+    
+    <!-- miRNA Binding Experiment -->
+    <div class="step" ng-show="hasValue(goflowData.mirna_binding_filter_result)">
+      <div class="prompt">Does this paper present an experiment on miRNA binding to mRNA?</div>
+      <div class="result" ng-class="getResultClass(goflowData.mirna_binding_filter_result)">
+        {{ getResultIcon(goflowData.mirna_binding_filter_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.mirna_binding_filter_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_binding_filter_reasoning | markdown "></p>
+      </details>
+      <details name="reasoning" ng-show="hasValue(goflowData.mirna_binding_filter_evidence)">
+        <summary>Show Evidence</summary>
+        <p ng-biind-html="goflowData.mirna_binding_filter_evidence | markdown"></p>
+      </details>
+    </div>
+
+    <!-- miRNA Cluster -->
+    <div class="step" ng-show="hasValue(goflowData.mirna_cluster_result)">
+      <div class="prompt">Does this paper present an experiment on a miRNA cluster?</div>
+      <div class="result" ng-class="getResultClass(goflowData.mirna_cluster_result)">
+        {{ getResultIcon(goflowData.mirna_cluster_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.mirna_cluster_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_cluster_reasoning | markdown"></p>
+      </details>
+         <details name="reasoning" ng-show="hasValue(goflowData.mirna_cluster_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_cluster_evidence | markdown"></p>
+      </details>
+  
+    </div>
+
+    <!-- Binding Type Filter -->
+    <div class="step" ng-show="hasValue(goflowData.binding_type_filter_result)">
+      <div class="prompt">Is the binding between a miRNA and an mRNA?</div>
+      <div class="result" ng-class="getResultClass(goflowData.binding_type_filter_result)">
+        {{ getResultIcon(goflowData.binding_type_filter_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.binding_type_filter_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.binding_type_filter_reasoning | markdown"></p>
+      </details>
+        <details name="reasoning" ng-show="hasValue(goflowData.binding_type_filter_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.binding_type_filter_evidence | markdown"></p>
+      </details>
+    </div>
+
+    <!-- Experimental Evidence -->
+    <div class="step" ng-show="hasValue(goflowData.experimental_evidence_result)">
+      <div class="prompt">Does the paper have experimental evidence?</div>
+      <div class="result" ng-class="getResultClass(goflowData.experimental_evidence_result)">
+        {{ getResultIcon(goflowData.experimental_evidence_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.experimental_evidence_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.experimental_evidence_reasoning | markdown"></p>
+      </details>
+       <details name="reasoning" ng-show="hasValue(goflowData.experimental_evidence_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text"  ng-bind-html="goflowData.experimental_evidence_evidence | markdown"></p>
+      </details>
+    </div>
+
+    <!-- Functional Interaction -->
+    <div class="step" ng-show="hasValue(goflowData.functional_interaction_result)">
+      <div class="prompt">Does the paper have a functional interaction between the miRNA and an mRNA?</div>
+      <div class="result" ng-class="getResultClass(goflowData.functional_interaction_result)">
+        {{ getResultIcon(goflowData.functional_interaction_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.functional_interaction_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.functional_interaction_reasoning | markdown"></p>
+      </details>
+         <details name="reasoning" ng-show="hasValue(goflowData.functional_interaction_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.functional_interaction_evidence | markdown"></p>
+      </details>
+    </div>
+
+    <!-- miRNA-mRNA Binding -->
+    <div class="step" ng-show="hasValue(goflowData.mirna_mrna_binding_result)">
+      <div class="prompt">Does the paper have a miRNA-mRNA binding assay?</div>
+      <div class="result" ng-class="getResultClass(goflowData.mirna_mrna_binding_result)">
+        {{ getResultIcon(goflowData.mirna_mrna_binding_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.mirna_mrna_binding_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_mrna_binding_reasoning | markdown"></p>
+      </details>
+        <details name="reasoning" ng-show="hasValue(goflowData.mirna_mrna_binding_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.mirna_mrna_binding_evidence | markdown"></p>
+      </details>
+      
+    </div>
+
+    <!-- Effect on Endogenous Target -->
+    <div class="step" ng-show="hasValue(goflowData.effect_endogenous_2_result)">
+      <div class="prompt">Does the paper directly demonstrate changes in endogenous target gene expression?</div>
+      <div class="result" ng-class="getResultClass(goflowData.effect_endogenous_2_result)">
+        {{ getResultIcon(goflowData.effect_endogenous_2_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.effect_endogenous_2_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.effect_endogenous_2_reasoning | markdown"></p>
+      </details>
+        <details name="reasoning" ng-show="hasValue(goflowData.effect_endogenous_2_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.effect_endogenous_2_evidence | markdown"></p>
+      </details>
+    </div>
+
+    <!-- Computational Prediction -->
+    <div class="step" ng-show="hasValue(goflowData.computational_prediction_result)">
+      <div class="prompt">Does the paper make a computational target prediction?</div>
+      <div class="result" ng-class="getResultClass(goflowData.computational_prediction_result)">
+        {{ getResultIcon(goflowData.computational_prediction_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.computational_prediction_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.computational_prediction_reasoning | markdown"></p>
+      </details>
+         <details name="reasoning" ng-show="hasValue(goflowData.computational_prediction_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.computational_prediction_evidence | markdown"></p>
+      </details>
+    </div>
+
+    <!-- Validated Binding Target -->
+    <div class="step" ng-show="hasValue(goflowData.validated_binding_only_result)">
+      <div class="prompt">Validated binding target based on conclusions section.</div>
+      <div class="result" ng-class="getResultClass(goflowData.validated_binding_only_result)">
+        {{ getResultIcon(goflowData.validated_binding_only_result) }} {{ goflowData.validated_binding_only_result }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.validated_binding_only_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.validated_binding_only_reasoning | markdown"></p>
+      </details>
+          <details name="reasoning" ng-show="hasValue(goflowData.validated_binding_only_revidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.validated_binding_only_revidence | markdown"></p>
+      </details>
+    </div>
+
+    <!-- mRNA Expression Assay -->
+    <div class="step" ng-show="hasValue(goflowData.mrna_expression_assay_result)">
+      <div class="prompt">Does the paper include an assay for the miRNA effect on the target gene mRNA expression?</div>
+      <div class="result" ng-class="getResultClass(goflowData.mrna_expression_assay_result)">
+        {{ getResultIcon(goflowData.mrna_expression_assay_result) }}
+      </div>
+      <details name="reasoning" ng-show="hasValue(goflowData.mrna_expression_assay_reasoning)">
+        <summary>Show Reasoning</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.mrna_expression_assay_reasoning | markdown"></p>
+      </details>
+       <details name="reasoning" ng-show="hasValue(goflowData.mrna_expression_assay_evidence)">
+        <summary>Show Evidence</summary>
+        <p class="reasoning-text" ng-bind-html="goflowData.mrna_expression_assay_evidence | markdown"></p>
+      </details>
+    </div>
+
+    <!-- Targets Section -->
+    <div class="step" ng-show="goflowData.targets || goflowData.target">
+      <div class="prompt">Identified Targets</div>
+      <div class="targets-list">
+        <p ng-show="goflowData.targets">{{ goflowData.targets }}</p>
+        <p ng-show="goflowData.target && !goflowData.targets">{{ goflowData.target }}</p>
+      </div>
+    </div>
+     <!-- PMCID -->
+    <div class="step" ng-show="goflowData.pmcid">
+      <div class="prompt">PMCID</div>
+      <div class="pmcid">
+        <p ng-show="goflowData.pmcid">
+           <a
+      ng-href="https://europepmc.org/article/PMC/{{goflowData.pmcid}}"
+      target="_blank">
+   {{goflowData.pmcid}}
+      </a>
+        </p>
+      </div>
+    </div>
+
+<!-- Annotation -->
+<div class="step" ng-show="goflowData.annotation">
+  <div class="prompt">Annotation</div>
+  <div class="annotation">
+    <p ng-if="goflowData && goflowData.annotation && goflowData.annotation.BP">
+      <a
+      ng-href="https://www.ebi.ac.uk/QuickGO/GTerm?id={{goflowData.annotation.BP.involved_in}}"
+      target="_blank">
+   {{goflowData.annotation.BP.involved_in}}
+      </a>
+  </p>
+    </div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <!-- No data state -->
+  <div ng-show="!goflowData && !isLoading && !error" class="no-data-container">
+    <p>No GoFlow data available for this sequence.</p>
+  </div>
+</div>

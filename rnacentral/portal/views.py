@@ -20,6 +20,8 @@ import re
 
 import requests
 import six
+from django.db.models import Max, IntegerField, F, Func, CharField
+from django.db.models.functions import Cast
 
 if six.PY2:
     from urlparse import urlparse
@@ -46,9 +48,14 @@ from portal.models import (
     Rna,
     Taxonomy,
     Xref,
+    Gene,
+    GeneMetadata,
+    GoflowResults
 )
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.rna_summary import RnaSummary
+from portal.models.gene import GeneMember
+from django.db import connection, DatabaseError
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -56,6 +63,26 @@ XREF_PAGE_SIZE = 1000
 ########################
 # Function-based views #
 ########################
+
+
+def get_ensembl_genes(upi, taxid):
+        """
+        Get Ensembl gene IDs associated with an RNA sequence.
+        Returns a list of gene IDs from Ensembl databases.
+        """
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT xref.upi, xref.taxid, acc.gene 
+                FROM rnc_accessions acc 
+                JOIN xref ON xref.ac = acc.accession 
+                WHERE xref.deleted = 'N' 
+                AND xref.upi = %s 
+                AND xref.taxid = %s 
+                AND acc.database IN ('ENSEMBL', 'ENSEMBL_GENCODE', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS', 'ENSEMBL_METAZOA', 'ENSEMBL_PLANTS')
+            """, [upi, taxid])
+            
+            results = cursor.fetchall()
+            return [row[2] for row in results] 
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -293,11 +320,9 @@ def rna_view(request, upi, taxid=None):
         pass
 
     # we also need gene and species to use the Expression Atlas widget
-    if (
-        expression_atlas
-        and summary.species
-        and [item for item in summary.genes if item.startswith("ENS")]
-    ):
+    # Replace the old summary.genes logic with direct database query
+    ensembl_genes = get_ensembl_genes(upi, taxid)
+    if expression_atlas and ensembl_genes:
         expression_atlas = True
     else:
         expression_atlas = False
@@ -307,9 +332,79 @@ def rna_view(request, upi, taxid=None):
     if tab == "2d":
         active_tab = 2
     elif tab == "pub":
-        active_tab = 4
+        active_tab = 5
     else:
         active_tab = 0
+    goflow_results = None
+    if taxid:
+        try:
+            urs_taxid = f"{upi}_{taxid}"
+            goflow_results = GoflowResults.objects.filter(urs_taxid=urs_taxid).first()
+
+            if goflow_results:
+                goflow_data = {
+                    'urs_taxid': goflow_results.urs_taxid,
+                    'rna_id': goflow_results.rna_id,
+                    'pmcid': goflow_results.pmcid,
+                    'mirna_binding_filter_result': goflow_results.mirna_binding_filter_result,
+                    'mirna_cluster_result': goflow_results.mirna_cluster_result,
+                    'binding_type_filter_result': goflow_results.binding_type_filter_result,
+                    'experimental_evidence_result': goflow_results.experimental_evidence_result,
+                    'functional_interaction_result': goflow_results.functional_interaction_result,
+                    'mirna_mrna_binding_result': goflow_results.mirna_mrna_binding_result,
+                    'effect_endogenous_2_result': goflow_results.effect_endogenous_2_result,
+                    'computational_prediction_result': goflow_results.computational_prediction_result,
+                    'validated_binding_only_result': goflow_results.validated_binding_only_result,
+                    'mrna_expression_assay_result': goflow_results.mrna_expression_assay_result,
+                    
+                    # Reasoning
+                    'mirna_binding_filter_reasoning': goflow_results.mirna_binding_filter_reasoning,
+                    'mirna_cluster_reasoning': goflow_results.mirna_cluster_reasoning,
+                    'binding_type_filter_reasoning': goflow_results.binding_type_filter_reasoning,
+                    'experimental_evidence_reasoning': goflow_results.experimental_evidence_reasoning,
+                    'functional_interaction_reasoning': goflow_results.functional_interaction_reasoning,
+                    'mirna_mrna_binding_reasoning': goflow_results.mirna_mrna_binding_reasoning,
+                    'effect_endogenous_2_reasoning': goflow_results.effect_endogenous_2_reasoning,
+                    'computational_prediction_reasoning': goflow_results.computational_prediction_reasoning,
+                    'validated_binding_only_reasoning': goflow_results.validated_binding_only_reasoning,
+                    'mrna_expression_assay_reasoning': goflow_results.mrna_expression_assay_reasoning,
+                    
+                    # Evidence
+                    'mirna_binding_filter_evidence': goflow_results.mirna_binding_filter_evidence,
+                    'mirna_cluster_evidence': goflow_results.mirna_cluster_evidence,
+                    'binding_type_filter_evidence': goflow_results.binding_type_filter_evidence,
+                    'experimental_evidence_evidence': goflow_results.experimental_evidence_evidence,
+                    'functional_interaction_evidence': goflow_results.functional_interaction_evidence,
+                    'mirna_mrna_binding_evidence': goflow_results.mirna_mrna_binding_evidence,
+                    'effect_endogenous_2_evidence': goflow_results.effect_endogenous_2_evidence,
+                    'computational_prediction_evidence': goflow_results.computational_prediction_evidence,
+                    'validated_binding_only_evidence': goflow_results.validated_binding_only_evidence,
+                    'mrna_expression_assay_evidence': goflow_results.mrna_expression_assay_evidence,
+                    
+                    # Targets and annotation
+                    'targets': goflow_results.targets,
+                    'target': goflow_results.target,
+                    'target_list': goflow_results.get_target_list(),
+                    'annotation': goflow_results.annotation
+                }
+
+                # Clean up None values for JSON serialization
+                goflow_data = {
+                    k: v for k, v in goflow_data.items() 
+                    if v is not None and v != ''
+                }
+            else:
+                goflow_data = None
+        except GoflowResults.DoesNotExist:
+            goflow_data = None
+        except Exception as e:
+            print(f"Error fetching GoFlow data: {e}")
+            goflow_data = None
+    else:
+        goflow_data = None
+
+
+
 
     context = {
         "upi": upi,
@@ -334,6 +429,9 @@ def rna_view(request, upi, taxid=None):
         "expression_atlas": expression_atlas,
         "interactions": rna.get_intact(taxid),
         "litsumm_summary": litsumm_summary,
+        "goflow_results": goflow_results,  # Keep for backward compatibility
+        "goflow_data": goflow_data,        # Enhanced data for component
+        "goflow_data_json": json.dumps(goflow_data) if goflow_data else None,
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google
@@ -349,6 +447,157 @@ def rna_view(request, upi, taxid=None):
     except AttributeError:
         pass
     return response
+
+@cache_page(CACHE_TIMEOUT)
+def gene_detail(request, name):
+    """
+    Gene detail view for genes with format public_name.version
+    - If name contains version (e.g., "RNACG12082614835.5"): fetch exact gene
+    - If no version (e.g., "RNACG12082614835"): fetch latest version for that public name
+    """
+    
+    gene = None
+    version = None
+    base_name = name
+    
+    # Parse version from name if it exists
+    if '.' in name and name.split('.')[-1].isdigit():
+        parts = name.rsplit('.', 1)
+        base_name = parts[0]
+        version = int(parts[1])
+        
+        # Look for exact match
+        gene = Gene.objects.filter(name=name).first()
+
+    else:
+        # No version in name, find latest version
+        # Look for all genes starting with "base_name." and get the one with highest version
+        versioned_genes = Gene.objects.filter(name__startswith=f"{base_name}.")
+        
+        if versioned_genes.exists():
+            # Extract version numbers and find the highest
+            latest_gene = None
+            highest_version = -1
+            
+            for g in versioned_genes:
+                try:
+                    # Extract version from gene name (e.g., "RNACG12082614835.5" -> 5)
+                    gene_version = int(g.name.split('.')[-1])
+                    if gene_version > highest_version:
+                        highest_version = gene_version
+                        latest_gene = g
+                        version = gene_version 
+                except (ValueError, IndexError):
+                    continue
+            
+            gene = latest_gene
+        else:
+            # Try exact match without version (fallback)
+            gene = Gene.objects.filter(name=base_name).first()
+    
+    if not gene:
+        return render(request, "portal/gene_detail.html", {
+            "geneFound": False,
+            "geneName": base_name,
+            "geneVersion": version,
+            "geneData": {},
+            "transcriptsData": [],
+            "externalLinksData": [],
+            "transcriptsPagination": {},
+        })
+    
+    metadata = getattr(gene, "metadata", None)
+    species_name = gene.taxonomy.name if gene.taxonomy else None
+
+    gene_data = {
+        "name": gene.name,
+        "chromosome": gene.chromosome,
+        "startPosition": gene.start,
+        "endPosition": gene.stop,
+        "strand": gene.strand,
+        "strandDirection": "Reverse" if gene.strand == "-" else "Forward",
+        "geneType": metadata.ontology_term.name if metadata and metadata.ontology_term else "Unknown",
+        "summary": metadata.description if metadata else "No summary available",
+        "shortDescription": metadata.short_description if metadata else "",
+        "length": abs(gene.stop - gene.start) + 1 if gene.start and gene.stop else 0,
+        "version": version,
+        "species": species_name.lower().replace(" ", "_")
+    }
+
+    # Get pagination params
+    page = int(request.GET.get('page', 1))
+    page_size = int(request.GET.get('page_size', 10))  # Default 10 transcripts per page
+  
+    # Total count
+    with connection.cursor() as cursor:
+        cursor.execute("""
+         SELECT COUNT(DISTINCT locus.urs_taxid)
+            FROM rnc_gene_members gm
+            JOIN rnc_genes g ON(gm.rnc_gene_id=g.id)
+            JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
+            JOIN rnc_rna_precomputed pre ON pre.id = locus.urs_taxid
+            WHERE g.public_name = %s
+        """, [gene.name])
+        total_count = cursor.fetchone()[0]
+
+    # Calculate pagination
+    total_pages = (total_count + page_size - 1) // page_size 
+    offset = (page - 1) * page_size
+
+    
+    # Get current page transcript data
+    transcripts_data = []
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT DISTINCT ON (locus.urs_taxid)
+                locus.urs_taxid,
+                pre.description
+            FROM rnc_gene_members gm
+            JOIN rnc_genes g ON(gm.rnc_gene_id=g.id)
+            JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
+            JOIN rnc_rna_precomputed pre ON pre.id = locus.urs_taxid
+            WHERE g.public_name = %s
+            ORDER BY locus.urs_taxid
+            LIMIT %s OFFSET %s
+        """, [gene.name, page_size, offset])
+        
+        rows = cursor.fetchall()
+        
+        for row in rows:
+            urs_taxid, description = row
+            transcript_info = {
+                "id": urs_taxid,
+                "description": description or "No description available"
+            }
+            transcripts_data.append(transcript_info)
+
+    # Pagination metadata - convert Python booleans to strings for JavaScript
+    pagination = {
+        "current_page": page,
+        "total_pages": total_pages,
+        "total_count": total_count,
+        "page_size": page_size,
+        "has_previous": "true" if page > 1 else "false",
+        "has_next": "true" if page < total_pages else "false",
+        "previous_page": page - 1 if page > 1 else None,
+        "next_page": page + 1 if page < total_pages else None,
+        "start_index": offset + 1 if total_count > 0 else 0,
+        "end_index": min(offset + page_size, total_count),
+    }
+
+
+    # External links data 
+    external_links_data = []
+
+    return render(request, "portal/gene_detail.html", {
+        "geneName": base_name,
+        "geneVersion": version,
+        "geneFound": True,
+        'geneData': json.dumps(gene_data),
+        'transcriptsData': json.dumps(transcripts_data),
+        'externalLinksData': json.dumps(external_links_data),
+        'transcriptsPagination': json.dumps(pagination),
+    })
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -383,15 +632,15 @@ def website_status_view(request):
     """
     This view will be used by Traffic Manager to check for the presence of the
     text "All systems operational". Traffic will be redirected to the HX
-    cluster if this function returns a problem. For more information, see the
-    vtm-terraform-config project on GitLab (monitors.tf file).
+    cluster if this function returns a problem.
     """
 
     def _is_database_up():
         try:
             Database.objects.get(id=1)
             return True
-        except Database.DoesNotExist:
+        except (Database.DoesNotExist, DatabaseError, Exception):
+            # Catch all database-related exceptions
             return False
 
     def _is_api_up():
@@ -407,6 +656,13 @@ def website_status_view(request):
     context["overall_status"] = (
         context["is_database_up"] and context["is_api_up"] and context["is_search_up"]
     )
+    
+    # Return 503 if any system is down
+    if not context["overall_status"]:
+        response = render(request, "portal/website-status.html", {"context": context})
+        response.status_code = 503
+        return response
+    
     return render(request, "portal/website-status.html", {"context": context})
 
 
