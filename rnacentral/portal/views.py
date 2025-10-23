@@ -330,7 +330,7 @@ def rna_view(request, upi, taxid=None):
     # get tab
     tab = request.GET.get("tab", "").lower()
     if tab == "2d":
-        active_tab = 2
+        active_tab = 3
     elif tab == "pub":
         active_tab = 5
     else:
