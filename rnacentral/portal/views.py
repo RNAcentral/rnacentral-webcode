@@ -332,7 +332,7 @@ def rna_view(request, upi, taxid=None):
     if tab == "2d":
         active_tab = 3
     elif tab == "pub":
-        active_tab = 5
+        active_tab = 6
     else:
         active_tab = 0
     goflow_results = None
