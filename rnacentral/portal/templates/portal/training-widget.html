@@ -100,7 +100,6 @@
   
   function vfTabsSwitch(newTab, panels) {
     const data = newTab.getAttribute("id");
-    // Removed URL hash update to keep URL clean
     let parentTabSet = newTab.closest(".vf-tabs__list");
     let oldTab = parentTabSet.querySelector("[aria-selected]");
     

@@ -88,8 +88,6 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-   {% include "portal/training-widget.html" %}
-
   <div class="row well well-sm">
     <h2 class="text-center" style="margin-top: 10px; margin-bottom: 2px;">AI generated summaries</h2>
     <div class="row">
@@ -178,7 +176,7 @@ RNAcentral: The non-coding RNA sequence database
       </div>
 
   </div>
-
+  
   <div class="row">
 
     <p class="lead text-center margin-bottom-0px">
@@ -219,10 +217,20 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
+    <!-- TRAINING WIDGET -->
+  {% include "portal/training-widget.html" %}
+
 </div>
 {% endblock content %}
 
 {% block extra_js_uncompressed %}
+<!-- Load React from CDN -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<!-- React Training Widget -->
+<script src="{% static 'js/components/training-widget/training-widget.js' %}"></script>
+
 <script>
 $(document).ready(function() {
     $('#expert-databases').slick({
