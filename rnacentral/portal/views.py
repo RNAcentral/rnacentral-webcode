@@ -665,6 +665,46 @@ def website_status_view(request):
     
     return render(request, "portal/website-status.html", {"context": context})
 
+@never_cache
+def health_check(request):
+    """
+    This view will be used by Traffic Manager to check for the response code, if 200x is returned then eeverything is fine.
+    If 500x is returned, traffic will be redirected to the HX cluster.
+    """
+
+    def check_database_status():
+        response = HttpResponse()
+        try:
+            Database.objects.get(id=00)
+            # TODO: Add check here to ensure that we can read/write to the database
+            response.status_code = 200
+            response['database_health'] = "Database is up"
+            return response # Should have code 200
+        except (Database.DoesNotExist, DatabaseError, Exception):
+            # Catch all database-related exceptions
+            response.status_code = 503
+            response['database_health'] = "Database is down"
+            return response # Should have code 503
+    def check():
+        return HttpResponse().status_code == 200 # TODO: implement real check
+
+    def _is_search_up():
+        return HttpResponse().status_code == 200 # TODO: implement real check
+
+    context = dict()
+    context["database_status"] = check_database_status()
+    context["api_status"] = _is_api_up()
+    context["search_status"] = _is_search_up()
+    context["overall_status"] = context["database_status"].status_code == 200 and context["api_status"] and context["search_status"]
+    
+    # Return 503 if any system is down
+    if not context["overall_status"]:
+        response = render(request, "portal/health-check.html", {"context": context})
+        response.status_code = 503
+        return response
+    
+    return render(request, "portal/health-check.html", {"context": context}, status=200 if context["overall_status"] else 503)
+
 
 @cache_page(CACHE_TIMEOUT)
 def proxy(request):

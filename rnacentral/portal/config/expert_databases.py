@@ -1594,4 +1594,18 @@ expert_dbs = [
         "status": "",
         "version": "as of Nov 2024",
     },
+     {
+        "name": "Sci-ModoM",
+        "label": "Sci-ModoM",
+        "url": "https://scimodom.dieterichlab.org/",
+        "description": "Sci-ModoM: The quantitative database of transcriptome-wide high-throughput RNA modification sites",
+        "hint": "Sci-ModoM is a quantitative database of transcriptome-wide high-throughput RNA modification sites",
+        "tags": ["", "", ""],
+        "abbreviation": "",
+        "examples": [],
+        "references": [],
+        "imported": False,
+        "status": "",
+        "version": "",
+    },
 ]
