@@ -55,7 +55,7 @@ from portal.models import (
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.rna_summary import RnaSummary
 from portal.models.gene import GeneMember
-from django.db import connection, DatabaseError
+from django.db import connection, DatabaseError, connections
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -668,22 +668,29 @@ def website_status_view(request):
 @never_cache
 def health_check(request):
     """
-    This view will be used by Traffic Manager to check for the response code, if 200x is returned then everything is fine.
+    This will be used by the Traffic Manager to redirect traffic. If it returns a 200x response code everything is fine.
     If 500x is returned, traffic will be redirected to the fallback cluster.
     """
 
     def check_database_status():
         response = HttpResponse()
         try:
-            Database.objects.get(id=1)
-            # TODO: Add check here to ensure that we can read/write to the database
-            response.status_code = 200
-            response.content = "OK"
-            return response 
-        except (Database.DoesNotExist, DatabaseError, Exception):
+            with connections['default'].cursor() as cursor:
+                cursor.execute("SELECT 1")
+                result = cursor.fetchone()
+                if result and result[0] == 1:
+                    response.status_code = 200
+                    response.content = "OK"
+                    return response
+                else:
+                    response.status_code = 503
+                    response.content = "Database is down"
+                    return response
+        except DatabaseError:
             response.status_code = 503
             response.content = "Database is down"
             return response
+
         
     def check_api():
         test_endpoint = 'https://rnacentral.org/api/v1/rna/'
@@ -709,7 +716,7 @@ def health_check(request):
         except requests.exceptions.ConnectTimeout:
             return HttpResponse("Search is too slow", status=503)
         except requests.RequestException:
-            return HttpResponse("Search is down", status=503)   
+            return HttpResponse("Search is down", status=503)
 
     context = {}
 
