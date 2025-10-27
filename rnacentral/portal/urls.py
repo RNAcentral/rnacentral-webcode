@@ -219,6 +219,7 @@ urlpatterns = [
     re_path(r"^error/?$", views.StaticView.as_view(), {"page": "error"}, name="error"),
     # status
     re_path(r"^status/?$", views.website_status_view, name="website-status"),
+
     # genome browser
     re_path(
         r"^genome-browser/?$",

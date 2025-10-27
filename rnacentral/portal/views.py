@@ -666,6 +666,7 @@ def website_status_view(request):
     return render(request, "portal/website-status.html", {"context": context})
 
 
+
 @cache_page(CACHE_TIMEOUT)
 def proxy(request):
     """
