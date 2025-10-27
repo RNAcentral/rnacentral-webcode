@@ -2,8 +2,8 @@
   const { useState, useEffect } = React;
   
   const TrainingPanel = () => {
-    const [liveData, setLiveData] = useState();
-    const [onDemandData, setOnDemandData] = useState();
+    const [liveData, setLiveData] = useState(null);
+    const [onDemandData, setOnDemandData] = useState(null);
 
     useEffect(() => {
       const getData = async () => {
@@ -29,10 +29,8 @@
             console.error("Error fetching on-demand training data:", error);
           });
       };
-      if (!liveData || !onDemandData) {
-        getData();
-      }
-    }, [liveData, onDemandData]);
+      getData();
+    }, []);
 
     useEffect(() => {
       // Initialize vfTabs after component renders
