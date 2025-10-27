@@ -699,7 +699,17 @@ def health_check(request):
             return HttpResponse("API is down", status=503)
 
     def check_search():
-        return HttpResponse("OK", status=200) # TODO: implement real check
+        search_endpoint = 'https://rnacentral.org/search'
+        test_query = 'RNA'
+        try:
+            search_response = requests.get(f"{search_endpoint}?q={test_query}", timeout=5)
+            if search_response.status_code == 200:
+                return HttpResponse("OK", status=200)
+            return HttpResponse("Search is down", status=503)
+        except requests.exceptions.ConnectTimeout:
+            return HttpResponse("Search is too slow", status=503)
+        except requests.RequestException:
+            return HttpResponse("Search is down", status=503)   
 
     context = {}
 
