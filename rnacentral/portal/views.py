@@ -665,6 +665,69 @@ def website_status_view(request):
     
     return render(request, "portal/website-status.html", {"context": context})
 
+@never_cache
+def health_check(request):
+    """
+    This view will be used by Traffic Manager to check for the response code, if 200x is returned then everything is fine.
+    If 500x is returned, traffic will be redirected to the fallback cluster.
+    """
+
+    def check_database_status():
+        response = HttpResponse()
+        try:
+            Database.objects.get(id=1)
+            # TODO: Add check here to ensure that we can read/write to the database
+            response.status_code = 200
+            response.content = "OK"
+            return response 
+        except (Database.DoesNotExist, DatabaseError, Exception):
+            response.status_code = 503
+            response.content = "Database is down"
+            return response
+        
+    def check_api():
+        test_endpoint = 'https://rnacentral.org/api/v1/rna/'
+        test_urs = 'URS0000000001'
+        try:
+            api_response = requests.get(f"{test_endpoint}{test_urs}", timeout=5)
+            if api_response.status_code == 200:
+                return HttpResponse("OK", status=200)
+            return HttpResponse("API is down", status=503)
+        except requests.exceptions.ConnectTimeout:
+            return HttpResponse("API is too slow", status=503)
+        except requests.RequestException:
+            return HttpResponse("API is down", status=503)
+
+    def check_search():
+        return HttpResponse("OK", status=200) # TODO: implement real check
+
+    context = {}
+
+    # Run checks
+    checks = {
+        "database": check_database_status(),
+        "api": check_api(),
+        "search": check_search(),
+    }
+
+    # Build structured context for template
+    context = {
+        name: {
+            "status_code": resp.status_code,
+            "message": resp.content.decode("utf-8"),
+        }
+        for name, resp in checks.items()
+    }
+
+    # Overall status
+    context["overall_status"] = all(
+        service["status_code"] == 200 for service in context.values()
+        if isinstance(service, dict)
+    )
+
+    # Set HTTP status for response
+    status_code = 200 if context["overall_status"] else 503
+    return render(request, "portal/health-check.html", {"context": context}, status=status_code)
 
 @cache_page(CACHE_TIMEOUT)
 def proxy(request):
