@@ -696,7 +696,7 @@ def health_check(request):
         test_endpoint = 'https://rnacentral.org/api/v1/rna/'
         test_id = 'URS0000000001'
         try:
-            api_response = requests.get(f"{test_endpoint}{test_id}", timeout=5)
+            api_response = requests.get(f"{test_endpoint}{test_id}", timeout=(10, 20))
             if api_response.status_code == 200:
                 return HttpResponse("OK", status=200)
             return HttpResponse("API is down", status=503)
@@ -709,7 +709,7 @@ def health_check(request):
         search_endpoint = 'https://rnacentral.org/search'
         test_query = 'RNA'
         try:
-            search_response = requests.get(f"{search_endpoint}?q={test_query}", timeout=5)
+            search_response = requests.get(f"{search_endpoint}?q={test_query}", timeout=(10, 20))
             if search_response.status_code == 200:
                 return HttpResponse("OK", status=200)
             return HttpResponse("Search is down", status=503)
