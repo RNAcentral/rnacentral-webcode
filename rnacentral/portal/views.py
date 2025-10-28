@@ -330,9 +330,9 @@ def rna_view(request, upi, taxid=None):
     # get tab
     tab = request.GET.get("tab", "").lower()
     if tab == "2d":
-        active_tab = 2
+        active_tab = 3
     elif tab == "pub":
-        active_tab = 5
+        active_tab = 6
     else:
         active_tab = 0
     goflow_results = None
@@ -745,6 +745,7 @@ def health_check(request):
     # Set HTTP status for response
     status_code = 200 if context["overall_status"] else 503
     return render(request, "portal/health-check.html", {"context": context}, status=status_code)
+
 
 @cache_page(CACHE_TIMEOUT)
 def proxy(request):
