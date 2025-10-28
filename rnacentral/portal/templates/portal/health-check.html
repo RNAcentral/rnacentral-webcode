@@ -1,0 +1,90 @@
+<!--
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="RNAcentral website health check"/>
+{% endblock %}
+
+{% block title %}
+Website Status
+{% endblock %}
+
+{% block content %}
+
+<h1>
+RNACentral Health Check
+</h1>
+
+<div class="row">
+
+  <div class="col-md-6">
+
+    <p>
+      We continuously monitor the status of <a href="{% url 'homepage' %}">rnacentral.org</a> and its related services.
+      If any problems are detected, a notice will appear on this page.
+      Please <a href="{% url 'contact-us' %}">contact us</a>
+      if you are experiencing problems not reflected here.
+    </p>
+
+    <table class="table table-hover">
+      <tr>
+        <td><strong>Database status</strong></td>
+        <td>
+          {% if  context.database.status_code == 200 %}
+           </span> <span class="badge badge-success"><span class="glyphicon glyphicon-ok"></span></span>
+          {% else %}
+           <span>{{ context.database.message }} </span>
+            <span class="badge badge-error"><span class="glyphicon glyphicon-warning-sign"></span></span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>API</strong></td>
+        <td>
+          {% if  context.api.status_code == 200  %}
+            <span class="badge badge-success"><span class="glyphicon glyphicon-ok"></span></span>
+          {% else %}
+          <span>{{ context.api.message }} </span>
+            <span class="badge badge-error"><span class="glyphicon glyphicon-warning-sign"></span></span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Search</strong></td>
+        <td>
+          {% if  context.search.status_code == 200 %}
+            <span class="badge badge-success"><span class="glyphicon glyphicon-ok"></span></span>
+          {% else %}
+          <span>{{ context.search.message }} </span>
+            <span class="badge badge-error"><span class="glyphicon glyphicon-warning-sign"></span></span>
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+
+    <br>
+
+    {% if context.overall_status %}
+      <div class="alert alert-success">All systems operational</div>
+    {% else %}
+      <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span> Some services are down</div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+{% endblock content %}

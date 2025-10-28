@@ -55,7 +55,7 @@ from portal.models import (
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.rna_summary import RnaSummary
 from portal.models.gene import GeneMember
-from django.db import connection, DatabaseError
+from django.db import connection, DatabaseError, connections
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -665,6 +665,86 @@ def website_status_view(request):
     
     return render(request, "portal/website-status.html", {"context": context})
 
+@never_cache
+def health_check(request):
+    """
+    This will be used by the Traffic Manager to redirect traffic. If it returns a 200x response code everything is fine.
+    If 500x is returned, traffic will be redirected to the fallback cluster.
+    """
+
+    def check_database_status():
+        response = HttpResponse()
+        try:
+            with connections['default'].cursor() as cursor:
+                cursor.execute("SELECT 1")
+                result = cursor.fetchone()
+                if result and result[0] == 1:
+                    response.status_code = 200
+                    response.content = "OK"
+                    return response
+                else:
+                    response.status_code = 503
+                    response.content = "Database is down"
+                    return response
+        except DatabaseError:
+            response.status_code = 503
+            response.content = "Database is down"
+            return response
+
+        
+    def check_api():
+        test_endpoint = 'https://rnacentral.org/api/v1/rna/'
+        test_id = 'URS0000000001'
+        try:
+            api_response = requests.get(f"{test_endpoint}{test_id}", timeout=(10, 20))
+            if api_response.status_code == 200:
+                return HttpResponse("OK", status=200)
+            return HttpResponse("API is down", status=503)
+        except requests.exceptions.ConnectTimeout:
+            return HttpResponse("API is too slow", status=503)
+        except requests.RequestException:
+            return HttpResponse("API is down", status=503)
+
+    def check_search():
+        search_endpoint = 'https://rnacentral.org/search'
+        test_query = 'RNA'
+        try:
+            search_response = requests.get(f"{search_endpoint}?q={test_query}", timeout=(10, 20))
+            if search_response.status_code == 200:
+                return HttpResponse("OK", status=200)
+            return HttpResponse("Search is down", status=503)
+        except requests.exceptions.ConnectTimeout:
+            return HttpResponse("Search is too slow", status=503)
+        except requests.RequestException:
+            return HttpResponse("Search is down", status=503)
+
+    context = {}
+
+    # Run checks
+    checks = {
+        "database": check_database_status(),
+        "api": check_api(),
+        "search": check_search(),
+    }
+
+    # Build structured context for template
+    context = {
+        name: {
+            "status_code": resp.status_code,
+            "message": resp.content.decode("utf-8"),
+        }
+        for name, resp in checks.items()
+    }
+
+    # Overall status
+    context["overall_status"] = all(
+        service["status_code"] == 200 for service in context.values()
+        if isinstance(service, dict)
+    )
+
+    # Set HTTP status for response
+    status_code = 200 if context["overall_status"] else 503
+    return render(request, "portal/health-check.html", {"context": context}, status=status_code)
 
 
 @cache_page(CACHE_TIMEOUT)
