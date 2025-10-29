@@ -13,4 +13,4 @@ database: db-fb
 proxy: proxy-hx
 
 # RNAcentral
-rnacentralReplicas: 6
+rnacentralReplicas: 1
