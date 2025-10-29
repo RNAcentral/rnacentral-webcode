@@ -145,7 +145,7 @@ RNAcentral: The non-coding RNA sequence database
           <div class="panel-body">
             <p class="margin-top-5px">
               <a href="{{ context.blog_url }}" class="thumbnail">
-                <img class="hvr-grow" src="{% static 'img/timeline/release-v24.png' %}" alt="Release announcement">
+                <img class="hvr-grow" src="{% static 'img/timeline/release-v26.png' %}" alt="Release announcement">
               </a>
             </p>
             <ul class="list-inline" style="margin-left: 5px; margin-top: -10px">
@@ -176,7 +176,7 @@ RNAcentral: The non-coding RNA sequence database
       </div>
 
   </div>
-
+  
   <div class="row">
 
     <p class="lead text-center margin-bottom-0px">
@@ -217,10 +217,20 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
+    <!-- TRAINING WIDGET -->
+  {% include "portal/training-widget.html" %}
+
 </div>
 {% endblock content %}
 
 {% block extra_js_uncompressed %}
+<!-- Load React from CDN -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<!-- React Training Widget -->
+<script src="{% static 'js/components/training-widget/training-widget.js' %}"></script>
+
 <script>
 $(document).ready(function() {
     $('#expert-databases').slick({
