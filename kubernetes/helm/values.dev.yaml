@@ -23,5 +23,3 @@ memcachedServiceMemory: "3400"
 # Nginx
 nginxReplicas: 1
 
-# RNAcentral
-rnacentralReplicas: 1
