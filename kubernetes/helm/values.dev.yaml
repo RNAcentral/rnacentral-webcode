@@ -1,7 +1,7 @@
 # Values used by the test website
 
 # Database
-database: db-pro
+database: db-pro-pg-16
 
 # EBI search index
 searchIndex: search-index-dev
