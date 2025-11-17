@@ -674,6 +674,8 @@ def health_check(request):
 
     def check_database_status():
         response = HttpResponse()
+         # TODO: remove debug response
+        return HttpResponse("Database is down", status=503)
         try:
             with connections['default'].cursor() as cursor:
                 cursor.execute("SELECT 1")
@@ -695,6 +697,8 @@ def health_check(request):
     def check_api():
         test_endpoint = 'https://rnacentral.org/api/v1/rna/'
         test_id = 'URS0000000001'
+         # TODO: remove debug response
+        return HttpResponse("API is down", status=503)
         try:
             api_response = requests.get(f"{test_endpoint}{test_id}", timeout=(10, 20))
             if api_response.status_code == 200:
@@ -708,6 +712,8 @@ def health_check(request):
     def check_search():
         search_endpoint = 'https://rnacentral.org/search'
         test_query = 'RNA'
+        # TODO: remove debug response
+        return HttpResponse("Search is down", status=503)
         try:
             search_response = requests.get(f"{search_endpoint}?q={test_query}", timeout=(10, 20))
             if search_response.status_code == 200:
@@ -742,8 +748,11 @@ def health_check(request):
         if isinstance(service, dict)
     )
 
+    # TODO: remove debug context
+
     # Set HTTP status for response
     status_code = 200 if context["overall_status"] else 503
+
     return render(request, "portal/health-check.html", {"context": context}, status=status_code)
 
 
