@@ -696,12 +696,10 @@ def health_check(request):
         test_endpoint = 'https://rnacentral.org/api/v1/rna/'
         test_id = 'URS0000000001'
         try:
-            api_response = requests.get(f"{test_endpoint}{test_id}", timeout=(10, 20))
+            api_response = requests.get(f"{test_endpoint}{test_id}")
             if api_response.status_code == 200:
                 return HttpResponse("OK", status=200)
             return HttpResponse("API is down", status=503)
-        except requests.exceptions.ConnectTimeout:
-            return HttpResponse("API is too slow", status=503)
         except requests.RequestException:
             return HttpResponse("API is down", status=503)
 
