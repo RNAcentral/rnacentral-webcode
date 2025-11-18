@@ -24,7 +24,7 @@ var textSearchResults = {
             ctrl.genomeMappingHelp = "/help/genomic-mapping";
 
             // subspecies can be toggled on and off
-            ctrl.includeSubspecies = !!search.query.match(/lineage_path:"(\d+)"/);
+            ctrl.includeSubspecies = !!search.query.match(/lineage_path:\"(\d+)\"/);
 
             // slider that allows users to set range of sequence lengths
             ctrl.setLengthSlider(); // initial value
@@ -225,7 +225,7 @@ var textSearchResults = {
          * Determine if the facet has already been applied.
          */
         ctrl.isFacetApplied = function(facetId, facetValue) {
-            var facetQuery = new RegExp(facetId + '\\:"' + facetValue + '"', 'i');
+            var facetQuery = new RegExp(facetId + '\\:\"' + facetValue + '\"', 'i');
             return !!search.query.match(facetQuery);
         };
 
@@ -233,7 +233,7 @@ var textSearchResults = {
          * Determine if the facet has already been applied.
          */
         ctrl.isSoFacetApplied = function(facetLabel) {
-            var facetQuery = new RegExp('so_rna_type_name' + '\\:"' + facetLabel + '"', 'i');
+            var facetQuery = new RegExp('so_rna_type_name' + '\\:\"' + facetLabel + '\"', 'i');
             return !!search.query.match(facetQuery);
         };
 
@@ -242,8 +242,8 @@ var textSearchResults = {
          */
         ctrl.showSubspecies = function() {
             ctrl.includeSubspecies = true;
-            if (search.query.match(/TAXONOMY:"(\d+)"/)) {
-                var addLineage = search.query.replace("RNA AND", "").replace(/TAXONOMY:"(\d+)"/, '(TAXONOMY:"$1" OR lineage_path:"$1")').trim()
+            if (search.query.match(/TAXONOMY:\"(\d+)\"/)) {
+                var addLineage = search.query.replace("RNA AND", "").replace(/TAXONOMY:\"(\d+)\"/, '(TAXONOMY:\"$1\" OR lineage_path:\"$1\")').trim()
                 search.search(addLineage);
             }
         };
@@ -253,8 +253,8 @@ var textSearchResults = {
          */
         ctrl.hideSubspecies = function() {
             ctrl.includeSubspecies = false;
-            if (search.query.match(/TAXONOMY:"(\d+)"/) && search.query.match(/lineage_path:"(\d+)"/)) {
-                var removeLineage = search.query.replace(/\(TAXONOMY:"(\d+)"\s+OR\s+lineage_path:"\d+"\)/, 'TAXONOMY:"$1"').trim()
+            if (search.query.match(/TAXONOMY:\"(\d+)\"/) && search.query.match(/lineage_path:\"(\d+)\"/)) {
+                var removeLineage = search.query.replace(/\(TAXONOMY:\"(\d+)\"\s+OR\s+lineage_path:\"\d+\"\)/, 'TAXONOMY:\"$1\"').trim()
                 search.search(removeLineage);
             }
         };
@@ -320,16 +320,27 @@ var textSearchResults = {
             }
 
             if (facetId !== 'length') {
-                facet = facetId + ':"' + facetValue + '"';
+                facet = facetId + ':\"' + facetValue + '\"';
 
-                if (ctrl.isFacetApplied(facetId, facetValue)) {
+                // Special handling for entry_type - radio button behavior (mutually exclusive)
+                if (facetId === 'entry_type') {
+                    // Remove any existing entry_type filters (with surrounding ANDs)
+                    newQuery = newQuery.replace(/ AND entry_type:"Sequence"/gi, '');
+                    newQuery = newQuery.replace(/ AND entry_type:"Gene"/gi, '');
+                    newQuery = newQuery.replace(/entry_type:"Sequence" AND /gi, '');
+                    newQuery = newQuery.replace(/entry_type:"Gene" AND /gi, '');
+                    newQuery = newQuery.replace(/entry_type:"Sequence"/gi, '');
+                    newQuery = newQuery.replace(/entry_type:"Gene"/gi, '');
+                    // Add the selected entry_type
+                    newQuery = newQuery.trim() + ' AND ' + facet;
+                } else if (ctrl.isFacetApplied(facetId, facetValue)) {
                     // remove facet in different contexts
                     if (ctrl.includeSubspecies && facetId === "TAXONOMY" && search.query.match(new RegExp('TAXONOMY', 'g')).length > 1) {
                         // remove subspecies
-                        newQuery = newQuery.replace(/AND TAXONOMY:"(\d+)"/, '').trim();
-                    } else if (ctrl.includeSubspecies && facetId === "TAXONOMY" && search.query.match(/lineage_path:"(\d+)"/)) {
+                        newQuery = newQuery.replace(/AND TAXONOMY:\"(\d+)\"/, '').trim();
+                    } else if (ctrl.includeSubspecies && facetId === "TAXONOMY" && search.query.match(/lineage_path:\"(\d+)\"/)) {
                         // remove lineage_path
-                        newQuery = newQuery.replace(/\(TAXONOMY:"(\d+)"\s+OR\s+lineage_path:"\d+"\)/, 'TAXONOMY:"$1"');
+                        newQuery = newQuery.replace(/\(TAXONOMY:\"(\d+)\"\s+OR\s+lineage_path:\"\d+\"\)/, 'TAXONOMY:\"$1\"');
                     }
                     newQuery = newQuery.replace(new RegExp(' AND ' + facet + ' AND ', 'gi'), ' AND ');
                     newQuery = newQuery.replace(new RegExp(facet + ' AND ', 'gi'), '');
@@ -339,9 +350,9 @@ var textSearchResults = {
                     newQuery = search.query + ' AND ' + facet; // add new facet
                 }
 
-                if (ctrl.includeSubspecies && facetId === "TAXONOMY" && !search.query.match(/lineage_path:"(\d+)"/)) {
+                if (ctrl.includeSubspecies && facetId === "TAXONOMY" && !search.query.match(/lineage_path:\"(\d+)\"/)) {
                     // add lineage_path
-                    newQuery = newQuery.replace("RNA AND", "").replace(/TAXONOMY:"(\d+)"/, '(TAXONOMY:"$1" OR lineage_path:"$1")').trim()
+                    newQuery = newQuery.replace("RNA AND", "").replace(/TAXONOMY:\"(\d+)\"/, '(TAXONOMY:\"$1\" OR lineage_path:\"$1\")').trim()
                 }
             } else {
                 var lengthClause = 'length\\:\\[\\d+ TO \\d+\\]';
@@ -398,11 +409,11 @@ var textSearchResults = {
             // Exclude genes when exporting FASTA format - genes don't have sequence data
             if (format === 'fasta') {
                 // If query already contains entry_type:"Gene", replace it with NOT entry_type:"Gene"
-                if (query.match(/entry_type:"Gene"/i)) {
-                    query = query.replace(/entry_type:"Gene"/gi, 'NOT entry_type:"Gene"');
+                if (query.match(/entry_type:\"Gene\"/i)) {
+                    query = query.replace(/entry_type:\"Gene\"/gi, 'NOT entry_type:\"Gene\"');
                 } else {
                     // Otherwise, just add the exclusion
-                    query = query + ' AND NOT entry_type:"Gene"';
+                    query = query + ' AND NOT entry_type:\"Gene\"';
                 }
             }
             
