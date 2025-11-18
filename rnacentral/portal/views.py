@@ -682,10 +682,9 @@ def health_check(request):
                     response.status_code = 200
                     response.content = "OK"
                     return response
-                else:
-                    response.status_code = 503
-                    response.content = "Database is down"
-                    return response
+                response.status_code = 503
+                response.content = "Database is down"
+                return response
         except DatabaseError:
             response.status_code = 503
             response.content = "Database is down"
