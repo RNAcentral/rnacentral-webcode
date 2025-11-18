@@ -16,3 +16,7 @@ MIN_LENGTH = 10
 
 # maximum query sequence length
 MAX_LENGTH = 7000
+
+CORS_ALLOWED_ORIGINS = [
+    "localhost:8000",
+]

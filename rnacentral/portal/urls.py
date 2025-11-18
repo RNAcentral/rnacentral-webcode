@@ -219,8 +219,7 @@ urlpatterns = [
     re_path(r"^error/?$", views.StaticView.as_view(), {"page": "error"}, name="error"),
     # status
     re_path(r"^status/?$", views.website_status_view, name="website-status"),
-    re_path(r"^health-check/?$", views.health_check, name="health-check"), 
-    # #TODO Restore endpoint later
+    # re_path(r"^health-check/?$", views.health_check, name="health-check"), TODO: Restore endpoint later
 
     # genome browser
     re_path(
