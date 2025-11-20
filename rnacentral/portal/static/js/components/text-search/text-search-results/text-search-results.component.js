@@ -29,8 +29,13 @@ var textSearchResults = {
             // slider that allows users to set range of sequence lengths
             ctrl.setLengthSlider(); // initial value
 
+            // Store original entry type counts (before any facet filtering)
+            ctrl.originalEntryTypeCounts = {};
+
             search.registerSearchCallback(function() { 
-                ctrl.setLengthSlider(); 
+                ctrl.setLengthSlider();
+                // Cache original entry type counts only if no entry_type filter is applied
+                ctrl.cacheOriginalEntryTypeCounts();
             });
 
             // retrieve expert_dbs json for display in tooltips
@@ -50,6 +55,38 @@ var textSearchResults = {
             );
         };
 
+        /**
+         * Cache the original entry type counts when no entry_type filter is applied
+         * This ensures the counts remain constant in the UI
+         */
+        ctrl.cacheOriginalEntryTypeCounts = function() {
+            // Only cache if no entry_type filter is currently applied
+            if (!search.query.match(/entry_type:/i)) {
+                var sequenceCount = ctrl.getEntryTypeCount('Sequence');
+                var geneCount = ctrl.getEntryTypeCount('Gene');
+                
+                // Only update if we got valid counts
+                if (sequenceCount > 0 || geneCount > 0) {
+                    ctrl.originalEntryTypeCounts = {
+                        'Sequence': sequenceCount,
+                        'Gene': geneCount
+                    };
+                }
+            }
+        };
+
+        /**
+         * Get the original (cached) entry type count
+         * Falls back to current count if original hasn't been cached yet
+         */
+        ctrl.getOriginalEntryTypeCount = function(entryType) {
+            if (ctrl.originalEntryTypeCounts[entryType] !== undefined) {
+                return ctrl.originalEntryTypeCounts[entryType];
+            }
+            // Fallback to current count if not cached yet
+            return ctrl.getEntryTypeCount(entryType);
+        };
+
         // Add function to get entry type count
         ctrl.getEntryTypeCount = function(entryType) {
             if (!ctrl.search.result.facets) return 0;
@@ -58,6 +95,7 @@ var textSearchResults = {
                 return facet.label === 'Entry type';
             });
             
+            if (!entryTypeFacet) return 0;
             
             var facetValue = entryTypeFacet.facetValues.find(function(fv) {
                 return fv.value === entryType;
