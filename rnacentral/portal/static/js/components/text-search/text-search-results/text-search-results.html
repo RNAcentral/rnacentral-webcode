@@ -166,7 +166,7 @@
                 <input type="radio" name="entry_type" ng-checked="$ctrl.isFacetApplied('entry_type', 'Sequence')" ng-click="$ctrl.facetSearch('entry_type', 'Sequence')">
                 <a href="" ng-click="$ctrl.facetSearch('entry_type', 'Sequence')" class="text-search-facet-link">
                   Sequence 
-                  <small>({{ $ctrl.getEntryTypeCount('Sequence') | number }})</small>
+                  <small>({{ $ctrl.getOriginalEntryTypeCount('Sequence') | number }})</small>
                 </a>
               </li>
               <!-- Hard-coded Gene option -->
@@ -174,7 +174,7 @@
                 <input type="radio" name="entry_type" ng-checked="$ctrl.isFacetApplied('entry_type', 'Gene')" ng-click="$ctrl.facetSearch('entry_type', 'Gene')">
                 <a href="" ng-click="$ctrl.facetSearch('entry_type', 'Gene')" class="text-search-facet-link">
                   Gene 
-                  <small>({{ $ctrl.getEntryTypeCount('Gene') | number }})</small>
+                  <small>({{ $ctrl.getOriginalEntryTypeCount('Gene') | number }})</small>
                 </a>
               </li>
             </ul>
