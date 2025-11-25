@@ -60,10 +60,17 @@ var textSearchResults = {
          * This ensures the counts remain constant in the UI
          */
         ctrl.cacheOriginalEntryTypeCounts = function() {
+            console.log('[DEBUG] cacheOriginalEntryTypeCounts called');
+            console.log('[DEBUG] search.query:', search.query);
+            console.log('[DEBUG] has entry_type filter:', !!search.query.match(/entry_type:/i));
+            
             // Only cache if no entry_type filter is currently applied
             if (!search.query.match(/entry_type:/i)) {
                 var sequenceCount = ctrl.getEntryTypeCount('Sequence');
                 var geneCount = ctrl.getEntryTypeCount('Gene');
+                
+                console.log('[DEBUG] sequenceCount:', sequenceCount);
+                console.log('[DEBUG] geneCount:', geneCount);
                 
                 // Only update if we got valid counts
                 if (sequenceCount > 0 || geneCount > 0) {
@@ -71,7 +78,12 @@ var textSearchResults = {
                         'Sequence': sequenceCount,
                         'Gene': geneCount
                     };
+                    console.log('[DEBUG] Cached counts:', ctrl.originalEntryTypeCounts);
+                } else {
+                    console.log('[DEBUG] Counts not valid, not caching');
                 }
+            } else {
+                console.log('[DEBUG] entry_type filter present, skipping cache');
             }
         };
 
@@ -89,17 +101,30 @@ var textSearchResults = {
 
         // Add function to get entry type count
         ctrl.getEntryTypeCount = function(entryType) {
-            if (!ctrl.search.result.facets) return 0;
+            console.log('[DEBUG] getEntryTypeCount called for:', entryType);
+            console.log('[DEBUG] ctrl.search.result.facets:', ctrl.search.result.facets);
+            
+            if (!ctrl.search.result.facets) {
+                console.log('[DEBUG] No facets available');
+                return 0;
+            }
             
             var entryTypeFacet = ctrl.search.result.facets.find(function(facet) {
                 return facet.label === 'Entry type';
             });
             
-            if (!entryTypeFacet) return 0;
+            console.log('[DEBUG] entryTypeFacet found:', entryTypeFacet);
+            
+            if (!entryTypeFacet) {
+                console.log('[DEBUG] Entry type facet not found');
+                return 0;
+            }
             
             var facetValue = entryTypeFacet.facetValues.find(function(fv) {
                 return fv.value === entryType;
             });
+            
+            console.log('[DEBUG] facetValue for', entryType, ':', facetValue);
             
             return facetValue ? facetValue.count : 0;
         };

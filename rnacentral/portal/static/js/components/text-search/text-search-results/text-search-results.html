@@ -252,7 +252,7 @@
           </div>
         </li>
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
-          <div ng-if="facet.label === 'Organisms' || facet.label === 'Expert databases' || facet.label === 'Secondary structure' || facet.id == 'has_secondary_structure' ">
+          <div ng-if="(facet.label === 'Organisms' || facet.label === 'Expert databases' || facet.label === 'Secondary structure' || facet.id == 'has_secondary_structure') && facet.label !== 'Entry type'">
             <h3>
               {{ facet.label }}
             </h3>
