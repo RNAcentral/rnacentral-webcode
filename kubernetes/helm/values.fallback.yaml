@@ -7,7 +7,7 @@
 # Using 67GB of RAM out of a total of 96GB
 
 # Database
-database: db-fb
+database: db-fb-pg-16
 
 # Proxy
 proxy: proxy-hx

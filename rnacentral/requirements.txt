@@ -1,39 +1,40 @@
-Django==4.1.13  # Django 4.2 requires Postgres 12
-PyYAML==5.3.1
-attrs==20.3.0
-psycopg2-binary==2.9.9
-django-cors-headers==3.5.0
-django-filter==2.4.0
-django-maintenancemode==0.11.3
-djangorestframework==3.14.0  # DRF 3.15 requires Django 4.2
+# Core Django and Python Dependencies
+Django==5.2.3  # Latest Django 5.2 LTS version
+PyYAML==6.0.2  # Updated for Django 5.2 compatibility
+attrs==24.2.0  # Updated version
+psycopg2-binary==2.9.9  # Compatible with Django 5.2
+django-cors-headers==4.6.0  # Updated for Django 5.2
+django-filter==24.3  # Updated for Django 5.2
+django-maintenancemode==0.11.7  # Compatible with Django 5.2
+djangorestframework==3.16.0  # Latest version with Django 5.2 support
 djangorestframework-yaml==2.0.0
-djangorestframework-jsonp
-logilab-common==1.8.0
-python-dateutil==2.8.1
+djangorestframework-jsonp==1.0.2  # Latest available version
+logilab-common==2.0.0  # Updated version
+python-dateutil==2.9.0  # Updated version
 pymemcache==4.0.0
-requests==2.25.1
-six==1.12.0
-sqlparse==0.4.1
-colorhash==1.0.3
-gunicorn==21.2.0
-python-dotenv==0.15.0
+requests==2.32.3  # Updated for security
+six==1.16.0  # Updated version
+sqlparse==0.5.2  # Updated version
+colorhash==1.2.1  # Updated version
+gunicorn==23.0.0  # Updated version
+python-dotenv==1.0.1  # Updated version
 
 # markdown support
 Markdown==3.7
 django-markdown-deux==1.0.6
-markdown2==2.4.13
+markdown2==2.5.0  # Updated version
 
 # django compressor
 django-appconf==1.0.6
-django-compressor==4.4
-rcssmin==1.1.1
-rjsmin==1.2.1
+django-compressor==4.5.1  # Updated version
+rcssmin==1.1.2  # Updated version
+rjsmin==1.2.2  # Updated version
 
-# django cache machine
-django-cachalot==2.7.0
+# django cache machine - FIXED VERSION
+django-cachalot==2.8.0  # Updated for Django 5.2 support
 
 # AWS SDK for Python
-boto3==1.36.15
+boto3==1.35.84  # Updated version
 
 # drf-spectacular for OpenAPI schema generation
-drf_spectacular==0.28.0
+drf-spectacular==0.28.0

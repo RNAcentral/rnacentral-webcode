@@ -8,7 +8,7 @@
 # Using up to 100GB of RAM out of a total of 256GB
 
 # Database
-database: db-hh
+database: db-hh-pg-16
 
 # Proxy
 proxy: proxy-hh
