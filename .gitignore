@@ -130,3 +130,4 @@ kubernetes/secrets
 
 #files created for local development
 staticfiles/*
+rnacentral/myenv/*

@@ -345,7 +345,7 @@ EBI_SEARCH_ENDPOINT = os.getenv(
 )
 
 RELEASE_ANNOUNCEMENT_URL = (
-    "https://blog.rnacentral.org/2024/03/rnacentral-release-24.html"
+    "https://blog.rnacentral.org/2025/10/rnacentral-release-26.html"
 )
 
 # django compressor
