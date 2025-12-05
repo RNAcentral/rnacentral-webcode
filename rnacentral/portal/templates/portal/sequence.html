@@ -37,6 +37,51 @@ limitations under the License.
 {% endblock %}
 
 {% block content %}
+<script type="text/javascript">
+// Initialize 2D tab activation state - wait for Angular to load
+(function() {
+    function initializeScope() {
+        // Check if Angular is available
+        if (typeof angular === 'undefined') {
+            setTimeout(initializeScope, 50);
+            return;
+        }
+        
+        var element = document.querySelector('[ng-controller="rnaSequenceController"]');
+        if (!element) {
+            setTimeout(initializeScope, 50);
+            return;
+        }
+        
+        var scope = angular.element(element).scope();
+        if (!scope) {
+            setTimeout(initializeScope, 50);
+            return;
+        }
+        
+        scope.$apply(function() {
+            // Check if we're loading with tab=2d parameter
+            // Check URL for tab parameter
+            var urlParams = new URLSearchParams(window.location.search);
+            var tabParam = urlParams.get('tab');
+            scope.is2dTabActivated = (tabParam === '2d');
+            
+            // Function to activate 2D tab
+            scope.activate2dTab = function() {
+                scope.is2dTabActivated = true;
+            };
+        });
+    }
+    
+    // Start trying to initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeScope);
+    } else {
+        initializeScope();
+    }
+})();
+</script>
+
 <div class="row" ng-controller="rnaSequenceController">
     <div ng-if="fetchRnaError" class="col-md-12">
         <div class="alert alert-danger">
@@ -109,6 +154,15 @@ limitations under the License.
               <p class="text-muted"><i class="fa fa-angle-right"></i> <strong>{{ item.display_id }}</strong>: {{ item.summary|safe }}</p>
             {% endfor %}
           </div>
+        {% endif %}
+
+        {% if rna.has_secondary_structure %}
+        <!-- Load r2dt-web script early to prevent rendering errors -->
+        {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
+            <script type="text/javascript" src="{% static "r2dt-web/dist/r2dt-web.js" %}"></script>
+        {% else %}
+            <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
+        {% endif %}
         {% endif %}
 
         <div class="tabbable">
@@ -321,20 +375,19 @@ limitations under the License.
             </uib-tab>
 
             {% if rna.has_secondary_structure %}
-            <uib-tab index="3" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
+            <uib-tab index="3" id="secondary-structures" select="activate2dTab()" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
                 <uib-tab-heading>
                   2D structure
                 </uib-tab-heading>
-                <r2dt-web
-                        search='{"urs": "{{ context.upi }}"}'
-                        customStyle='{"fixCss": "true", "titleColor": "#BF8E3E"}'
-                />
-                
-                {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
-                    <script type="text/javascript" src="{% static "r2dt-web/dist/r2dt-web.js" %}"></script>
-                {% else %}
-                    <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
-                {% endif %}
+                <div ng-if="is2dTabActivated">
+                    <r2dt-web
+                            search='{"urs": "{{ context.upi }}"}'
+                            customStyle='{"fixCss": "true", "titleColor": "#BF8E3E"}'
+                    />
+                </div>
+                <div ng-if="!is2dTabActivated">
+                    <p>Loading 2D structure...</p>
+                </div>
             </uib-tab>
             {% endif %}
 
