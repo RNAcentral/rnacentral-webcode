@@ -1,10 +1,10 @@
 var HomepageController = function($scope) {
     $scope.RNAcentralPublication = {
-        "title": "RNAcentral 2021: secondary structure integration, improved sequence search and new member databases",
+        "title": "RNAcentral in 2026: genes and literature integration",
         "authors": ["The RNAcentral Consortium"],
-        "publication": "Nucleic Acids Res. 2020",
-        "pubmed_id": 33106848,
-        "doi": "10.1093/nar/gkaa921",
+        "publication": "Nucleic Acids Res. 2025",
+        "pubmed_id": 41404707,
+        "doi": "10.1093/nar/gkaf1329",
         "pub_id": ""
     }
 };
