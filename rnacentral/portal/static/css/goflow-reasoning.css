@@ -206,7 +206,6 @@ details .reasoning-text {
     background: #e7f3ff;
     padding: 12px;
     border-radius: 6px;
-    border-left: 4px solid var(--c-secondary);
     margin-top: 10px;
 }
 
