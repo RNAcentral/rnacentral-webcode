@@ -22,6 +22,15 @@ Watch a recording of an online webinar to see RNAcentral in action:
 RNAcentral has been described in several papers:
 
 <blockquote class="callout-info">
+  <p>RNAcentral in 2026: genes and literature integration</p>
+  <footer>The RNAcentral Consortium, 2025</footer>
+  <footer><em>Nucleic Acids Research (Database issue)</em></footer>
+  <a href="https://doi.org/10.1093/nar/gkaf1329">NAR</a> |
+  <a href="http://europepmc.org/abstract/MED/41404707">EuropePMC</a> |
+  <a href="http://www.ncbi.nlm.nih.gov/pubmed/41404707">Pubmed</a>
+</blockquote>
+
+<blockquote>
   <p>RNAcentral 2021: secondary structure integration, improved sequence search and new member databases</p>
   <footer>The RNAcentral Consortium, 2020</footer>
   <footer><em>Nucleic Acids Research (Database issue)</em></footer>
