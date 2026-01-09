@@ -12,6 +12,29 @@
   
   <!-- Results -->
   <div ng-show="goflowData && !isLoading && !error">
+
+    <!-- Annotation -->
+<div class="step" ng-show="goflowData.annotation">
+  <div class="prompt">Annotation</div>
+  <div class="annotation">
+    <p ng-if="goflowData && goflowData.annotation && goflowData.annotation.BP">
+      <a
+      ng-href="https://www.ebi.ac.uk/QuickGO/GTerm?id={{goflowData.annotation.BP.involved_in}}"
+      target="_blank">
+   {{goflowData.annotation.BP.involved_in}}
+      </a>
+  </p>
+    </div>
+  </div>
+
+      <!-- Targets Section -->
+    <div class="step" ng-show="goflowData.targets || goflowData.target">
+      <div class="prompt">Identified Targets</div>
+      <div class="targets-list">
+        <p ng-show="goflowData.targets">{{ goflowData.targets }}</p>
+        <p ng-show="goflowData.target && !goflowData.targets">{{ goflowData.target }}</p>
+      </div>
+    </div>
     
     <!-- miRNA Binding Experiment -->
     <div class="step" ng-show="hasValue(goflowData.mirna_binding_filter_result)">
@@ -175,14 +198,6 @@
       </details>
     </div>
 
-    <!-- Targets Section -->
-    <div class="step" ng-show="goflowData.targets || goflowData.target">
-      <div class="prompt">Identified Targets</div>
-      <div class="targets-list">
-        <p ng-show="goflowData.targets">{{ goflowData.targets }}</p>
-        <p ng-show="goflowData.target && !goflowData.targets">{{ goflowData.target }}</p>
-      </div>
-    </div>
      <!-- PMCID -->
     <div class="step" ng-show="goflowData.pmcid">
       <div class="prompt">PMCID</div>
@@ -197,19 +212,7 @@
       </div>
     </div>
 
-<!-- Annotation -->
-<div class="step" ng-show="goflowData.annotation">
-  <div class="prompt">Annotation</div>
-  <div class="annotation">
-    <p ng-if="goflowData && goflowData.annotation && goflowData.annotation.BP">
-      <a
-      ng-href="https://www.ebi.ac.uk/QuickGO/GTerm?id={{goflowData.annotation.BP.involved_in}}"
-      target="_blank">
-   {{goflowData.annotation.BP.involved_in}}
-      </a>
-  </p>
-    </div>
-  </div>
+
 </div>
 
 

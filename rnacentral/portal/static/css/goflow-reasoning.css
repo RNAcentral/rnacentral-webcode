@@ -202,12 +202,14 @@ details .reasoning-text {
 }
 
 /* Annotation, PMCID, and targets */
-.annotation, .pmcid, .targets-list {
-    background: #e7f3ff;
+.annotation, .pmcid, .targets-list { 
     padding: 12px;
     border-radius: 6px;
-    border-left: 4px solid var(--c-secondary);
     margin-top: 10px;
+}
+
+.annotation, .targets-list{
+ background: #e7f3ff;
 }
 
 .targets-list p, .annotation p, .targets p{
