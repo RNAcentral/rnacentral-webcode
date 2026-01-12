@@ -48,7 +48,6 @@
     <section class="gene__litsumm-section" ng-if="vm.litsummSummaries && vm.litsummSummaries.length > 0">
       <div class="gene-container">
         <div class="gene__litsumm-header">
-          <h4 class="gene__litsumm-subtitle">{{ vm.litsummSummaries[0].urs }} - <span>{{vm.geneData.summary}}</span></h4>
           <p class="gene__litsumm-caution">
            Caution, this is an AI generated summary based on literature. This may have errors, see <a href="/help/litsumm" target="_blank">here for more</a>. Please share your <a href="#" target="_blank">feedback</a> with us.
           </p>
@@ -56,6 +55,10 @@
         <div id="gene-litsumm-carousel" class="gene__litsumm-carousel">
           <div class="panel panel-default gene__litsumm-panel"
                ng-repeat="item in vm.litsummSummaries">
+               <div class="gene__litsumm-subtitle">
+                 <span ng-bind-html="item.urs"></span> - <span>{{vm.geneData.summary}}</span>
+               </div>
+
             <p class="gene__litsumm-summary" ng-bind-html="item.summary"></p>
           </div>
         </div>

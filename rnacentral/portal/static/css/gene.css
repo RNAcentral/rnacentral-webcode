@@ -617,9 +617,15 @@ text-decoration: none;
     margin-bottom: 0.25rem;
     margin-top: 0;
 }
-
+.gene__litsumm-subtitle {
+    padding-inline: 10px;
+    padding-block-end: 20px;
+    margin: 0;
+}
 .gene__litsumm-subtitle span {
-    color: #BF8E3E;
+    color: rgb(38, 183, 231);
+    font-size: 1.4rem;
+    font-weight: bold;
 }
 
 .gene__litsumm-caution {
