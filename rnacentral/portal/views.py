@@ -504,6 +504,7 @@ def gene_detail(request, name):
             "transcriptsData": [],
             "externalLinksData": [],
             "transcriptsPagination": {},
+            "litsummSummaries": [],
         })
     
     metadata = getattr(gene, "metadata", None)
@@ -586,8 +587,40 @@ def gene_detail(request, name):
     }
 
 
-    # External links data 
+    # External links data
     external_links_data = []
+
+    # Fetch litsumm summaries for all transcripts of this gene
+    litsumm_summaries_data = []
+
+    # Get all transcript IDs for this gene (not just current page)
+    all_transcript_ids = []
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT DISTINCT locus.urs_taxid
+            FROM rnc_gene_members gm
+            JOIN rnc_genes g ON(gm.rnc_gene_id=g.id)
+            JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
+            WHERE g.public_name = %s
+        """, [gene.name])
+        all_transcript_ids = [row[0] for row in cursor.fetchall()]
+
+    if all_transcript_ids:
+        # Get all litsumm summaries for transcripts of this gene
+        litsumm_records = LitSumm.objects.filter(primary_id__in=all_transcript_ids)
+        pmc_regex = re.compile(r"PMC[0-9]+")
+
+        for record in litsumm_records:
+            # Convert PMC IDs to links
+            summary_with_links = pmc_regex.sub(
+                r'<a href="https://europepmc.org/article/PMC/\g<0>" target="_blank">\g<0></a>',
+                record.summary,
+            )
+            litsumm_summaries_data.append({
+                "id": record.display_id,
+                "urs": record.primary_id,
+                "summary": summary_with_links,
+            })
 
     return render(request, "portal/gene_detail.html", {
         "geneName": base_name,
@@ -597,6 +630,7 @@ def gene_detail(request, name):
         'transcriptsData': json.dumps(transcripts_data),
         'externalLinksData': json.dumps(external_links_data),
         'transcriptsPagination': json.dumps(pagination),
+        'litsummSummaries': json.dumps(litsumm_summaries_data),
     })
 
 

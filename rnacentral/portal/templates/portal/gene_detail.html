@@ -34,7 +34,37 @@ window.geneDetailData = {
     transcriptsData: {{ transcriptsData|safe }},
     externalLinksData: {{ externalLinksData|safe }},
     transcriptsPagination: {{ transcriptsPagination|safe }},
+    litsummSummaries: {{ litsummSummaries|safe }},
     geneFound: {{ geneFound|yesno:'true,false' }}
 };
+
+// Initialize litsumm carousel after AngularJS renders the content
+$(document).ready(function() {
+    var litsummData = window.geneDetailData.litsummSummaries || [];
+    if (litsummData.length > 1) {
+        // Wait for AngularJS to render the carousel items
+        var initCarousel = function() {
+            var $carousel = $('#gene-litsumm-carousel');
+            var itemCount = $carousel.children('.gene__litsumm-panel').length;
+
+            if (itemCount >= litsummData.length && !$carousel.hasClass('slick-initialized')) {
+                $carousel.slick({
+                    draggable: true,
+                    rows: 1,
+                    dots: true,
+                    infinite: true,
+                    lazyLoad: 'ondemand',
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: true
+                });
+            } else if (itemCount < litsummData.length) {
+                // Retry if items not yet rendered
+                setTimeout(initCarousel, 100);
+            }
+        };
+        setTimeout(initCarousel, 500);
+    }
+});
 </script>
 {% endblock %}

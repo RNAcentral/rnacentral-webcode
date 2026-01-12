@@ -9,7 +9,7 @@ var geneDetail = {
         geneFound: '@?'
     },
     controllerAs: 'vm',
-    controller: ['$timeout', '$element', '$scope', '$http', function($timeout, $element, $scope, $http) {
+    controller: ['$timeout', '$element', '$scope', '$http', '$sce', function($timeout, $element, $scope, $http, $sce) {
         var vm = this;
         
         // State management
@@ -49,6 +49,7 @@ var geneDetail = {
 
         vm.transcripts = [];
         vm.externalLinks = [];
+        vm.litsummSummaries = [];
 
         vm.$onInit = function() {
             
@@ -70,9 +71,19 @@ var geneDetail = {
             if (globalData.geneData) {
                 processGeneData(globalData.geneData);
                 
-                // Set transcripts and external links from global data
+                // Set transcripts, external links, and litsumm summaries from global data
                 vm.transcripts = globalData.transcriptsData || [];
                 vm.externalLinks = globalData.externalLinksData || [];
+
+                // Process litsumm summaries and trust HTML content
+                var rawSummaries = globalData.litsummSummaries || [];
+                vm.litsummSummaries = rawSummaries.map(function(item) {
+                    return {
+                        id: item.id,
+                        urs: item.urs,
+                        summary: $sce.trustAsHtml(item.summary)
+                    };
+                });
 
                 // parse urs and taxid for each transcript
 

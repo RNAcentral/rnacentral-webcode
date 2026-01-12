@@ -1,5 +1,5 @@
 (function() {
     'use strict';
 
-    angular.module('geneDetail', []);
+    angular.module('geneDetail', ['ngSanitize']);
 })();
