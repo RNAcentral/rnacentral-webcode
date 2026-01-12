@@ -21,6 +21,7 @@
         </button>
         <ul class="dropdown-menu pull-right" role="menu">
           <li ng-if="!$ctrl.isGeneOnlyResults()"><a href="" ng-click="$ctrl.exportResults('fasta')">FASTA</a></li>
+          <li><a href="" ng-click="$ctrl.exportResults('parquet')">Parquet</a></li>
           <li><a href="" ng-click="$ctrl.exportResults('json')">JSON</a></li>
           <li><a href="" ng-click="$ctrl.exportResults('txt')">RNAcentral ids</a></li>
         </ul>
