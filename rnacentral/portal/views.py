@@ -593,32 +593,34 @@ def gene_detail(request, name):
     # Fetch litsumm summaries for all transcripts of this gene
     litsumm_summaries_data = []
 
-    # Get all transcript IDs for this gene (not just current page)
-    all_transcript_ids = []
+    # Get all litsumm summaries for transcripts of this gene
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT DISTINCT locus.urs_taxid
+            SELECT ls.primary_id, ls.display_id, ls.summary
             FROM rnc_gene_members gm
-            JOIN rnc_genes g ON(gm.rnc_gene_id=g.id)
+            JOIN rnc_genes g ON gm.rnc_gene_id = g.id
             JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
+            JOIN litsumm_summaries ls ON ls.primary_id = locus.urs_taxid
             WHERE g.public_name = %s
         """, [gene.name])
-        all_transcript_ids = [row[0] for row in cursor.fetchall()]
+        rows = cursor.fetchall()
 
-    if all_transcript_ids:
-        # Get all litsumm summaries for transcripts of this gene
-        litsumm_records = LitSumm.objects.filter(primary_id__in=all_transcript_ids)
         pmc_regex = re.compile(r"PMC[0-9]+")
-
-        for record in litsumm_records:
+        seen_ids = set()
+        for row in rows:
+            primary_id, display_id, summary = row
+            # Skip duplicates
+            if primary_id in seen_ids:
+                continue
+            seen_ids.add(primary_id)
             # Convert PMC IDs to links
             summary_with_links = pmc_regex.sub(
                 r'<a href="https://europepmc.org/article/PMC/\g<0>" target="_blank">\g<0></a>',
-                record.summary,
+                summary,
             )
             litsumm_summaries_data.append({
-                "id": record.display_id,
-                "urs": record.primary_id,
+                "id": display_id,
+                "urs": primary_id,
                 "summary": summary_with_links,
             })
 
