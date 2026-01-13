@@ -685,6 +685,26 @@ text-decoration: none;
 }
 
 /* Slick carousel overrides for litsumm */
+.gene__litsumm-carousel .slick-list {
+    overflow: hidden;
+}
+
+.gene__litsumm-carousel .slick-track {
+    display: flex;
+    align-items: stretch;
+}
+
+.gene__litsumm-carousel .slick-slide {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gene__litsumm-carousel .slick-slide.slick-active {
+    visibility: visible;
+    opacity: 1;
+}
+
 .gene__litsumm-carousel .slick-prev {
     left: 0;
 }
@@ -696,6 +716,14 @@ text-decoration: none;
 .gene__litsumm-carousel .slick-prev:before,
 .gene__litsumm-carousel .slick-next:before {
     color: #9e9e9e;
+}
+
+.gene__litsumm-carousel .slick-disabled {
+    cursor:not-allowed;
+}
+
+.gene__litsumm-carousel .slick-disabled:before {
+    opacity: 0.25;
 }
 
 .gene__litsumm-carousel .slick-dots {

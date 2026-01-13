@@ -37,32 +37,38 @@ window.geneDetailData = {
     litsummSummaries: {{ litsummSummaries|safe }},
     geneFound: {{ geneFound|yesno:'true,false' }}
 };
+</script>
+{% endblock %}
 
-// Initialize litsumm carousel after AngularJS renders the content
+{% block extra_js_uncompressed %}
+<script>
 $(document).ready(function() {
     var litsummData = window.geneDetailData.litsummSummaries || [];
     if (litsummData.length > 1) {
-        // Wait for AngularJS to render the carousel items
-        var initCarousel = function() {
-            var $carousel = $('#gene-litsumm-carousel');
-            var itemCount = $carousel.children('.gene__litsumm-panel').length;
+        // Poll until the carousel element exists and has items
+        var attempts = 0;
+        var maxAttempts = 50;
 
-            if (itemCount >= litsummData.length && !$carousel.hasClass('slick-initialized')) {
-                $carousel.slick({
-                    draggable: true,
-                    rows: 1,
-                    dots: true,
-                    infinite: true,
-                    lazyLoad: 'ondemand',
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    arrows: true
-                });
-            } else if (itemCount < litsummData.length) {
-                // Retry if items not yet rendered
+        var initCarousel = function() {
+            attempts++;
+            var $carousel = $('#gene-litsumm-carousel');
+
+            if ($carousel.length && $carousel.find('.gene__litsumm-panel').length > 0) {
+                if (!$carousel.hasClass('slick-initialized')) {
+                    $carousel.slick({
+                        draggable: true,
+                        dots: true,
+                        infinite: false,
+                        slidesToShow: 1,
+                        slidesToScroll: 1,
+                        arrows: true
+                    });
+                }
+            } else if (attempts < maxAttempts) {
                 setTimeout(initCarousel, 100);
             }
         };
+
         setTimeout(initCarousel, 500);
     }
 });
