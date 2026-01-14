@@ -81,7 +81,8 @@ var geneDetail = {
                     return {
                         id: item.id,
                         urs: item.urs,
-                        summary: $sce.trustAsHtml(item.summary)
+                        summary: $sce.trustAsHtml(item.summary),
+                        description: item.description || ""
                     };
                 });
 

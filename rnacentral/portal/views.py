@@ -593,14 +593,15 @@ def gene_detail(request, name):
     # Fetch litsumm summaries for all transcripts of this gene
     litsumm_summaries_data = []
 
-    # Get all litsumm summaries for transcripts of this gene
+    # Get all litsumm summaries for transcripts of this gene with their descriptions
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT ls.primary_id, ls.display_id, ls.summary
+            SELECT ls.primary_id, ls.display_id, ls.summary, pre.description
             FROM rnc_gene_members gm
             JOIN rnc_genes g ON gm.rnc_gene_id = g.id
             JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
             JOIN litsumm_summaries ls ON ls.primary_id = locus.urs_taxid
+            JOIN rnc_rna_precomputed pre ON pre.id = locus.urs_taxid
             WHERE g.public_name = %s
         """, [gene.name])
         rows = cursor.fetchall()
@@ -608,7 +609,7 @@ def gene_detail(request, name):
         pmc_regex = re.compile(r"PMC[0-9]+")
         seen_ids = set()
         for row in rows:
-            primary_id, display_id, summary = row
+            primary_id, display_id, summary, description = row
             # Skip duplicates
             if primary_id in seen_ids:
                 continue
@@ -622,6 +623,7 @@ def gene_detail(request, name):
                 "id": display_id,
                 "urs": primary_id,
                 "summary": summary_with_links,
+                "description": description or "",
             })
 
     return render(request, "portal/gene_detail.html", {

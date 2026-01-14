@@ -57,7 +57,7 @@
           <div class="panel panel-default gene__litsumm-panel"
                ng-repeat="item in vm.litsummSummaries">
                <div class="gene__litsumm-subtitle">
-                 <span ng-bind-html="item.urs"></span> - <span>{{vm.geneData.summary}}</span>
+                 <span ng-bind-html="item.urs"></span> - <span ng-bind-html="item.description"></span>
                </div>
 
             <p class="gene__litsumm-summary" ng-bind-html="item.summary"></p>
