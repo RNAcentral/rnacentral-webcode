@@ -34,7 +34,43 @@ window.geneDetailData = {
     transcriptsData: {{ transcriptsData|safe }},
     externalLinksData: {{ externalLinksData|safe }},
     transcriptsPagination: {{ transcriptsPagination|safe }},
+    litsummSummaries: {{ litsummSummaries|safe }},
     geneFound: {{ geneFound|yesno:'true,false' }}
 };
+</script>
+{% endblock %}
+
+{% block extra_js_uncompressed %}
+<script>
+$(document).ready(function() {
+    var litsummData = window.geneDetailData.litsummSummaries || [];
+    if (litsummData.length > 1) {
+        // Poll until the carousel element exists and has items
+        var attempts = 0;
+        var maxAttempts = 50;
+
+        var initCarousel = function() {
+            attempts++;
+            var $carousel = $('#gene-litsumm-carousel');
+
+            if ($carousel.length && $carousel.find('.gene__litsumm-panel').length > 0) {
+                if (!$carousel.hasClass('slick-initialized')) {
+                    $carousel.slick({
+                        draggable: true,
+                        dots: true,
+                        infinite: false,
+                        slidesToShow: 1,
+                        slidesToScroll: 1,
+                        arrows: true
+                    });
+                }
+            } else if (attempts < maxAttempts) {
+                setTimeout(initCarousel, 100);
+            }
+        };
+
+        setTimeout(initCarousel, 500);
+    }
+});
 </script>
 {% endblock %}

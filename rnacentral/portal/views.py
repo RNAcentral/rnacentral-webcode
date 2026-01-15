@@ -504,6 +504,7 @@ def gene_detail(request, name):
             "transcriptsData": [],
             "externalLinksData": [],
             "transcriptsPagination": {},
+            "litsummSummaries": [],
         })
     
     metadata = getattr(gene, "metadata", None)
@@ -586,8 +587,44 @@ def gene_detail(request, name):
     }
 
 
-    # External links data 
+    # External links data
     external_links_data = []
+
+    # Fetch litsumm summaries for all transcripts of this gene
+    litsumm_summaries_data = []
+
+    # Get all litsumm summaries for transcripts of this gene with their descriptions
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT ls.primary_id, ls.display_id, ls.summary, pre.description
+            FROM rnc_gene_members gm
+            JOIN rnc_genes g ON gm.rnc_gene_id = g.id
+            JOIN rnc_sequence_regions locus ON locus.id = gm.locus_id
+            JOIN litsumm_summaries ls ON ls.primary_id = locus.urs_taxid
+            JOIN rnc_rna_precomputed pre ON pre.id = locus.urs_taxid
+            WHERE g.public_name = %s
+        """, [gene.name])
+        rows = cursor.fetchall()
+
+        pmc_regex = re.compile(r"PMC[0-9]+")
+        seen_ids = set()
+        for row in rows:
+            primary_id, display_id, summary, description = row
+            # Skip duplicates
+            if primary_id in seen_ids:
+                continue
+            seen_ids.add(primary_id)
+            # Convert PMC IDs to links
+            summary_with_links = pmc_regex.sub(
+                r'<a href="https://europepmc.org/article/PMC/\g<0>" target="_blank">\g<0></a>',
+                summary,
+            )
+            litsumm_summaries_data.append({
+                "id": display_id,
+                "urs": primary_id,
+                "summary": summary_with_links,
+                "description": description or "",
+            })
 
     return render(request, "portal/gene_detail.html", {
         "geneName": base_name,
@@ -597,6 +634,7 @@ def gene_detail(request, name):
         'transcriptsData': json.dumps(transcripts_data),
         'externalLinksData': json.dumps(external_links_data),
         'transcriptsPagination': json.dumps(pagination),
+        'litsummSummaries': json.dumps(litsumm_summaries_data),
     })
 
 
