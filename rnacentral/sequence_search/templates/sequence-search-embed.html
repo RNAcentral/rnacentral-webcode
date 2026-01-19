@@ -21,7 +21,6 @@
 {% block content %}
     <h1><i class="fa fa-search"></i> Sequence search</h1>
     <rnacentral-sequence-search
-        databases='[]'
         examples='[
           {"description": "miRNA hsa-let-7a-1", "urs": "", "sequence": "CUAUACAAUCUACUGUCUUUC"},
           {"description": "SNORD3A", "urs": "", "sequence": "AAGACUAUACUUUCAGGGAUCAUUUCUAUAGUGUGUUACUAGAGAAGUUUCUCUGAACGUGUAGAGCACCGAAAACCACGAGGAAGAGAGGUAGCGUUUUCUCCUGAGCGUGAAGCCGGCUUUCUGGCGUUGCUUGGCUGCAACUGCCGUCAGCCAUUGAUGAUCGUUCUUCUCUCCGUAUUGGGGAGUGAGAGGGAGAGAACGCGGUCUGAGUGGU"},
@@ -32,15 +31,6 @@
         ]'
         rfam="true"
         r2dt="true"
-        customStyle='{
-          "fixCss": "true",
-          "searchButtonColor": "#337ab7",
-          "h3Color": "#BF8E3E",
-          "facetColor": "#BF8E3E",
-          "hideRnacentral": "true",
-          "urlWithJobId": "true",
-          "trackingID": "G-37T22PHH90"
-        }'
     />
     {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost' %}
         <script type="text/javascript" src="{% static "rnacentral-sequence-search-embed/dist/RNAcentral-sequence-search.js" %}"></script>
