@@ -21,20 +21,26 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-SEQUENCE_SEARCH_ENDPOINT = "https://search.rnacentral.org"
-
+# Configure sequence search endpoint and proxy settings per environment
 if settings.ENVIRONMENT == "DEV":
+    SEQUENCE_SEARCH_ENDPOINT = "https://sequence-search-test.rnacentral.org"
     proxies = None
 elif settings.ENVIRONMENT == "HX":
+    SEQUENCE_SEARCH_ENDPOINT = "https://sequence-search-test.rnacentral.org"
     proxies = {
         "http": "http://hx-wwwcache.ebi.ac.uk:3128",
         "https": "http://hx-wwwcache.ebi.ac.uk:3128",
     }
 elif settings.ENVIRONMENT == "HH":
+    SEQUENCE_SEARCH_ENDPOINT = "https://sequence-search-test.rnacentral.org"
     proxies = {
         "http": "http://hh-wwwcache.ebi.ac.uk:3128",
         "https": "http://hh-wwwcache.ebi.ac.uk:3128",
     }
+else:
+    # Fallback for any other environment
+    SEQUENCE_SEARCH_ENDPOINT = "https://sequence-search-test.rnacentral.org"
+    proxies = None
 
 
 def proxy_request(request, url, method):
