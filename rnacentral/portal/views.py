@@ -1039,7 +1039,7 @@ def docbot_feedback(request):
     # Whitelist of allowed hosts
     allowed_hosts = ["wwwint.ebi.ac.uk"]
     if settings.DEBUG:
-        allowed_hosts.extend(["localhost:8000", "127.0.0.1"])
+        allowed_hosts.extend(["localhost", "127.0.0.1"])
 
     referer = request.META.get("HTTP_REFERER", "")
     if not any(host in referer for host in allowed_hosts):
