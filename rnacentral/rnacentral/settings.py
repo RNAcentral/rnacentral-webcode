@@ -344,6 +344,10 @@ EBI_SEARCH_ENDPOINT = os.getenv(
     "EBI_SEARCH_ENDPOINT", "https://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral"
 )
 
+# Doorbell.io feedback integration
+DOORBELL_API_KEY = os.getenv("DOORBELL_API_KEY", "")
+DOORBELL_API_ID = os.getenv("DOORBELL_API_ID", "")
+
 RELEASE_ANNOUNCEMENT_URL = (
     "https://blog.rnacentral.org/2025/10/rnacentral-release-26.html"
 )
