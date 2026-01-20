@@ -1261,16 +1261,34 @@ class RelationshipsView(generics.ListAPIView):
             relationships_data = relationships_response.json()
             relationships = relationships_data.get('relationships', [])
 
-            # Apply search filter if provided
+            # Apply filters if provided
             search_query = self.request.query_params.get('search', '').strip().lower()
-            if search_query:
+            relationship_type_filter = self.request.query_params.get('relationship_type', '').strip()
+            source_filter = self.request.query_params.get('source', '').strip()
+
+            if search_query or relationship_type_filter or source_filter:
                 filtered_relationships = []
                 for rel in relationships:
-                    node_props = rel.get('node_properties', {})
-                    label = (node_props.get('Label') or rel.get('node_id') or '').lower()
-                    description = (node_props.get('Description') or '').lower()
-                    if search_query in label or search_query in description:
-                        filtered_relationships.append(rel)
+                    # Text search filter
+                    if search_query:
+                        node_props = rel.get('node_properties', {})
+                        label = (node_props.get('Label') or rel.get('node_id') or '').lower()
+                        description = (node_props.get('Description') or '').lower()
+                        if search_query not in label and search_query not in description:
+                            continue
+
+                    # Relationship type filter
+                    if relationship_type_filter:
+                        if rel.get('relationship_type', '') != relationship_type_filter:
+                            continue
+
+                    # Source filter
+                    if source_filter:
+                        sources = rel.get('relationship_properties', {}).get('Source', [])
+                        if source_filter not in sources:
+                            continue
+
+                    filtered_relationships.append(rel)
                 relationships = filtered_relationships
 
             # Create a mock queryset-like object for pagination
@@ -1305,7 +1323,7 @@ class RelationshipsView(generics.ListAPIView):
             'node_id': node_id,
             'node_id_scheme': 'RNAcentral'
         }
-        
+
         try:
             node_response = requests.get(node_id_url, params=node_id_params, timeout=10)
             if node_response.status_code == 200:
@@ -1314,22 +1332,64 @@ class RelationshipsView(generics.ListAPIView):
         except Exception:
             pass
         return None
-    
+
+    def get_filter_options(self):
+        """Extract unique relationship types and sources from the full dataset"""
+        node_id = f"{self.kwargs['pk']}_{self.kwargs['taxid']}"
+        rna_kg_url = "https://rna-kg.biodata.di.unimi.it/api/v1/incoming/id"
+        relationships_params = {
+            'node_id': node_id,
+            'node_id_scheme': 'RNAcentral',
+            'filter_rnacentral_rels': 'false'
+        }
+
+        relationship_types = set()
+        sources = set()
+
+        try:
+            response = requests.get(rna_kg_url, params=relationships_params, timeout=10)
+            response.raise_for_status()
+            relationships = response.json().get('relationships', [])
+
+            for rel in relationships:
+                rel_type = rel.get('relationship_type')
+                if rel_type:
+                    relationship_types.add(rel_type)
+
+                rel_sources = rel.get('relationship_properties', {}).get('Source', [])
+                for source in rel_sources:
+                    sources.add(source)
+        except Exception:
+            pass
+
+        return {
+            'relationship_types': sorted(list(relationship_types)),
+            'sources': sorted(list(sources))
+        }
+
     def list(self, request, *args, **kwargs):
-        """Override list method to include RNA sequence rnakg_id in response"""
+        """Override list method to include RNA sequence rnakg_id and filter options in response"""
         queryset = self.filter_queryset(self.get_queryset())
-        
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             paginated_response = self.get_paginated_response(serializer.data)
-            
-            # Add the RNA sequence rnakg_id to the response
+
+            # Add the RNA sequence rnakg_id and filter options to the response
             rna_sequence_rnakg_id = self.get_rna_sequence_rnakg_id()
             paginated_response.data['rna_sequence_rnakg_id'] = rna_sequence_rnakg_id
-            
+
+            # Only fetch filter options on initial load (no filters applied)
+            if not any([
+                request.query_params.get('search'),
+                request.query_params.get('relationship_type'),
+                request.query_params.get('source')
+            ]):
+                paginated_response.data['filter_options'] = self.get_filter_options()
+
             return paginated_response
-        
+
         serializer = self.get_serializer(queryset, many=True)
         response_data = {
             'results': serializer.data,
