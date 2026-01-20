@@ -41,9 +41,5 @@
           "trackingID": "G-37T22PHH90"
         }'
     />
-    {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost' %}
-        <script type="text/javascript" src="{% static "rnacentral-sequence-search-embed/dist/RNAcentral-sequence-search.js" %}"></script>
-    {% else %}
-        <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-sequence-search-embed/dist/RNAcentral-sequence-search.js"></script>
-    {% endif %}
+    <script type="text/javascript" src="{% static "rnacentral-sequence-search-embed/dist/RNAcentral-sequence-search.js" %}"></script>
 {% endblock %}
