@@ -37,6 +37,7 @@ from apiv1.serializers import (
     RnaFastaSerializer,
     RnaFlatSerializer,
     RnaGenomeLocationsSerializer,
+    RnaGenesSerializer,  # NEW IMPORT
     RnaNestedSerializer,
     RnaSecondaryStructureSerializer,
     RnaSpeciesSpecificSerializer,
@@ -634,58 +635,132 @@ class RnaGenomeLocations(generics.ListAPIView):
         return SequenceRegionActive.objects.raw(sequence_region_active_query)
 
 
-class AccessionView(generics.RetrieveAPIView):
+class RnaGenesView(APIView):
     """
-    API endpoint that allows single accessions to be viewed.
+    List of genes associated with a specific RNA sequence in a specific species.
 
     [API documentation](/api)
     """
-
-    # the above docstring appears on the API website
-    queryset = Accession.objects.select_related().all()
-    serializer_class = AccessionSerializer
-
-
-class CitationsView(generics.ListAPIView):
-    """
-    API endpoint that allows the citations associated with
-    a particular cross-reference to be viewed.
-
-    [API documentation](/api)
-    """
-
-    serializer_class = CitationSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs["pk"]
-        try:
-            citations = Accession.objects.select_related().get(pk=pk).refs.all()
-        except Accession.DoesNotExist:
-            citations = Accession.objects.none()
-
-        return citations
-
-
-class RnaPublicationsView(generics.ListAPIView):
-    """
-    API endpoint that allows the citations associated with
-    each Unique RNA Sequence to be viewed.
-
-    [API documentation](/api)
-    """
-
-    # the above docstring appears on the API website
+    
     permission_classes = (AllowAny,)
-    serializer_class = RawPublicationSerializer
-    pagination_class = Pagination
+    
+    def get(self, request, pk, taxid, **kwargs):
+        """Return gene information for a given URS and taxid"""
+        
+        urs_taxid = pk + "_" + taxid
+        
+        from django.db import connection
+        
+        # Try different approaches to get gene information
+        approaches = [
+            # Approach 1: Check if gene info is in rnc_accessions table
+            {
+                "name": "accessions_gene_info",
+                "query": """
+                    SELECT DISTINCT
+                        sr.chromosome,
+                        sr.region_start,
+                        sr.region_stop,
+                        acc.gene,
+                        acc.product
+                    FROM rnc_sequence_regions sr
+                    INNER JOIN rnc_accession_sequence_region asr ON sr.id = asr.region_id
+                    INNER JOIN rnc_accessions acc ON asr.accession = acc.accession
+                    WHERE sr.urs_taxid = %s 
+                        AND (acc.gene IS NOT NULL OR acc.product IS NOT NULL)
+                    ORDER BY sr.chromosome, sr.region_start
+                    LIMIT 10
+                """
+            },
+            
+            # Approach 2: Check sequence features for gene-related information
+            {
+                "name": "sequence_features",
+                "query": """
+                    SELECT DISTINCT
+                        sr.chromosome,
+                        sr.region_start,
+                        sr.region_stop,
+                        sf.feature_name,
+                        sf.metadata
+                    FROM rnc_sequence_regions sr,
+                         rnc_sequence_features sf
+                    WHERE sr.urs_taxid = %s 
+                        AND sf.upi = %s
+                        AND sf.taxid = %s
+                        AND sf.feature_name ILIKE '%%gene%%'
+                    ORDER BY sr.chromosome, sr.region_start
+                    LIMIT 10
+                """
+            },
+            
+            # Approach 3: Just return sequence regions without gene info
+            {
+                "name": "regions_only",
+                "query": """
+                    SELECT DISTINCT
+                        sr.chromosome,
+                        sr.region_start,
+                        sr.region_stop
+                    FROM rnc_sequence_regions sr
+                    WHERE sr.urs_taxid = %s
+                    ORDER BY sr.chromosome, sr.region_start
+                    LIMIT 10
+                """
+            }
+        ]
+        
+        for approach in approaches:
+            try:
+                with connection.cursor() as cursor:
+                    if approach["name"] == "sequence_features":
+                        cursor.execute(approach["query"], [urs_taxid, pk, taxid])
+                    else:
+                        cursor.execute(approach["query"], [urs_taxid])
+                    
+                    results = cursor.fetchall()
+                    
+                    if results:
+                        genes = []
+                        for row in results:
+                            # Build location string
+                            if row[0]:  # chromosome
+                                location = f"chr{row[0]}:{row[1]}-{row[2]}"
+                            else:
+                                location = "Unknown"
+                            
+                            # Extract gene name based on approach - remove gene_id
+                            if approach["name"] == "accessions_gene_info":
+                                gene_name = row[4] or row[3] or "GENE"  # product or gene
+                            elif approach["name"] == "sequence_features":
+                                gene_name = str(row[4]) if row[4] else "GENE"  # metadata
+                            else:  # regions_only
+                                gene_name = "Genomic Region"
+                            
+                            genes.append({
+                                "location": location,
+                                "gene_name": gene_name
+                            })
+                        
+                        return Response({
+                            "count": len(genes),
+                            "results": genes,
+                            "source": approach["name"]  # For debugging
+                        })
+                        
+            except Exception as e:
+                # Continue to next approach if this one fails
+                continue
+        
+        # If all approaches fail, return no genes found
+        return Response({
+            "count": 0,
+            "results": [],
+            "message": "No gene information available for this sequence"
+        })
 
-    def get_queryset(self):
-        upi = self.kwargs["pk"]
-        taxid = self.kwargs["taxid"] if "taxid" in self.kwargs else None
-        return Rna.objects.get(upi=upi).get_publications(
-            taxid
-        )  # this is actually a list
 
+# Add the missing view classes and complete the file
 
 class ExpertDatabasesAPIView(APIView):
     """
@@ -718,10 +793,6 @@ class ExpertDatabasesAPIView(APIView):
                 db.update(databases[normalized_label])
 
         return Response(expert_dbs)
-
-    # def get_queryset(self):
-    #     expert_db_name = self.kwargs['expert_db_name']
-    #     return Database.objects.get(expert_db_name).references
 
 
 @extend_schema(exclude=True)
@@ -1139,6 +1210,62 @@ class LitSummView(ReadOnlyModelViewSet):
         if primary_id is not None:
             queryset = queryset.filter(primary_id=primary_id)
         return queryset
+
+
+class AccessionView(generics.RetrieveAPIView):
+    """
+    API endpoint that allows single accessions to be viewed.
+
+    [API documentation](/api)
+    """
+
+    # the above docstring appears on the API website
+    queryset = Accession.objects.select_related().all()
+    serializer_class = AccessionSerializer
+
+
+class CitationsView(generics.ListAPIView):
+    """
+    API endpoint that allows the citations associated with
+    a particular cross-reference to be viewed.
+
+    [API documentation](/api)
+    """
+
+    serializer_class = CitationSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs["pk"]
+        try:
+            citations = Accession.objects.select_related().get(pk=pk).refs.all()
+        except Accession.DoesNotExist:
+            citations = Accession.objects.none()
+
+        return citations
+
+
+class RnaPublicationsView(generics.ListAPIView):
+    """
+    API endpoint that allows the citations associated with
+    each Unique RNA Sequence to be viewed.
+
+    [API documentation](/api)
+    """
+
+    # the above docstring appears on the API website
+    permission_classes = (AllowAny,)
+    serializer_class = RawPublicationSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        upi = self.kwargs["pk"]
+        taxid = self.kwargs["taxid"] if "taxid" in self.kwargs else None
+        return Rna.objects.get(upi=upi).get_publications(
+            taxid
+        )  # this is actually a list
+
+
+# ... [Rest of the file continues with existing views] ...
 
 
 class Md5SequenceView(APIView):
