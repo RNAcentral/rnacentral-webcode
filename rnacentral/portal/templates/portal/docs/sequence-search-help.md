@@ -9,7 +9,7 @@ The RNAcentral [sequence similarity search](/sequence-search) enables searches a
 
 The search is powered by the [nhmmer](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3777106/) software which is more sensitive than *blastn* but is comparable in speed. The command executed by the sequence search is as follows:
 
-`nhmmer --qfasta --tformat fasta -o <output_file> -T 0 --F3 0.02 --rna --watson --cpu 4 -Z <number> <query> <database.fasta>`
+`nhmmer --qformat fasta --tformat fasta -o <output_file> -T 0 --F3 0.02 --rna --watson --cpu 4 -Z <number> <query> <database.fasta>`
 
 Where:
 
