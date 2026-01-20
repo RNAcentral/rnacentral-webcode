@@ -50,6 +50,15 @@ def get_ebi_search_endpoint():
     return settings.EBI_SEARCH_ENDPOINT
 
 
+@register.simple_tag
+def get_export_app_endpoint():
+    """
+    Get the export app endpoint URL so that it can be added to the template
+    and passed to javascript.
+    """
+    return settings.EXPORT_APP_ENDPOINT
+
+
 @register.filter
 @stringfilter
 def template_exists(value):

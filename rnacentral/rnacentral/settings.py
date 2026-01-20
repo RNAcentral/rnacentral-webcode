@@ -344,6 +344,10 @@ EBI_SEARCH_ENDPOINT = os.getenv(
     "EBI_SEARCH_ENDPOINT", "https://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral"
 )
 
+EXPORT_APP_ENDPOINT = os.getenv(
+    "EXPORT_APP_ENDPOINT", "https://export.rnacentral.org"
+)
+
 RELEASE_ANNOUNCEMENT_URL = (
     "https://blog.rnacentral.org/2025/10/rnacentral-release-26.html"
 )

@@ -4,3 +4,4 @@ metadata:
   name: search-index-dev
 data:
   EBI_SEARCH_ENDPOINT: https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral
+  EXPORT_APP_ENDPOINT: http://10.3.38.174:32752

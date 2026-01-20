@@ -15,6 +15,7 @@ DB_PASSWORD=${DB_PASSWORD:-'NWDMCE5xdipIjRrp'}
 SECRET_KEY=${SECRET_KEY:-$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')}
 DJANGO_DEBUG=${DJANGO_DEBUG:-'False'}
 EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT:-'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'}
+EXPORT_APP_ENDPOINT=${EXPORT_APP_ENDPOINT:-'https://export.rnacentral.org'}
 S3_HOST=${S3_HOST}
 S3_KEY=${S3_KEY}
 S3_SECRET=${S3_SECRET}
@@ -30,6 +31,7 @@ else
 		from .utils import get_environment
 		SECRET_KEY = "$SECRET_KEY"
 		EBI_SEARCH_ENDPOINT = "$EBI_SEARCH_ENDPOINT"
+		EXPORT_APP_ENDPOINT = "$EXPORT_APP_ENDPOINT"
 		ENVIRONMENT = get_environment()
 		INTERNAL_IPS = ('127.0.0.1', '192.168.99.1')
 		DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG}
