@@ -1244,9 +1244,9 @@ class RelationshipsView(generics.ListAPIView):
     
     def get_queryset(self):
         """Return relationship data for a given URS and taxid from RNA-KG API"""
-        
+
         node_id = f"{self.kwargs['pk']}_{self.kwargs['taxid']}"
-        
+
         # Get the relationships using the original endpoint
         rna_kg_url = "https://rna-kg.biodata.di.unimi.it/api/v1/incoming/id"
         relationships_params = {
@@ -1254,32 +1254,44 @@ class RelationshipsView(generics.ListAPIView):
             'node_id_scheme': 'RNAcentral',
             'filter_rnacentral_rels': 'false'
         }
-        
+
         try:
             relationships_response = requests.get(rna_kg_url, params=relationships_params, timeout=10)
             relationships_response.raise_for_status()
             relationships_data = relationships_response.json()
             relationships = relationships_data.get('relationships', [])
-            
+
+            # Apply search filter if provided
+            search_query = self.request.query_params.get('search', '').strip().lower()
+            if search_query:
+                filtered_relationships = []
+                for rel in relationships:
+                    node_props = rel.get('node_properties', {})
+                    label = (node_props.get('Label') or rel.get('node_id') or '').lower()
+                    description = (node_props.get('Description') or '').lower()
+                    if search_query in label or search_query in description:
+                        filtered_relationships.append(rel)
+                relationships = filtered_relationships
+
             # Create a mock queryset-like object for pagination
             class RelationshipQuerySet:
                 def __init__(self, data):
                     self.data = data
-                
+
                 def __iter__(self):
                     return iter(self.data)
-                
+
                 def __len__(self):
                     return len(self.data)
-                
+
                 def count(self):
                     return len(self.data)
-                
+
                 def __getitem__(self, key):
                     return self.data[key]
-            
+
             return RelationshipQuerySet(relationships)
-            
+
         except Exception as e:
             # Log the error if you have logging set up
             # print(f"Error fetching RNA-KG relationships data: {e}")

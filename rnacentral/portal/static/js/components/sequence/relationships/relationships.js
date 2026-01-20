@@ -29,18 +29,63 @@
             ctrl.pageSize = 20;
             ctrl.showPagination = false;
             ctrl.rnaSequenceRnakgId = null;
+            ctrl.filterText = '';
+            ctrl.serverSearch = '';
+            ctrl.pageSizeOptions = [10, 20, 50, 100];
+
+            ctrl.filterByTargetOrDescription = function(rel) {
+                if (!ctrl.filterText) {
+                    return true;
+                }
+                var searchText = ctrl.filterText.toLowerCase();
+                var target = (rel.node_properties.Label || rel.node_id || '').toLowerCase();
+                var description = (rel.node_properties.Description || '').toLowerCase();
+                return target.indexOf(searchText) !== -1 || description.indexOf(searchText) !== -1;
+            };
+
+            ctrl.onFilterChange = function() {
+                // Clear server search message when filter text is manually cleared
+                if (!ctrl.filterText && ctrl.serverSearch) {
+                    ctrl.serverSearch = '';
+                    ctrl.loadRelationships(1);
+                }
+            };
+
+            ctrl.onSearchKeypress = function(event) {
+                if (event.keyCode === 13) {
+                    ctrl.searchAll();
+                }
+            };
+
+            ctrl.searchAll = function() {
+                ctrl.serverSearch = ctrl.filterText;
+                ctrl.loadRelationships(1);
+            };
+
+            ctrl.clearFilter = function() {
+                ctrl.filterText = '';
+                ctrl.serverSearch = '';
+                ctrl.loadRelationships(1);
+            };
+
+            ctrl.changePageSize = function() {
+                ctrl.loadRelationships(1);
+            };
 
             ctrl.loadRelationships = function(page, append) {
                 if (!ctrl.taxid || !ctrl.upi) {
                     return;
                 }
-                
+
                 page = page || 1;
                 append = append || false;
                 ctrl.loading = true;
                 ctrl.error = false;
-                
-                var relationshipsUrl = '/api/v1/rna/' + ctrl.upi + '/relationships/' + ctrl.taxid + '?page=' + page;
+
+                var relationshipsUrl = '/api/v1/rna/' + ctrl.upi + '/relationships/' + ctrl.taxid + '?page=' + page + '&page_size=' + ctrl.pageSize;
+                if (ctrl.serverSearch) {
+                    relationshipsUrl += '&search=' + encodeURIComponent(ctrl.serverSearch);
+                }
                 
                 $http.get(relationshipsUrl)
                     .then(function(response) {
@@ -147,6 +192,38 @@
                         <span ng-if="ctrl.showPagination">Showing {{ctrl.getStartRecord()}} - {{ctrl.getEndRecord()}} of {{ctrl.totalCount}} relationships.</span>
                     </p>
                     
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="col-sm-7">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                                <input type="text" class="form-control" placeholder="Filter by target or description..." ng-model="ctrl.filterText" ng-keypress="ctrl.onSearchKeypress($event)" ng-change="ctrl.onFilterChange()">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" ng-click="ctrl.searchAll()" title="Search all pages">
+                                        <i class="fa fa-search"></i> Search all
+                                    </button>
+                                    <button class="btn btn-default" type="button" ng-click="ctrl.clearFilter()" ng-if="ctrl.filterText || ctrl.serverSearch">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <small class="text-muted" ng-if="ctrl.filterText && !ctrl.serverSearch">
+                                Filtering current page. Press Enter or click "Search all" to search all pages.
+                            </small>
+                            <small class="text-muted" ng-if="ctrl.serverSearch">
+                                Showing results matching "{{ctrl.serverSearch}}" across all pages.
+                            </small>
+                        </div>
+                        <div class="col-sm-3 col-sm-offset-2">
+                            <div class="input-group">
+                                <span class="input-group-addon">Show</span>
+                                <select class="form-control" ng-model="ctrl.pageSize" ng-change="ctrl.changePageSize()">
+                                    <option ng-repeat="size in ctrl.pageSizeOptions" ng-value="size">{{size}}</option>
+                                </select>
+                                <span class="input-group-addon">per page</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered">
                             <thead>
@@ -159,7 +236,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="rel in ctrl.relationships">
+                                <tr ng-repeat="rel in ctrl.relationships | filter:ctrl.filterByTargetOrDescription">
                                     <td>
                                         <a ng-if="rel.rel_rnakg_id" href="https://rna-kg.biodata.di.unimi.it/relationship/{{rel.rel_rnakg_id}}" target="_blank" class="label label-info" style="text-decoration: none;">
                                             {{ rel.relationship_type || "Unknown" }}
