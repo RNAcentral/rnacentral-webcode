@@ -56,14 +56,6 @@ limitations under the License.
             {% endblock stylesheets %}
         {% endcompress %}
 
-        <!-- Global settings must be defined before Angular scripts load -->
-        <script>
-          var global_settings = {
-            EBI_SEARCH_ENDPOINT: '{% get_ebi_search_endpoint %}',
-            EXPORT_APP_ENDPOINT: '{% get_export_app_endpoint %}',
-          };
-        </script>
-
         {% compress js %}
           {% block javascript %}
           {% endblock javascript %}
@@ -302,5 +294,12 @@ limitations under the License.
             }
         </script>
         <!--Doorbell.io feedback-->
+
+        <script>
+          var global_settings = {
+            EBI_SEARCH_ENDPOINT: '{% get_ebi_search_endpoint %}',
+            EXPORT_APP_ENDPOINT: '{% get_export_app_endpoint %}',
+          };
+        </script>
     </body>
 </html>

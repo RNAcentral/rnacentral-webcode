@@ -112,13 +112,7 @@ limitations under the License.
      */
     $scope.triggerDownload = function() {
         var downloadUrl = routes.exportApp() + '/download/' + $scope.export.job_id + '/' + $scope.export.data_type;
-        var extensionMap = {
-            'json': 'json.gz',
-            'fasta': 'fasta.gz',
-            'parquet': 'parquet',
-            'txt': 'txt.gz'
-        };
-        var filename = $scope.export.job_id + '.' + (extensionMap[$scope.export.data_type] || 'txt.gz');
+        var filename = $scope.export.job_id + '.' + ($scope.export.data_type === 'json' ? 'json.gz' : $scope.export.data_type === 'fasta' ? 'fasta.gz' : 'txt.gz');
         var a = document.createElement('a');
 
         a.style.display = 'none';
