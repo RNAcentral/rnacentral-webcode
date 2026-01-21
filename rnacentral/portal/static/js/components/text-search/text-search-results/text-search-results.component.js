@@ -455,11 +455,6 @@ var textSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
-            console.log('=== EXPORT RESULTS DEBUG ===');
-            console.log('Export format requested:', format);
-            console.log('Export endpoint:', routes.exportApp());
-            console.log('============================');
-
             var query = ctrl.search.query;
             
             // Exclude genes when exporting FASTA format - genes don't have sequence data
