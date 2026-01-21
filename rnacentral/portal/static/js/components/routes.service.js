@@ -1,4 +1,12 @@
 angular.module("routes", []).service('routes', ['$interpolate', function($interpolate) {
+    // DEBUG: Log global_settings at routes service initialization
+    console.log('=== ROUTES SERVICE DEBUG ===');
+    console.log('global_settings defined:', typeof global_settings !== 'undefined');
+    if (typeof global_settings !== 'undefined') {
+        console.log('global_settings.EXPORT_APP_ENDPOINT:', global_settings.EXPORT_APP_ENDPOINT);
+    }
+    console.log('============================');
+
     var routes = {
         helpTextSearch: '/help/text-search/',
         contactUs: '/contact',

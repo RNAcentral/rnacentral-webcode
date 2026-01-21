@@ -6,6 +6,14 @@ var textSearchResults = {
         var ctrl = this;
 
         ctrl.$onInit = function() {
+            // DEBUG: Log export endpoint and routes info
+            console.log('=== TEXT SEARCH RESULTS DEBUG ===');
+            console.log('global_settings:', typeof global_settings !== 'undefined' ? global_settings : 'UNDEFINED');
+            console.log('EXPORT_APP_ENDPOINT:', typeof global_settings !== 'undefined' ? global_settings.EXPORT_APP_ENDPOINT : 'UNDEFINED');
+            console.log('routes.exportApp:', routes.exportApp);
+            console.log('routes.exportApp():', typeof routes.exportApp === 'function' ? routes.exportApp() : routes.exportApp);
+            console.log('=================================');
+
             // expose search service in template
             ctrl.search = search;
 
@@ -447,6 +455,11 @@ var textSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
+            console.log('=== EXPORT RESULTS DEBUG ===');
+            console.log('Export format requested:', format);
+            console.log('Export endpoint:', routes.exportApp());
+            console.log('============================');
+
             var query = ctrl.search.query;
             
             // Exclude genes when exporting FASTA format - genes don't have sequence data
