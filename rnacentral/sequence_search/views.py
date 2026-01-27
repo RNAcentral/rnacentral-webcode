@@ -133,9 +133,9 @@ def dashboard(request):
     searches_per_month = None
     expert_db_results = None
     if "test" in request.build_absolute_uri():
-        show_searches_url = "http://45.88.80.122:8002/api/show-searches"
+        show_searches_url = "https://sequence-search-test.rnacentral.org/api/show-searches"
     else:
-        show_searches_url = "http://45.88.81.147:8002/api/show-searches"
+        show_searches_url = "https://sequence-search.rnacentral.org/api/show-searches"
 
     try:
         response_url = requests.get(show_searches_url)
