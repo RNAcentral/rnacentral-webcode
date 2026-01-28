@@ -216,6 +216,12 @@ urlpatterns = [
         cache_page(CACHE_TIMEOUT)(views.RelationshipsView.as_view()),
         name="rna-relationships",
     ),
+    # internal health check for RNA-KG API 
+    re_path(
+        r"^internal/rna-kg-health/?$",
+        views.RnaKgHealthCheckView.as_view(),
+        name="rna-kg-health-check",
+    ),
 ]
 
 urlpatterns = format_suffix_patterns(

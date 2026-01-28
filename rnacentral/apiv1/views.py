@@ -1231,10 +1231,71 @@ class RnaGenesView(APIView):
                 "message": "No gene information available for this sequence"
             })
 
+class RnaKgHealthCheckView(APIView):
+    """
+    Internal endpoint for monitoring RNA-KG API availability.
+    Used by UptimeRobot to check if the RNA Knowledge Graph API is operational.
+    """
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        import time
+
+        rna_kg_base_url = "https://rna-kg.biodata.di.unimi.it/api/v1/node/id"
+        # Test URS (hsa-mir-708-5b)
+        test_params = {
+            'node_id': 'URS000019D79B_9606',
+            'node_id_scheme': 'RNAcentral'
+        }
+
+        start_time = time.time()
+
+        try:
+            response = requests.get(rna_kg_base_url, params=test_params, timeout=10)
+            response_time_ms = int((time.time() - start_time) * 1000)
+
+            if response.status_code == 200:
+                return Response({
+                    'status': 'ok',
+                    'service': 'RNA-KG API',
+                    'response_time_ms': response_time_ms,
+                    'api_url': 'https://rna-kg.biodata.di.unimi.it/api/v1/'
+                })
+            else:
+                return Response({
+                    'status': 'error',
+                    'service': 'RNA-KG API',
+                    'response_time_ms': response_time_ms,
+                    'error': f'API returned status code {response.status_code}',
+                    'api_url': 'https://rna-kg.biodata.di.unimi.it/api/v1/'
+                }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        except requests.exceptions.Timeout:
+            response_time_ms = int((time.time() - start_time) * 1000)
+            return Response({
+                'status': 'error',
+                'service': 'RNA-KG API',
+                'response_time_ms': response_time_ms,
+                'error': 'Request timed out',
+                'api_url': 'https://rna-kg.biodata.di.unimi.it/api/v1/'
+            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        except requests.exceptions.RequestException as e:
+            response_time_ms = int((time.time() - start_time) * 1000)
+            return Response({
+                'status': 'error',
+                'service': 'RNA-KG API',
+                'response_time_ms': response_time_ms,
+                'error': str(e),
+                'api_url': 'https://rna-kg.biodata.di.unimi.it/api/v1/'
+            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
 class RelationshipsView(generics.ListAPIView):
     """
     API endpoint for retrieving molecular relationships from RNA Knowledge Graph.
-    
+
     [API documentation](/api)
     """
     
