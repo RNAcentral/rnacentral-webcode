@@ -15,7 +15,7 @@ limitations under the License.
 {% load compress %}
 {% load portal_extras %}
 <!DOCTYPE html>
-<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="rnacentralApp" ng-cloak>
+<html lang="en" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="rnacentralApp" ng-cloak>
     <head>
         {% block meta_tags %}
             <meta charset="utf-8">
@@ -110,7 +110,7 @@ limitations under the License.
 
         <div class="container">
 
-          <div class="container-main">
+          <main class="container-main">
             <!--[if lt IE 10]>
               <div class="alert alert-danger">
                 You are using an <strong>outdated browser</strong> and as a result this website may not function as intended. Please <a href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p>
@@ -132,7 +132,7 @@ limitations under the License.
               {% block content %}{% endblock %}
             </div>
             <text-search-results ng-if="displaySearchInterface"></text-search-results>
-          </div>
+          </main>
 
           <footer>
             <div id="local-footer">

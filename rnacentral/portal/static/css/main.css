@@ -1077,7 +1077,7 @@ textarea {
   -webkit-transition-property: transform;
   transition-property: transform;
 }
-.homepage-card:hover a,
+.homepage-card:hover .btn,
 .secondary-structure-homepage-card:hover img,
 .homepage-callout-overlay:hover .btn,
 .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
@@ -1154,7 +1154,7 @@ textarea {
   margin: auto;
 }
 
-.homepage-card h2 {
+.homepage-card h3 {
   margin-top: 5px;
 }
 
@@ -1268,6 +1268,33 @@ textarea {
   padding: 10px;
 }
 
+/* Accessible card links - wrap cards in anchors instead of onclick */
+.homepage-card-link,
+.featured-summary-link,
+.secondary-structure-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.homepage-card-link:hover,
+.homepage-card-link:focus,
+.featured-summary-link:hover,
+.featured-summary-link:focus,
+.secondary-structure-link:hover,
+.secondary-structure-link:focus {
+  text-decoration: none;
+  color: inherit;
+}
+
+.homepage-card-link:focus,
+.featured-summary-link:focus,
+.secondary-structure-link:focus {
+  outline: 2px solid #337ab7;
+  outline-offset: 2px;
+}
+
 .homepage-callout {
   background-image: url('../img/homepage-banner.png');
   background-size: cover;
@@ -1283,7 +1310,7 @@ textarea {
   padding: 15px;
 }
 
-.homepage-callout-overlay h2 {
+.homepage-callout-overlay h1 {
   color: #3F3F3F;
   font-weight: bolder;
   letter-spacing: 0.1em;
@@ -1476,12 +1503,13 @@ textarea {
 }
 
 .btn-circle {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
   text-align: center;
-  padding: 0px 0;
-  font-size: 12px;
-  border-radius: 15px;
+  padding: 0;
+  font-size: 14px;
+  line-height: 32px;
+  border-radius: 50%;
 }
 
 .rfamModelsGroup, .crsFeaturesGroup, .matureMirnaFeaturesGroup, .rediPortalFeaturesGroup, .anticodonFeaturesGroup, .tmRNAFeaturesGroup {

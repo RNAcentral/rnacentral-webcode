@@ -31,9 +31,9 @@ RNAcentral: The non-coding RNA sequence database
   <div class="row well well-sm homepage-callout" id="homepage-callout">
 
     <div class="homepage-callout-overlay">
-      <h2 class="text-center">
+      <h1 class="text-center">
         RNAcentral: The non-coding RNA sequence database
-      </h2>
+      </h1>
       <p class="text-center" style="opacity: 0.7;">
         a comprehensive ncRNA sequence collection representing all ncRNA types from a broad range of organisms
       </p>
@@ -48,42 +48,48 @@ RNAcentral: The non-coding RNA sequence database
 
     <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;">Getting started</h2>
 
-    <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'text-search' %}?q=RNA';" style="cursor: pointer;">
-      <div class="panel panel-default homepage-card">
-        <div class="panel-body text-center">
-          <h2 class="text-center"><i class="fa fa-search"></i> Text search</h2>
-          <p class="text-center">
-            Search by <em>gene, species, ncRNA type, accession</em>, or any other keyword
-          </p>
-          <a class="btn btn-primary" href="{% url 'text-search' %}?q=RNA" id="btn-browse-sequences">Browse sequences</a>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <a href="{% url 'text-search' %}?q=RNA" class="homepage-card-link">
+        <div class="panel panel-default homepage-card">
+          <div class="panel-body text-center">
+            <h3 class="text-center"><i class="fa fa-search"></i> Text search</h3>
+            <p class="text-center">
+              Search by <em>gene, species, ncRNA type, accession</em>, or any other keyword
+            </p>
+            <span class="btn btn-primary" id="btn-browse-sequences">Browse sequences</span>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
 
-    <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'sequence-search' %}';" style="cursor: pointer;">
-      <div class="panel panel-default homepage-card">
-        <div class="panel-body text-center">
-          <h2 class="text-center"> Sequence search</h2>
-          <p class="text-center">
-            Search for similar sequences -
-            <br>
-            <em class="text-primary">now with facets and 2D diagrams</em>
-          </p>
-          <a class="btn btn-primary" id="btn-sequence-search" href="{% url 'sequence-search' %}" role="button">Search by sequence</a>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <a href="{% url 'sequence-search' %}" class="homepage-card-link">
+        <div class="panel panel-default homepage-card">
+          <div class="panel-body text-center">
+            <h3 class="text-center"> Sequence search</h3>
+            <p class="text-center">
+              Search for similar sequences -
+              <br>
+              <em class="text-primary">now with facets and 2D diagrams</em>
+            </p>
+            <span class="btn btn-primary" id="btn-sequence-search">Search by sequence</span>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
 
-    <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'genome-browser' %}';" style="cursor: pointer;">
-      <div class="panel panel-default homepage-card">
-        <div class="panel-body text-center">
-          <h2 class="text-center"><i class="fa fa-map-marker"></i> Genome browser</h2>
-          <p class="text-center">
-            Explore RNAcentral sequences in your favorite genome locations
-          </p>
-          <a class="btn btn-primary" id="btn-genome-browser" href="{% url 'genome-browser' %}" role="button">Explore genomes</a>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <a href="{% url 'genome-browser' %}" class="homepage-card-link">
+        <div class="panel panel-default homepage-card">
+          <div class="panel-body text-center">
+            <h3 class="text-center"><i class="fa fa-map-marker"></i> Genome browser</h3>
+            <p class="text-center">
+              Explore RNAcentral sequences in your favorite genome locations
+            </p>
+            <span class="btn btn-primary" id="btn-genome-browser">Explore genomes</span>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
 
   </div>
@@ -97,10 +103,12 @@ RNAcentral: The non-coding RNA sequence database
     </div>
     <div id="featured-summaries">
       {% for item in context.summaries %}
-        <div class="panel panel-default" style="padding: 20px; cursor: pointer" onclick="location.href='/rna/{{ item.urs }}';">
-          <h4 class="rnacentral-gold">{{ item.title }} ({{ item.id }})</h4>
-          <p>{{ item.summary|safe }}</p>
-        </div>
+        <a href="/rna/{{ item.urs }}" class="featured-summary-link">
+          <div class="panel panel-default" style="padding: 20px;">
+            <h3 class="rnacentral-gold">{{ item.title }} ({{ item.id }})</h3>
+            <p>{{ item.summary|safe }}</p>
+          </div>
+        </a>
       {% endfor %}
     </div>
     <div class="text-center" style="margin-bottom: 10px; font-size: large;">
@@ -119,13 +127,15 @@ RNAcentral: The non-coding RNA sequence database
 
     <div id="featured-secondary-structures">
     {% for item in context.svg_images %}
-      <div class="col-md-3 col-sm-4 col-xs-12" onclick="location.href='/rna/{{ item.uid }}/{{ item.taxid }}?tab=2d';" style="cursor: pointer;">
-        <div class="panel panel-default secondary-structure-homepage-card">
-          <div class="panel-body text-center">
-              <h4 class="text-center rnacentral-gold">{{ item.description }}</h4>
-              <img class="img-responsive center-block" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
+      <div class="col-md-3 col-sm-4 col-xs-12">
+        <a href="/rna/{{ item.uid }}/{{ item.taxid }}?tab=2d" class="secondary-structure-link">
+          <div class="panel panel-default secondary-structure-homepage-card">
+            <div class="panel-body text-center">
+                <h3 class="text-center rnacentral-gold">{{ item.description }}</h3>
+                <img class="img-responsive center-block" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
+            </div>
           </div>
-        </div>
+        </a>
       </div>
     {% endfor %}
     </div>
