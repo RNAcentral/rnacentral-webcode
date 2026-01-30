@@ -29,11 +29,12 @@ elif six.PY3:
     from urllib.parse import urlparse
 
 from django.conf import settings
-from django.http import Http404, HttpResponse, HttpResponseForbidden
+from django.http import Http404, HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect, render
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_control, cache_page, never_cache
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
 from portal.config.expert_databases import expert_dbs
 from portal.config.go_dataset import go_set
@@ -1025,6 +1026,60 @@ def _get_json_lineage_tree(taxonomies):
     nodes = get_nested_dict(lineages)
     json_lineage_tree = get_nested_tree(nodes, {})
     return json.dumps(json_lineage_tree)
+
+@csrf_exempt
+def docbot_feedback(request):
+    """
+    Post DocBot feedback to Doorbell.io.
+    Only allow POST requests from whitelisted hosts, then forward to Doorbell.io.
+    """
+    if request.method != "POST":
+        return HttpResponseForbidden("Only POST requests are allowed.")
+
+    # Whitelist of allowed hosts
+    allowed_hosts = ["wwwint.ebi.ac.uk"]
+    if settings.DEBUG:
+        allowed_hosts.extend(["localhost", "127.0.0.1"])
+
+    referer = request.META.get("HTTP_REFERER", "")
+    if not any(host in referer for host in allowed_hosts):
+        return HttpResponseForbidden("Invalid referer.")
+
+    # Parse JSON body from request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {"status": "error", "message": "Invalid JSON in request body."}, status=400
+        )
+
+    doorbell_api_key = settings.DOORBELL_API_KEY
+    doorbell_api_id = settings.DOORBELL_API_ID
+    doorbell_url = f"https://doorbell.io/api/applications/{doorbell_api_id}/submit?key={doorbell_api_key}"
+
+    feedback_data = {
+        "message": data.get("message", ""),
+        "email": data.get("email", ""),
+        "name": data.get("name", ""),
+        "url": data.get("url", referer),
+        "properties": {
+            "source": "DocBot",
+        },
+    }
+
+    try:
+        response = requests.post(doorbell_url, json=feedback_data)
+        if response.status_code == 201:
+            return JsonResponse({"status": "success"})
+        else:
+            return JsonResponse(
+                {"status": "error", "message": "Failed to submit feedback."}, status=500
+            )
+    except requests.RequestException:
+        return JsonResponse(
+            {"status": "error", "message": "An error occurred while submitting feedback."},
+            status=500,
+        )
 
 
 def handler500(request, *args, **argv):

@@ -62,6 +62,16 @@ spec:
           env:
             - name: RNACENTRAL_ENV
               value: {{ .Values.setEnv }}
+            - name: DOORBELL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: doorbell-credentials
+                  key: DOORBELL_API_KEY
+            - name: DOORBELL_API_ID
+              valueFrom:
+                secretKeyRef:
+                  name: doorbell-credentials
+                  key: DOORBELL_API_ID
           envFrom:
           - secretRef:
               name: {{ .Values.database }}
