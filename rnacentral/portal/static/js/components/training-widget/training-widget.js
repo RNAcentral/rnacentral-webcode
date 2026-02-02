@@ -41,9 +41,15 @@
       }, 100);
     }, [liveData, onDemandData]);
 
+    const stripHtml = (html) => {
+      const div = document.createElement('div');
+      div.innerHTML = html.replace(/&nbsp;/g, ' ');
+      return div.textContent || div.innerText || '';
+    };
+
     const formatDesc = (content) => {
       if (content) {
-        let safeContent = content.replace(/(<([^>]+)>)/gi, "");
+        let safeContent = stripHtml(content);
         let slicedContent =
           safeContent.length > 200
             ? safeContent.slice(0, 200).split(" ").slice(0, -1).join(" ") + "..."
