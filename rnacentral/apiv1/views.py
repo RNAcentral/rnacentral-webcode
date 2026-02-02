@@ -1231,10 +1231,71 @@ class RnaGenesView(APIView):
                 "message": "No gene information available for this sequence"
             })
 
+class RnaKgHealthCheckView(APIView):
+    """
+    Internal endpoint for monitoring RNA-KG API availability.
+    Used by UptimeRobot to check if the RNA Knowledge Graph API is operational.
+    """
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        import time
+
+        rna_kg_base_url = "https://rna-kg.biodata.di.unimi.it/api/v1/node/id"
+        # Test URS (hsa-mir-708-5b)
+        test_params = {
+            'node_id': 'URS000019D79B_9606',
+            'node_id_scheme': 'RNAcentral'
+        }
+
+        start_time = time.time()
+
+        try:
+            response = requests.get(rna_kg_base_url, params=test_params, timeout=10)
+            response_time_ms = int((time.time() - start_time) * 1000)
+
+            if response.status_code == 200:
+                return Response({
+                    'status': 'ok',
+                    'service': 'RNA-KG API',
+                    'response_time_ms': response_time_ms,
+                    'api_url': 'https://rna-kg.biodata.di.unimi.it/api/v1/'
+                })
+            else:
+                return Response({
+                    'status': 'error',
+                    'service': 'RNA-KG API',
+                    'response_time_ms': response_time_ms,
+                    'error': f'API returned status code {response.status_code}',
+                    'api_url': 'https://rna-kg.biodata.di.unimi.it/api/v1/'
+                }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        except requests.exceptions.Timeout:
+            response_time_ms = int((time.time() - start_time) * 1000)
+            return Response({
+                'status': 'error',
+                'service': 'RNA-KG API',
+                'response_time_ms': response_time_ms,
+                'error': 'Request timed out',
+                'api_url': 'https://rna-kg.biodata.di.unimi.it/api/v1/'
+            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        except requests.exceptions.RequestException as e:
+            response_time_ms = int((time.time() - start_time) * 1000)
+            return Response({
+                'status': 'error',
+                'service': 'RNA-KG API',
+                'response_time_ms': response_time_ms,
+                'error': str(e),
+                'api_url': 'https://rna-kg.biodata.di.unimi.it/api/v1/'
+            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
 class RelationshipsView(generics.ListAPIView):
     """
     API endpoint for retrieving molecular relationships from RNA Knowledge Graph.
-    
+
     [API documentation](/api)
     """
     
@@ -1244,9 +1305,9 @@ class RelationshipsView(generics.ListAPIView):
     
     def get_queryset(self):
         """Return relationship data for a given URS and taxid from RNA-KG API"""
-        
+
         node_id = f"{self.kwargs['pk']}_{self.kwargs['taxid']}"
-        
+
         # Get the relationships using the original endpoint
         rna_kg_url = "https://rna-kg.biodata.di.unimi.it/api/v1/incoming/id"
         relationships_params = {
@@ -1254,32 +1315,62 @@ class RelationshipsView(generics.ListAPIView):
             'node_id_scheme': 'RNAcentral',
             'filter_rnacentral_rels': 'false'
         }
-        
+
         try:
             relationships_response = requests.get(rna_kg_url, params=relationships_params, timeout=10)
             relationships_response.raise_for_status()
             relationships_data = relationships_response.json()
             relationships = relationships_data.get('relationships', [])
-            
+
+            # Apply filters if provided
+            search_query = self.request.query_params.get('search', '').strip().lower()
+            relationship_type_filter = self.request.query_params.get('relationship_type', '').strip()
+            source_filter = self.request.query_params.get('source', '').strip()
+
+            if search_query or relationship_type_filter or source_filter:
+                filtered_relationships = []
+                for rel in relationships:
+                    # Text search filter
+                    if search_query:
+                        node_props = rel.get('node_properties', {})
+                        label = (node_props.get('Label') or rel.get('node_id') or '').lower()
+                        description = (node_props.get('Description') or '').lower()
+                        if search_query not in label and search_query not in description:
+                            continue
+
+                    # Relationship type filter
+                    if relationship_type_filter:
+                        if rel.get('relationship_type', '') != relationship_type_filter:
+                            continue
+
+                    # Source filter
+                    if source_filter:
+                        sources = rel.get('relationship_properties', {}).get('Source', [])
+                        if source_filter not in sources:
+                            continue
+
+                    filtered_relationships.append(rel)
+                relationships = filtered_relationships
+
             # Create a mock queryset-like object for pagination
             class RelationshipQuerySet:
                 def __init__(self, data):
                     self.data = data
-                
+
                 def __iter__(self):
                     return iter(self.data)
-                
+
                 def __len__(self):
                     return len(self.data)
-                
+
                 def count(self):
                     return len(self.data)
-                
+
                 def __getitem__(self, key):
                     return self.data[key]
-            
+
             return RelationshipQuerySet(relationships)
-            
+
         except Exception as e:
             # Log the error if you have logging set up
             # print(f"Error fetching RNA-KG relationships data: {e}")
@@ -1293,7 +1384,7 @@ class RelationshipsView(generics.ListAPIView):
             'node_id': node_id,
             'node_id_scheme': 'RNAcentral'
         }
-        
+
         try:
             node_response = requests.get(node_id_url, params=node_id_params, timeout=10)
             if node_response.status_code == 200:
@@ -1302,22 +1393,64 @@ class RelationshipsView(generics.ListAPIView):
         except Exception:
             pass
         return None
-    
+
+    def get_filter_options(self):
+        """Extract unique relationship types and sources from the full dataset"""
+        node_id = f"{self.kwargs['pk']}_{self.kwargs['taxid']}"
+        rna_kg_url = "https://rna-kg.biodata.di.unimi.it/api/v1/incoming/id"
+        relationships_params = {
+            'node_id': node_id,
+            'node_id_scheme': 'RNAcentral',
+            'filter_rnacentral_rels': 'false'
+        }
+
+        relationship_types = set()
+        sources = set()
+
+        try:
+            response = requests.get(rna_kg_url, params=relationships_params, timeout=10)
+            response.raise_for_status()
+            relationships = response.json().get('relationships', [])
+
+            for rel in relationships:
+                rel_type = rel.get('relationship_type')
+                if rel_type:
+                    relationship_types.add(rel_type)
+
+                rel_sources = rel.get('relationship_properties', {}).get('Source', [])
+                for source in rel_sources:
+                    sources.add(source)
+        except Exception:
+            pass
+
+        return {
+            'relationship_types': sorted(list(relationship_types)),
+            'sources': sorted(list(sources))
+        }
+
     def list(self, request, *args, **kwargs):
-        """Override list method to include RNA sequence rnakg_id in response"""
+        """Override list method to include RNA sequence rnakg_id and filter options in response"""
         queryset = self.filter_queryset(self.get_queryset())
-        
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             paginated_response = self.get_paginated_response(serializer.data)
-            
-            # Add the RNA sequence rnakg_id to the response
+
+            # Add the RNA sequence rnakg_id and filter options to the response
             rna_sequence_rnakg_id = self.get_rna_sequence_rnakg_id()
             paginated_response.data['rna_sequence_rnakg_id'] = rna_sequence_rnakg_id
-            
+
+            # Only fetch filter options on initial load (no filters applied)
+            if not any([
+                request.query_params.get('search'),
+                request.query_params.get('relationship_type'),
+                request.query_params.get('source')
+            ]):
+                paginated_response.data['filter_options'] = self.get_filter_options()
+
             return paginated_response
-        
+
         serializer = self.get_serializer(queryset, many=True)
         response_data = {
             'results': serializer.data,

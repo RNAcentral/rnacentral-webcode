@@ -243,9 +243,11 @@ urlpatterns = [
     views.gene_detail,
     name="gene-detail"
 
-    )
-
-
+    ),
+    # relay DocBot feedback to Doorbell.io
+    re_path(
+        r"^api/internal/feedback-relay/?$", views.docbot_feedback, name="docbot-feedback"
+    ),
 
 ]
 
