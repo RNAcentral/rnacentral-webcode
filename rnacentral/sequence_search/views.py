@@ -138,7 +138,7 @@ def dashboard(request):
         show_searches_url = "https://sequence-search.rnacentral.org/api/show-searches"
 
     try:
-        response_url = requests.get(show_searches_url)
+        response_url = requests.get(show_searches_url, proxies=proxies)
         if response_url.status_code == 200:
             data = response_url.json()
             searches_last_24_hours = data["last_24_hours_result"]["count"]
