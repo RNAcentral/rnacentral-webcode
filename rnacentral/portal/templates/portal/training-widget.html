@@ -5,9 +5,11 @@
   <div id="training-widget-root"></div>
 </div>
 
-<!-- Load EMBL VF styles for the training widget -->
-<link rel="stylesheet" href="https://assets.emblstatic.net/vf/v2.5.14/css/styles.css">
-<link rel="stylesheet" href="https://ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css" type="text/css" media="all" />
+<!-- Load EMBL VF styles for the training widget (deferred to avoid render-blocking) -->
+<link rel="stylesheet" href="https://assets.emblstatic.net/vf/v2.5.14/css/styles.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://assets.emblstatic.net/vf/v2.5.14/css/styles.css"></noscript>
+<link rel="stylesheet" href="https://ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css"></noscript>
 
 <!-- VF Tabs initialization function -->
 <script>
@@ -36,8 +38,9 @@
     Array.prototype.forEach.call(tabs, (tab, i) => {
       const tabId = tab.href.split("#")[1];
       tab.setAttribute("role", "tab");
-      tab.setAttribute("id", tabId);
+      tab.setAttribute("id", tabId + "-tab");
       tab.setAttribute("data-tabs__item", tabId);
+      tab.setAttribute("aria-controls", tabId);
       tab.setAttribute("tabindex", "0");
       tab.parentNode.setAttribute("role", "presentation");
       tab.removeAttribute("aria-selected");
@@ -76,12 +79,12 @@
     Array.prototype.forEach.call(panels, panel => {
       panel.setAttribute("role", "tabpanel");
       panel.setAttribute("tabindex", "-1");
-      panel.setAttribute("aria-labelledby", panel.id);
+      panel.setAttribute("aria-labelledby", panel.id + "-tab");
       panel.hidden = true;
     });
     
     Array.prototype.forEach.call(tabsList, tabsListset => {
-      tabsListset.setAttribute("role", "tabsList");
+      tabsListset.setAttribute("role", "tablist");
       let firstTab = tabsListset.querySelectorAll(".vf-tabs__link")[0];
       firstTab.removeAttribute("tabindex");
       firstTab.setAttribute("aria-selected", "true");
@@ -99,33 +102,34 @@
   }
   
   function vfTabsSwitch(newTab, panels) {
-    const data = newTab.getAttribute("id");
     let parentTabSet = newTab.closest(".vf-tabs__list");
     let oldTab = parentTabSet.querySelector("[aria-selected]");
-    
+
     if (oldTab) {
+      var oldPanelId = oldTab.getAttribute("data-tabs__item");
       oldTab.removeAttribute("aria-selected");
       oldTab.setAttribute("tabindex", "-1");
       oldTab.classList.remove("is-active");
       for (let item = 0; item < panels.length; item++) {
         const panel = panels[item];
-        if (panel.id === oldTab.id) {
+        if (panel.id === oldPanelId) {
           panel.hidden = true;
           break;
         }
       }
     }
-    
+
     newTab.focus({
       preventScroll: true
     });
     newTab.removeAttribute("tabindex");
     newTab.setAttribute("aria-selected", "true");
     newTab.classList.add("is-active");
-    
+
+    var newPanelId = newTab.getAttribute("data-tabs__item");
     for (let item = 0; item < panels.length; item++) {
       const panel = panels[item];
-      if (panel.id === newTab.id) {
+      if (panel.id === newPanelId) {
         panel.hidden = false;
         break;
       }

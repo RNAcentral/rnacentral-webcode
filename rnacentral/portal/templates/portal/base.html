@@ -100,17 +100,46 @@ limitations under the License.
           gtag('config', 'G-37T22PHH90');
         </script>
 
+        <!-- Preconnect to third-party origins for faster resource loading -->
+        <link rel="preconnect" href="https://www.ebi.ac.uk" crossorigin>
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+        <link rel="dns-prefetch" href="https://embed.doorbell.io">
+        <link rel="dns-prefetch" href="https://unpkg.com">
+
+        <!-- Make touch/wheel event listeners passive by default for better scroll performance -->
+        <script>
+        (function(){
+          if (typeof EventTarget !== 'undefined') {
+            var orig = EventTarget.prototype.addEventListener;
+            var passiveEvents = ['touchstart','touchmove','wheel','mousewheel'];
+            EventTarget.prototype.addEventListener = function(type, fn, opts) {
+              if (passiveEvents.indexOf(type) !== -1) {
+                if (typeof opts === 'boolean') {
+                  opts = { capture: opts, passive: true };
+                } else if (typeof opts === 'undefined') {
+                  opts = { passive: true };
+                } else if (typeof opts === 'object' && opts.passive === undefined) {
+                  opts = Object.assign({}, opts, { passive: true });
+                }
+              }
+              return orig.call(this, type, fn, opts);
+            };
+          }
+        })();
+        </script>
+
         {% block extra_head %}{% endblock %}
     </head>
 
     <body class="level2" ng-controller="MainContent">
+        <a class="skip-to-main" href="#main-content">Skip to main content</a>
         <header>
         {% include "portal/header.html" %}
         </header>
 
         <div class="container">
 
-          <main class="container-main">
+          <main class="container-main" id="main-content">
             <!--[if lt IE 10]>
               <div class="alert alert-danger">
                 You are using an <strong>outdated browser</strong> and as a result this website may not function as intended. Please <a href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p>
@@ -233,7 +262,7 @@ limitations under the License.
         {% endcompress %}
 
         <!-- bootstrap conflicts with jquery-ui tooltip, so it should go after datatables -->
-        <script src="{% static "node_modules/bootstrap/dist/js/bootstrap.js" %}"></script>
+        <script defer src="{% static "node_modules/bootstrap/dist/js/bootstrap.js" %}"></script>
 
         <script>
             $(function() {
@@ -271,22 +300,39 @@ limitations under the License.
         {% block extra_js_uncompressed %}
         {% endblock %}
 
-        <!--Doorbell.io feedback-->
+        <!--Doorbell.io feedback (deferred until user interaction) -->
         <script type="text/javascript">
-            window.doorbellOptions = {
+            var doorbellLoaded = false;
+            function loadDoorbell(callback) {
+              if (doorbellLoaded) {
+                if (callback) callback();
+                return;
+              }
+              window.doorbellOptions = {
                 appKey: 'iPUykwSlDQ7fuIHlRux5tNce109WQyyUYCAyksCG41X57V793oTm0w4VCx7nSlbC',
                 hideButton: true,
+                onReady: function() {
+                  doorbellLoaded = true;
+                  if (callback) callback();
+                },
                 strings: {
                   'email-input-placeholder': 'Your email (optional)',
                   'intro-text': 'The <strong>current URL</strong> and your <strong>browser</strong> version are sent automatically',
                 }
-            };
-            (function(d, t) {
-                var g = d.createElement(t);g.id = 'doorbellScript';g.type = 'text/javascript';g.async = true;g.src = 'https://embed.doorbell.io/button/2991?t='+(new Date().getTime());(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(g);
-            }(document, 'script'));
+              };
+              var g = document.createElement('script');
+              g.id = 'doorbellScript';
+              g.type = 'text/javascript';
+              g.async = true;
+              g.src = 'https://embed.doorbell.io/button/2991?t='+(new Date().getTime());
+              (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(g);
+            }
             $(function(){
-              $('.doorbell-feedback').on('click', function(){
-                doorbell.show();
+              $('.doorbell-feedback').on('click', function(e){
+                e.preventDefault();
+                loadDoorbell(function() {
+                  doorbell.show();
+                });
               });
             });
             function changePlaceholder(){

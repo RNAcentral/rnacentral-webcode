@@ -15,6 +15,10 @@ limitations under the License.
 {% load static %}
 {% load humanize %}
 
+{% block extra_head %}
+    <link rel="preload" as="image" href="{% static 'img/homepage-banner.png' %}" fetchpriority="high">
+{% endblock %}
+
 {% block meta_tags %}
     {{ block.super }}
     <meta name="description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that represents all types of ncRNA from a broad range of organisms. RNAcentral is the world's largest RNA secondary structure database."/>
@@ -29,6 +33,7 @@ RNAcentral: The non-coding RNA sequence database
 {% block content %}
 <div ng-controller="HomepageController">
   <div class="row well well-sm homepage-callout" id="homepage-callout">
+    <img src="{% static 'img/homepage-banner.png' %}" alt="" class="homepage-callout-bg" fetchpriority="high" width="1399" height="473">
 
     <div class="homepage-callout-overlay">
       <h1 class="text-center">
@@ -101,14 +106,14 @@ RNAcentral: The non-coding RNA sequence database
         RNAcentral now uses LLMs to generate summaries for selected ncRNA genes. <a href="/help/litsumm">Learn more &rarr;</a>
       </p>
     </div>
-    <div id="featured-summaries">
+    <div id="featured-summaries" role="region" aria-label="Featured AI generated summaries">
       {% for item in context.summaries %}
-        <a href="/rna/{{ item.urs }}" class="featured-summary-link">
-          <div class="panel panel-default" style="padding: 20px;">
+        <div class="panel panel-default" style="padding: 20px;">
+          <a href="/rna/{{ item.urs }}" class="featured-summary-link">
             <h3 class="rnacentral-gold">{{ item.title }} ({{ item.id }})</h3>
             <p>{{ item.summary|safe }}</p>
-          </div>
-        </a>
+          </a>
+        </div>
       {% endfor %}
     </div>
     <div class="text-center" style="margin-bottom: 10px; font-size: large;">
@@ -125,14 +130,14 @@ RNAcentral: The non-coding RNA sequence database
       </p>
     </div>
 
-    <div id="featured-secondary-structures">
+    <div id="featured-secondary-structures" role="region" aria-label="Featured secondary structures">
     {% for item in context.svg_images %}
       <div class="col-md-3 col-sm-4 col-xs-12">
         <a href="/rna/{{ item.uid }}/{{ item.taxid }}?tab=2d" class="secondary-structure-link">
           <div class="panel panel-default secondary-structure-homepage-card">
             <div class="panel-body text-center">
                 <h3 class="text-center rnacentral-gold">{{ item.description }}</h3>
-                <img class="img-responsive center-block" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
+                <img class="img-responsive center-block" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram" loading="lazy" width="200" height="180">
             </div>
           </div>
         </a>
@@ -155,12 +160,12 @@ RNAcentral: The non-coding RNA sequence database
           <div class="panel-body">
             <p class="margin-top-5px">
               <a href="{{ context.blog_url }}" class="thumbnail">
-                <img class="hvr-grow" src="{% static 'img/timeline/release-v26.png' %}" alt="Release announcement">
+                <img class="hvr-grow" src="{% static 'img/timeline/release-v26.png' %}" alt="Release announcement" loading="lazy">
               </a>
             </p>
             <ul class="list-inline" style="margin-left: 5px; margin-top: -10px">
-              <li><a href="https://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
-              <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
+              <li><a href="https://blog.rnacentral.org" target="_blank" rel="noopener noreferrer"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
+              <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank" rel="noopener noreferrer"><i class="fa fa-rss"></i> RSS feed</a></li>
             </ul>
           </div>
         </div>
@@ -193,12 +198,12 @@ RNAcentral: The non-coding RNA sequence database
       Data from <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
     </p>
 
-    <div id="expert-databases">
+    <div id="expert-databases" role="region" aria-label="Expert databases carousel">
       {% for database in context.databases %}
         {% if database and database.imported %}
         <div class="hvr-grow help expert-db-card" data-container="body" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
           <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
-            <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
+            <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo" loading="lazy" width="130" height="100">
           </a>
           <p class="margin-top-5px text-center">
           {% if database.name == "REDIportal" %}
@@ -235,11 +240,11 @@ RNAcentral: The non-coding RNA sequence database
 
 {% block extra_js_uncompressed %}
 <!-- Load React from CDN -->
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script defer crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script defer crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
 <!-- React Training Widget -->
-<script src="{% static 'js/components/training-widget/training-widget.js' %}"></script>
+<script defer src="{% static 'js/components/training-widget/training-widget.js' %}"></script>
 
 <script>
 $(document).ready(function() {
@@ -353,6 +358,10 @@ $(document).ready(function() {
         arrows: true,
     })
 
+    // Fix Slick carousel's invalid ARIA attributes.
+    // Slick adds aria-describedby to role="tabpanel" elements, which is not
+    // a supported attribute for that role, causing Lighthouse failures.
+    $('.slick-slide').removeAttr('aria-describedby');
 
 });
 </script>

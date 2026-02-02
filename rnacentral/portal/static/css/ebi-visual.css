@@ -582,7 +582,7 @@ ul li>p {
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.woff') format('woff'),
 local('☺'),
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.svg#EBI-Conceptual') format('svg'),
-url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.ttf') format('truetype');font-weight:normal;font-style:normal;
+url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap;
 }
 
 @font-face {
@@ -590,7 +590,7 @@ url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Concept
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.woff') format('woff'),
 local('☺'),
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.svg#EBI-Functional') format('svg'),
-url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.ttf') format('truetype');font-weight:normal;font-style:normal;
+url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap;
 }
 
 @font-face {
@@ -598,7 +598,7 @@ url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functio
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.woff') format('woff'),
 local('☺'),
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.svg#EBI-Generic') format('svg'),
-url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.ttf') format('truetype');font-weight:normal;font-style:normal;
+url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap;
 }
 
 @font-face {
@@ -606,7 +606,7 @@ url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.tt
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.woff') format('woff'),
 local('☺'),
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.svg#EBI-Species') format('svg'),
-url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.ttf') format('truetype');font-weight:normal;font-style:normal;
+url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap;
 }
 
 @font-face {
@@ -614,7 +614,7 @@ url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.tt
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.woff') format('woff'),
 local('☺'),
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.svg#EBI-SocialMedia') format('svg'),
-url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.ttf') format('truetype');font-weight:normal;font-style:normal;
+url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap;
 }
 
 @font-face {
@@ -622,7 +622,7 @@ url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-Social
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.woff') format('woff'),
 local('☺'),
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.svg#EBI-Functional') format('svg'),
-url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.ttf') format('truetype');font-weight:normal;font-style:normal;
+url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap;
 }
 
 @font-face {
@@ -630,7 +630,7 @@ url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFo
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.woff') format('woff'),
 local('☺'),
 url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.svg#EBI-Chemistry') format('svg'),
-url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.ttf') format('truetype');font-weight:normal;font-style:normal;
+url('https://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap;
 }
 
 .icon {
