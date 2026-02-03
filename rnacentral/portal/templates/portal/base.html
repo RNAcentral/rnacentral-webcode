@@ -284,6 +284,51 @@ limitations under the License.
             (function(d, t) {
                 var g = d.createElement(t);g.id = 'doorbellScript';g.type = 'text/javascript';g.async = true;g.src = 'https://embed.doorbell.io/button/2991?t='+(new Date().getTime());(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(g);
             }(document, 'script'));
+
+            // Wait for doorbell to load
+            (function() {
+              var ALLOWED_DOCBOT_ORIGINS = [
+                'https://wwwdev.ebi.ac.uk/docbot',
+                'http://localhost:8000'
+              ];
+
+              var params = new URLSearchParams(window.location.search);
+              if (params.get('source') !== 'docbot') return;
+
+              var conversation = params.get('conversation') || '';
+              if (!conversation) return;
+
+              // Referrer origin
+              var referrer = document.referrer;
+              if (referrer) {
+                try {
+                  var referrerOrigin = new URL(referrer).origin;
+                  if (ALLOWED_DOCBOT_ORIGINS.indexOf(referrerOrigin) === -1) return;
+                } catch (e) {
+                  return;
+                }
+              }
+
+              // Poll until doorbell is available (loaded async)
+              var attempts = 0;
+              var interval = setInterval(function() {
+                if (++attempts > 50) { clearInterval(interval); return; }
+                if (typeof doorbell === 'undefined') return;
+                clearInterval(interval);
+
+                doorbell.setOption('onShow', function() {
+                  var textarea = document.getElementById('doorbell-feedback');
+                  if (textarea) {
+                    textarea.value = conversation;
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    textarea.setSelectionRange(0, 0);
+                    textarea.focus();
+                  }
+                });
+
+                doorbell.show();
+              }, 100);
+            })();
             $(function(){
               $('.doorbell-feedback').on('click', function(){
                 doorbell.show();
