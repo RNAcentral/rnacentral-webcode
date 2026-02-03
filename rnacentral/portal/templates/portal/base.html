@@ -289,7 +289,7 @@ limitations under the License.
             (function() {
               var ALLOWED_DOCBOT_ORIGINS = [
                 'https://wwwdev.ebi.ac.uk/docbot',
-                'http://localhost:8000'
+                'http://localhost:8000' // dev
               ];
 
               var params = new URLSearchParams(window.location.search);
@@ -309,7 +309,7 @@ limitations under the License.
                 }
               }
 
-              // Poll until doorbell is available (loaded async)
+              // Poll until doorbell is available
               var attempts = 0;
               var interval = setInterval(function() {
                 if (++attempts > 50) { clearInterval(interval); return; }
