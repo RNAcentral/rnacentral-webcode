@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from django.conf import settings
+
 
 def baseurl(request):
     """
@@ -18,4 +20,5 @@ def baseurl(request):
     """
     return {
         "BASE_URL": "https://" + request.get_host(),
+        "ENVIRONMENT": getattr(settings, "ENVIRONMENT", "PROD"),
     }
