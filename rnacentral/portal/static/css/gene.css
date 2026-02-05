@@ -675,6 +675,19 @@ text-decoration: none;
     margin: 0;
 }
 
+.gene__litsumm-warning {
+    display: inline-block;
+    background-color: #dc3545;
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .gene__litsumm-summary a {
     color: #3498db;
     text-decoration: none;
