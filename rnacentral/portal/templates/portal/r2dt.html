@@ -41,7 +41,7 @@
           "hideRnacentral": "true"
         }'
     />
-    {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost' %}
+    {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'test-2.rnacentral.org' or request.get_host == 'localhost' %}
         <script type="text/javascript" src="{% static "r2dt-web/dist/r2dt-web.js" %}"></script>
     {% else %}
         <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>

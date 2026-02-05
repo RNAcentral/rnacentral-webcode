@@ -158,7 +158,7 @@ limitations under the License.
 
         {% if rna.has_secondary_structure %}
         <!-- Load r2dt-web script early to prevent rendering errors -->
-        {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
+        {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'test-2.rnacentral.org' or request.get_host == 'localhost:8000' %}
             <script type="text/javascript" src="{% static "r2dt-web/dist/r2dt-web.js" %}"></script>
         {% else %}
             <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
@@ -218,7 +218,7 @@ limitations under the License.
                 <div style="padding-left: 1rem; margin-top: -10px">
                     <rnacentral-genome-browser data='{"urs": "{{ context.upi }}", "taxid": "{{ context.taxid }}"}'></rnacentral-genome-browser>
                 </div>
-                {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
+                {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'test-2.rnacentral.org' or request.get_host == 'localhost:8000' %}
                     <script type="text/javascript" src="{% static "rnacentral-genome-browser/build/genome-browser.js" %}"></script>
                 {% else %}
                     <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-genome-browser/build/genome-browser.js"></script>
@@ -455,7 +455,7 @@ limitations under the License.
                             database='{"name": "RNAcentral"}'
                             customStyle='{"fixCss": "true", "articleTitleSize": "16px", "hideRnacentral": "true"}'
                 />
-                {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
+                {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'test-2.rnacentral.org' or request.get_host == 'localhost:8000' %}
                     <script type="text/javascript" src="{% static "rnacentral-litscan/dist/rnacentral-litscan.js" %}"></script>
                 {% else %}
                     <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-litscan/dist/rnacentral-litscan.js"></script>
