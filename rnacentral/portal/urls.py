@@ -249,6 +249,13 @@ urlpatterns = [
         r"^api/internal/feedback-relay/?$", views.docbot_feedback, name="docbot-feedback"
     ),
 
+    # HuggingFace OAuth callback
+    re_path(
+        r"^hf-oauth-callback/?$",
+        TemplateView.as_view(template_name="portal/hf-oauth-callback.html"),
+        name="hf-oauth-callback",
+    ),
+
 ]
 
 # internal API
