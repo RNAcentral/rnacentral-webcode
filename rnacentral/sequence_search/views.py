@@ -21,26 +21,37 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-# Configure sequence search endpoint and proxy settings per environment
-if settings.ENVIRONMENT == "DEV":
-    SEQUENCE_SEARCH_ENDPOINT = "https://sequence-search-test.rnacentral.org"
-    proxies = None
-elif settings.ENVIRONMENT == "HX":
-    SEQUENCE_SEARCH_ENDPOINT = "https://sequence-search-test.rnacentral.org"
+# Configure proxy settings per environment
+if settings.ENVIRONMENT == "HX":
     proxies = {
         "http": "http://hx-wwwcache.ebi.ac.uk:3128",
         "https": "http://hx-wwwcache.ebi.ac.uk:3128",
     }
 elif settings.ENVIRONMENT == "HH":
-    SEQUENCE_SEARCH_ENDPOINT = "https://sequence-search-test.rnacentral.org"
     proxies = {
         "http": "http://hh-wwwcache.ebi.ac.uk:3128",
         "https": "http://hh-wwwcache.ebi.ac.uk:3128",
     }
 else:
-    # Fallback for any other environment
-    SEQUENCE_SEARCH_ENDPOINT = "https://sequence-search-test.rnacentral.org"
     proxies = None
+
+PROD_SEQUENCE_SEARCH = "https://sequence-search.rnacentral.org"
+TEST_SEQUENCE_SEARCH = "https://sequence-search-test.rnacentral.org"
+
+
+def get_sequence_search_endpoint(request):
+    """
+    Return the appropriate sequence search API endpoint.
+    - DEV: always test
+    - HX: always prod (prod fallback cluster)
+    - HH: prod unless the request URL contains 'test' (test deployments on dev/dev-2 contexts)
+    - fallback: prod
+    """
+    if settings.ENVIRONMENT == "DEV":
+        return TEST_SEQUENCE_SEARCH
+    if settings.ENVIRONMENT == "HH" and "test" in request.build_absolute_uri():
+        return TEST_SEQUENCE_SEARCH
+    return PROD_SEQUENCE_SEARCH
 
 
 def proxy_request(request, url, method):
@@ -72,7 +83,7 @@ def proxy_request(request, url, method):
 @permission_classes([AllowAny])
 def submit_job(request):
     """Submit a job to sequence search service."""
-    url = SEQUENCE_SEARCH_ENDPOINT + "/api/submit-job"
+    url = get_sequence_search_endpoint(request) + "/api/submit-job"
     return proxy_request(request, url, "POST")
 
 
@@ -81,7 +92,7 @@ def submit_job(request):
 @permission_classes([AllowAny])
 def job_status(request, job_id):
     """Displays status of a job."""
-    url = SEQUENCE_SEARCH_ENDPOINT + "/api/job-status/" + job_id
+    url = get_sequence_search_endpoint(request) + "/api/job-status/" + job_id
     return proxy_request(request, url, "GET")
 
 
@@ -90,7 +101,7 @@ def job_status(request, job_id):
 @permission_classes([AllowAny])
 def job_results(request, job_id):
     """Displays results of a finished job."""
-    url = SEQUENCE_SEARCH_ENDPOINT + "/api/facets-search/" + job_id
+    url = get_sequence_search_endpoint(request) + "/api/facets-search/" + job_id
     return proxy_request(request, url, "GET")
 
 
@@ -99,7 +110,7 @@ def job_results(request, job_id):
 @permission_classes([AllowAny])
 def infernal_job_status(request, job_id):
     """Displays status of infernal job."""
-    url = SEQUENCE_SEARCH_ENDPOINT + "/api/infernal-status/" + job_id
+    url = get_sequence_search_endpoint(request) + "/api/infernal-status/" + job_id
     return proxy_request(request, url, "GET")
 
 
@@ -108,7 +119,7 @@ def infernal_job_status(request, job_id):
 @permission_classes([AllowAny])
 def infernal_job_results(request, job_id):
     """Displays results of a finished infernal job."""
-    url = SEQUENCE_SEARCH_ENDPOINT + "/api/infernal-result/" + job_id
+    url = get_sequence_search_endpoint(request) + "/api/infernal-result/" + job_id
     return proxy_request(request, url, "GET")
 
 
@@ -117,7 +128,7 @@ def infernal_job_results(request, job_id):
 @permission_classes([AllowAny])
 def show_searches(request):
     """Displays info about searches."""
-    url = SEQUENCE_SEARCH_ENDPOINT + "/api/show-searches"
+    url = get_sequence_search_endpoint(request) + "/api/show-searches"
     return proxy_request(request, url, "GET")
 
 
