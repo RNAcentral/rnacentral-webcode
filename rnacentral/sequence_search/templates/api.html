@@ -27,7 +27,7 @@
       <div class="col-12">
         <h2>API Throttling</h2>
         <p>
-            The maximum number of requests from the same IP address is limited to 50 requests per minute.
+            The maximum number of requests from the same IP address is limited to 10 requests per minute.
         </p>
       </div>
     </div>
@@ -55,14 +55,119 @@
                 |-- ...
             </code>
         </p>
-        <table class="table table-borderless">
-          <thead>
-            <tr></tr>
-          </thead>
-          <tbody>
-            <tr><th><script src="https://gist.github.com/carlosribas/b2f4095df29a44116d5d0555d708b357.js"></script></th></tr>
-          </tbody>
-        </table>
+        <pre style="background:#f6f8fa;padding:1em;border-radius:4px;overflow-x:auto;"><code>"""
+Copyright [2009-present] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Usage: python search.py [file] [database]
+Examples:
+python search.py file.fasta               # search in all databases
+python search.py file.fasta mirbase       # search in miRBase only
+"""
+
+import json
+import math
+import requests
+import sys
+import time
+from Bio import SeqIO
+from pathlib import Path
+
+server = "https://sequence-search.rnacentral.org/"
+
+
+def get_sequence_search_result(description, sequence, job_id):
+    """Check job status and retrieve sequence search results."""
+    get_status = requests.get(server + "api/job-status/" + job_id)
+    job_status = json.loads(get_status.text)["status"]
+
+    if job_status == "finished":
+        start = 0
+        get_result = requests.get(
+            server + "api/facets-search/" + job_id + "?start=" + str(start) + "&amp;size=100"
+        )
+        get_result = json.loads(get_result.text)
+        results = [get_result["entries"]]
+
+        hit_count = get_result["hit_count"]
+        iter_number = int(math.ceil(hit_count / 100.0))
+
+        for num in range(iter_number - 1):
+            start += 100
+            new_request = requests.get(
+                server + "api/facets-search/" + job_id + "?start=" + str(start) + "&amp;size=100"
+            )
+            if new_request and new_request.text:
+                new_request_result = json.loads(new_request.text)
+                results.append(new_request_result["entries"])
+
+        return {
+            "job_id": job_id,
+            "hits": hit_count,
+            "status": job_status,
+            "description": description,
+            "sequence": str(sequence),
+            "results": [item for sublist in results for item in sublist],
+        }
+
+    elif job_status in ("error", "not_found"):
+        print("There was an error for record: {}".format(description))
+        return {"job_id": job_id, "status": job_status, "description": description, "sequence": str(sequence)}
+
+    elif job_status in ("pending", "running"):
+        time.sleep(10)
+        return get_sequence_search_result(description, sequence, job_id)
+
+
+def main():
+    if len(sys.argv) == 1:
+        print("You must specify the FASTA file")
+        exit()
+    elif len(sys.argv) == 2:
+        filename = sys.argv[1]
+        database = []
+    elif len(sys.argv) == 3:
+        filename = sys.argv[1]
+        database = [sys.argv[2]]
+    else:
+        print("Usage: python search.py file.fasta [database]")
+        exit()
+
+    Path("results").mkdir(parents=True, exist_ok=True)
+
+    with open(filename, mode="r") as handle:
+        for record in SeqIO.parse(handle, "fasta"):
+            description = record.description
+            sequence = record.seq
+
+            data = {"databases": database, "sequence": str(sequence)}
+            post_job = requests.post(server + "api/submit-job", json=data)
+
+            job_id = None
+            if post_job.status_code == 200:
+                job_id = json.loads(post_job.text)["job_id"]
+            else:
+                print("Failed to submit job for record:\n{}\n{}".format(description, sequence))
+
+            if job_id:
+                result = get_sequence_search_result(description, sequence, job_id)
+                if result:
+                    print("Saving results for {}".format(description))
+                    with open("results/" + description + ".json", "w") as f:
+                        json.dump(result, f)
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
       </div>
     </div>
 
@@ -75,7 +180,7 @@
           </div>
           <div class="panel-body">
             <div class="embed-responsive embed-responsive-16by9">
-              <iframe class="embed-responsive-item" src="https://search.rnacentral.org/api/doc" frameborder="0" allowfullscreen></iframe>
+              <iframe class="embed-responsive-item" src="https://sequence-search.rnacentral.org/docs" frameborder="0" allowfullscreen></iframe>
             </div>
           </div>
         </div>
