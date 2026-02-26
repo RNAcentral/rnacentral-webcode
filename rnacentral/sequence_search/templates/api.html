@@ -74,57 +74,69 @@ python search.py file.fasta mirbase       # search in miRBase only
 """
 
 import json
-import math
 import requests
 import sys
 import time
 from Bio import SeqIO
 from pathlib import Path
 
-server = "https://sequence-search.rnacentral.org/"
-
+SERVER = "https://sequence-search.rnacentral.org/"
 
 def get_sequence_search_result(description, sequence, job_id):
-    """Check job status and retrieve sequence search results."""
-    get_status = requests.get(server + "api/job-status/" + job_id)
-    job_status = json.loads(get_status.text)["status"]
+    """Poll job status then retrieve all paginated sequence search results."""
+    job_status = "pending"
+    while True:
+        try:
+            data = requests.get(SERVER + "api/job-status/" + job_id, timeout=30).json()
+            job_status = data["status"]
+            progress = data.get("progress", 0)
+        except requests.exceptions.RequestException as e:
+            print("Error checking job status, retrying: {}".format(e))
+            time.sleep(10)
+            continue
 
-    if job_status == "finished":
-        start = 0
-        get_result = requests.get(
-            server + "api/facets-search/" + job_id + "?start=" + str(start) + "&amp;size=100"
-        )
-        get_result = json.loads(get_result.text)
-        results = [get_result["entries"]]
+        if job_status == "finished":
+            break
+        elif job_status in ("error", "not_found"):
+            print("Search failed for record: {}".format(description))
+            return {"job_id": job_id, "status": job_status, "description": description, "sequence": str(sequence)}
+        else:
+            print("  {:.0f}% complete...".format(progress))
+            time.sleep(10)
 
-        hit_count = get_result["hit_count"]
-        iter_number = int(math.ceil(hit_count / 100.0))
+    # Fetch results page by page
+    results = []
+    page = 1
+    page_size = 100
+    hit_count = None
 
-        for num in range(iter_number - 1):
-            start += 100
-            new_request = requests.get(
-                server + "api/facets-search/" + job_id + "?start=" + str(start) + "&amp;size=100"
-            )
-            if new_request and new_request.text:
-                new_request_result = json.loads(new_request.text)
-                results.append(new_request_result["entries"])
+    while True:
+        try:
+            url = "{}api/job-results/{}?page={}&amp;page_size={}".format(SERVER, job_id, page, page_size)
+            data = requests.get(url, timeout=30).json()
+        except requests.exceptions.RequestException as e:
+            print("Error fetching results page {} for {}: {}".format(page, description, e))
+            break
 
-        return {
-            "job_id": job_id,
-            "hits": hit_count,
-            "status": job_status,
-            "description": description,
-            "sequence": str(sequence),
-            "results": [item for sublist in results for item in sublist],
-        }
+        if hit_count is None:
+            hit_count = data.get("hit_count", 0)
 
-    elif job_status in ("error", "not_found"):
-        print("There was an error for record: {}".format(description))
-        return {"job_id": job_id, "status": job_status, "description": description, "sequence": str(sequence)}
+        entries = data.get("entries", [])
+        results.extend(entries)
 
-    elif job_status in ("pending", "running"):
-        time.sleep(10)
-        return get_sequence_search_result(description, sequence, job_id)
+        if not entries or len(results) >= hit_count:
+            break
+
+        page += 1
+
+    return {
+        "job_id": job_id,
+        "hits": hit_count or 0,
+        "status": job_status,
+        "description": description,
+        "sequence": str(sequence),
+        "results": results,
+    }
 
 
 def main():
@@ -149,20 +161,24 @@ def main():
             sequence = record.seq
 
             data = {"databases": database, "sequence": str(sequence)}
-            post_job = requests.post(server + "api/submit-job", json=data)
+            post_job = requests.post(SERVER + "api/submit-job", json=data)
 
             job_id = None
             if post_job.status_code == 200:
-                job_id = json.loads(post_job.text)["job_id"]
+                job_id = post_job.json()["job_id"]
             else:
                 print("Failed to submit job for record:\n{}\n{}".format(description, sequence))
 
             if job_id:
                 result = get_sequence_search_result(description, sequence, job_id)
                 if result:
-                    print("Saving results for {}".format(description))
-                    with open("results/" + description + ".json", "w") as f:
-                        json.dump(result, f)
+                    hits = result.get("hits", 0)
+                    if hits == 0:
+                        print("No results found for {}".format(description))
+                    else:
+                        print("Saving {} hit(s) for {}".format(hits, description))
+                        with open("results/" + description + ".json", "w") as f:
+                            json.dump(result, f)
 
 
 if __name__ == "__main__":
