@@ -29,14 +29,20 @@ ADMINS = (("RNAcentral Team", "".join(["rnacentral", "@", "gmail.com"])),)
 
 MANAGERS = ADMINS
 
-# use the public Postgres database as the default value
+def _require_env(name):
+    value = os.getenv(name)
+    if not value:
+        raise RuntimeError(f"Required environment variable '{name}' is not set.")
+    return value
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("DB_NAME", "pfmegrnargs"),
-        "USER": os.getenv("DB_USERNAME", "reader"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "NWDMCE5xdipIjRrp"),
-        "HOST": os.getenv("DB_HOST", "hh-pgsql-public.ebi.ac.uk"),
+        "NAME": _require_env("DB_NAME"),
+        "USER": _require_env("DB_USERNAME"),
+        "PASSWORD": _require_env("DB_PASSWORD"),
+        "HOST": _require_env("DB_HOST"),
         "PORT": os.getenv("DB_PORT", 5432),
     }
 }
