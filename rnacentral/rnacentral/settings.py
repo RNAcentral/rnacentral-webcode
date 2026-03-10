@@ -29,21 +29,28 @@ ADMINS = (("RNAcentral Team", "".join(["rnacentral", "@", "gmail.com"])),)
 
 MANAGERS = ADMINS
 
-# use the public Postgres database as the default value
+def _require_env(name):
+    value = os.getenv(name)
+    if not value:
+        raise RuntimeError(f"Required environment variable '{name}' is not set.")
+    return value
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("DB_NAME", "pfmegrnargs"),
-        "USER": os.getenv("DB_USERNAME", "reader"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "NWDMCE5xdipIjRrp"),
-        "HOST": os.getenv("DB_HOST", "hh-pgsql-public.ebi.ac.uk"),
+        "NAME": _require_env("DB_NAME"),
+        "USER": _require_env("DB_USER"),
+        "PASSWORD": _require_env("DB_PASSWORD"),
+        "HOST": _require_env("DB_HOST"),
         "PORT": os.getenv("DB_PORT", 5432),
     }
 }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["*"]
+
+_extra_hosts = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h]
+ALLOWED_HOSTS = ["rnacentral.org", "www.rnacentral.org", "test.rnacentral.org"] + _extra_hosts
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -113,6 +120,8 @@ SECRET_KEY = os.getenv(
 )
 
 MIDDLEWARE = (
+    # SecurityMiddleware must be first so security headers are applied to all responses
+    "django.middleware.security.SecurityMiddleware",
     # gzip
     "django.middleware.gzip.GZipMiddleware",
     # default
@@ -160,7 +169,20 @@ TEMPLATES = [
 
 USE_ETAGS = True
 
-CORS_ORIGIN_ALLOW_ALL = True
+# Restrict CORS to known consumers rather than allowing all origins.
+# django-cors-headers evaluates CORS_ALLOWED_ORIGIN_REGEXES when an exact-match
+# against CORS_ALLOWED_ORIGINS fails, so both lists are checked.
+#
+# Add localhost / 127.0.0.1 origins in local_settings.py when running locally:
+#   CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    # All RNAcentral subdomains (test, sequence-search, blog, search, …)
+    r"^https://([a-z0-9-]+\.)*rnacentral\.org$",
+    # All EBI subdomains (www, wwwdev, wwwint, …)
+    r"^https://([a-z0-9-]+\.)*ebi\.ac\.uk$",
+    # GitHub Pages hosting the sequence-search embed widget
+    r"^https://rnacentral\.github\.io$",
+]
 
 ROOT_URLCONF = "rnacentral.urls"
 
@@ -372,6 +394,20 @@ USE_X_FORWARDED_HOST = True
 
 # Use a simplified runner to prevent any modifications to the database.
 TEST_RUNNER = "portal.tests.test_runner.FixedRunner"
+
+# Security settings (defence in depth — some may also be enforced at nginx/load-balancer level)
+# SECURE_BROWSER_XSS_FILTER is intentionally omitted: it was removed in Django 5.0 because
+# the X-XSS-Protection header it set is considered harmful on modern browsers.
+SECURE_SSL_REDIRECT = not DEBUG
+# Tell SecurityMiddleware that HTTPS is indicated by the X-Forwarded-Proto header set by the
+# reverse proxy, so that SECURE_SSL_REDIRECT does not loop on proxied requests.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+X_FRAME_OPTIONS = "DENY"
 
 try:
     from .local_settings import *
