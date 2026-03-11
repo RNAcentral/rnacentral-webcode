@@ -55,7 +55,22 @@
                 |-- ...
             </code>
         </p>
-        <pre style="background:#f6f8fa;padding:1em;border-radius:4px;overflow-x:auto;"><code>"""
+        <style>
+          #example-script { counter-reset: line; }
+          #example-script .line { counter-increment: line; display: block; }
+          #example-script .line::before {
+            content: counter(line);
+            display: inline-block;
+            width: 2.5em;
+            text-align: right;
+            margin-right: 1em;
+            color: #999;
+            border-right: 1px solid #ddd;
+            padding-right: 0.5em;
+            user-select: none;
+          }
+        </style>
+        <pre id="example-script" style="background:#f6f8fa;padding:1em;border-radius:4px;overflow-x:auto;"><code>"""
 Copyright [2009-present] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -184,6 +199,16 @@ def main():
 if __name__ == "__main__":
     main()
 </code></pre>
+        <script>
+          (function() {
+            var code = document.getElementById('example-script').querySelector('code');
+            var lines = code.innerHTML.split('\n');
+            if (lines[lines.length - 1] === '') lines.pop();
+            code.innerHTML = lines.map(function(line) {
+              return '<span class="line">' + line + '</span>';
+            }).join('');
+          })();
+        </script>
       </div>
     </div>
 
