@@ -809,16 +809,10 @@ def proxy(request):
             "This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk, mirbase.org, rfam.org or rna.bgsu.edu only."
         )
 
-    if domain == "rna.bgsu.edu":
-        # make sure to use the full url
-        try:
-            query_string = request.META["QUERY_STRING"]
-            url = query_string.split("url=")[1]
-        except IndexError:
-            pass
-
     try:
-        proxied_response = requests.get(url)
+        # timeout prevents slow-loris / hung connections; allow_redirects=False
+        # prevents redirect chains from escaping the validated domain.
+        proxied_response = requests.get(url, timeout=10, allow_redirects=False)
         if proxied_response.status_code == 200:
             if (
                 domain == "rfam.org"
@@ -1084,12 +1078,22 @@ def docbot_feedback(request):
 
 def handler500(request, *args, **argv):
     """
-    Customized version of handler500 with status_code = 200 in order
-    to make EBI load balancer to proxy pass to this view, instead of displaying 500.
+    Custom 500 handler that renders our error template with the correct HTTP status.
 
-    https://stackoverflow.com/questions/17662928/django-creating-a-custom-500-404-error-page
+    The EBI load balancer concern (previously worked around by returning 200) is
+    already handled at the nginx layer: nginx.yaml intercepts 5xx responses from
+    Gunicorn via `error_page 500 /error/` and internally proxies to the /error/
+    Django view (which returns 200), so the load balancer never sees the raw 500.
+
+    The load balancer's health probing should use /health-check/ rather than
+    individual request responses — that endpoint already returns 200/503 based on
+    real service state and is documented as the Traffic Manager signal.
+
+    NOTE FOR INFRASTRUCTURE TEAM: if the EBI load balancer is still configured to
+    probe arbitrary page responses rather than /health-check/, please update it to
+    target /health-check/ instead. This restores correct HTTP semantics and ensures
+    application errors are visible to monitoring without affecting load-balancer
+    routing decisions.
     """
-    # warning: in django2 signature of this function has changed
     response = render(request, "500.html", {})
-    response.status_code = 200
     return response
