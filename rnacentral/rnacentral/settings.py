@@ -50,7 +50,7 @@ DATABASES = {
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 
 _extra_hosts = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h]
-ALLOWED_HOSTS = ["rnacentral.org", "www.rnacentral.org", "test.rnacentral.org"] + _extra_hosts
+ALLOWED_HOSTS = ["rnacentral.org", "www.rnacentral.org", "test.rnacentral.org", "test-2.rnacentral.org"] + _extra_hosts
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
