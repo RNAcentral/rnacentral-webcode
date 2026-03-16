@@ -235,6 +235,13 @@ limitations under the License.
         <!-- bootstrap conflicts with jquery-ui tooltip, so it should go after datatables -->
         <script src="{% static "node_modules/bootstrap/dist/js/bootstrap.js" %}"></script>
 
+        <!-- HuggingFace Dataset Exporter Web Component (loaded outside compress block for code splitting) -->
+        {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'test-2.rnacentral.org' or request.get_host == 'localhost:8000' %}
+            <script type="text/javascript" src="{% static "js/components/hf-exporter/bundle.js" %}"></script>
+        {% else %}
+            <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-hf-dataset-component/bundle.js"></script>
+        {% endif %}
+
         <script>
             $(function() {
               // record javascript errors for selenium
