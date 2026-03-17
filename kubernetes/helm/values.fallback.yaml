@@ -14,3 +14,9 @@ proxy: proxy-hx
 
 # RNAcentral
 rnacentralReplicas: 1
+
+# Allowed hosts (in addition to rnacentral.org domains hardcoded in settings.py)
+allowedHosts: ".caas.ebi.ac.uk"
+
+# Disable SSL redirect so the site is accessible over plain HTTP on NodePort
+djangoDebug: "True"

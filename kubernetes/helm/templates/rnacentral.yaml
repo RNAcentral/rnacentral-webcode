@@ -61,14 +61,14 @@ spec:
             {{- end }}
           env:
             - name: RNACENTRAL_ENV
-              value: {{ .Values.setEnv }}
+              value: {{ .Values.setEnv | quote }}
             {{- if .Values.allowedHosts }}
             - name: ALLOWED_HOSTS
-              value: {{ .Values.allowedHosts }}
+              value: {{ .Values.allowedHosts | quote }}
             {{- end }}
             {{- if .Values.djangoDebug }}
             - name: DJANGO_DEBUG
-              value: {{ .Values.djangoDebug }}
+              value: {{ .Values.djangoDebug | quote }}
             {{- end }}
             - name: DOORBELL_API_KEY
               valueFrom:
