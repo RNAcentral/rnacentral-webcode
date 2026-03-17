@@ -15,6 +15,12 @@ sitemaps: "false"
 # Add environment variable
 setEnv: "dev"
 
+# Allowed hosts (in addition to rnacentral.org domains hardcoded in settings.py)
+allowedHosts: ".caas.ebi.ac.uk"
+
+# Disable SSL redirect so the site is accessible over plain HTTP on NodePort
+djangoDebug: "True"
+
 # Memcached
 memcachedRequestsMemory: "4000Mi"
 memcachedLimitsMemory: "4000Mi"
