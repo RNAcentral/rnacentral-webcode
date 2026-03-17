@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import fnmatch
 import os
 
 from dotenv import load_dotenv
@@ -49,8 +50,18 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 
+_static_hosts = ["rnacentral.org", "www.rnacentral.org", "test.rnacentral.org", "test-2.rnacentral.org"]
 _extra_hosts = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h]
-ALLOWED_HOSTS = ["rnacentral.org", "www.rnacentral.org", "test.rnacentral.org", "test-2.rnacentral.org"] + _extra_hosts
+
+
+class _AllowedHosts(list):
+    """Extends ALLOWED_HOSTS to support glob patterns (e.g. *-worker-*.caas.ebi.ac.uk)."""
+
+    def __contains__(self, host):
+        return any(fnmatch.fnmatch(host, pattern) for pattern in self)
+
+
+ALLOWED_HOSTS = _AllowedHosts(_static_hosts + _extra_hosts)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
