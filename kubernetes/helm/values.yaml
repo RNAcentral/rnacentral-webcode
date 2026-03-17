@@ -25,6 +25,12 @@ sitemaps: "true"
 # Add environment variable
 setEnv: "prod"
 
+# Allowed hosts (in addition to rnacentral.org domains hardcoded in settings.py)
+allowedHosts: ".caas.ebi.ac.uk"
+
+# Disable SSL redirect so the site is accessible over plain HTTP on NodePort
+djangoDebug: "True"
+
 # Memcached
 # Using only 1 because no data is shared between replicas.
 # This link explains a little more: https://github.com/helm/charts/issues/11773
