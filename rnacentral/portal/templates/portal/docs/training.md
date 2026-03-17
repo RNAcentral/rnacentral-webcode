@@ -82,6 +82,10 @@ RNAcentral has been described in several papers:
   <a href="http://www.ncbi.nlm.nih.gov/pubmed/21940779">Pubmed</a>
 </blockquote>
 
+### Other resources <a style="cursor: pointer" id="other-resources" ng-click="scrollTo('other-resources')" name="other-resources" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+Explore community-contributed educational resources including tutorials, slides, and lecture materials: [Educational Resources Repository](https://github.com/RNAcentral/rna-educational-resources).
+
 ### Feedback <a style="cursor: pointer" id="feedback" ng-click="scrollTo('feedback')" name="feedback" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Let us know what you think by getting in touch on [Twitter](https://twitter.com/rnacentral),

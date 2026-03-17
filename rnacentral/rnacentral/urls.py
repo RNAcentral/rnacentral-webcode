@@ -59,6 +59,6 @@ else:
 urlpatterns += additional_settings
 
 
-# Override 500 page, so that in case of an error, we still display our error page with normal response status
-# and EBI load balancer still proxies to our website instead of showing an EBI 'service down' page
+# Override 500 handler to render our custom error template.
+# Load-balancer health probing should target /health-check/, not individual responses.
 handler500 = "portal.views.handler500"
