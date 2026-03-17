@@ -485,6 +485,37 @@ var textSearchResults = {
             );
         };
 
+        /**
+         * Show HuggingFace Dataset exporter and configure it with current search
+         */
+        ctrl.showHFExporter = function() {
+            // Build the EBI Search API URL from current search query
+            var queryParam = encodeURIComponent(`(${search.preprocessQuery(ctrl.search.query)})`);
+            var sourceApiUrl = `https://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=${queryParam}&size=1000&sort=id&format=json`;
+
+            // Get the component element
+            var exporter = document.getElementById('hf-exporter');
+
+            if (exporter) {
+                // Set URLs dynamically from shared routes config
+                exporter.setAttribute('source-api-url', sourceApiUrl);
+                exporter.setAttribute('export-api-url', routes.exportApp() + '/submit');
+                exporter.setAttribute('redirect-uri', window.location.origin + '/hf-oauth-callback');
+
+                // Also update internal config since connectedCallback already ran
+                if (exporter.config) {
+                    exporter.config.exportApiUrl = routes.exportApp() + '/submit';
+                    exporter.config.redirectUri = window.location.origin + '/hf-oauth-callback';
+                }
+
+                // Show the component
+                exporter.style.display = 'block';
+
+                // Scroll to component
+                exporter.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        };
+
         /*
         ctrl.expert_db_logo = function(expert_db) {
             // expert_db can contain some html markup - strip it off, replace whitespaces with hyphens
