@@ -182,6 +182,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://([a-z0-9-]+\.)*ebi\.ac\.uk$",
     # GitHub Pages hosting the sequence-search embed widget
     r"^https://rnacentral\.github\.io$",
+    # PomBase
+    r"^https://www\.pombase\.org$",
 ]
 
 ROOT_URLCONF = "rnacentral.urls"
