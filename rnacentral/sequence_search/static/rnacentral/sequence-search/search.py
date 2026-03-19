@@ -1,64 +1,4 @@
-{% extends "portal/base.html" %}
-{% load static %}
-
-{% block title %}
-    Sequence search API
-{% endblock %}
-
-{% block content %}
-    <div class="row">
-      <div class="col-12">
-        <h1><i class="fa fa-book"></i> Sequence search API</h1>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12">
-        <h2>Overview</h2>
-        <p>
-            The RNAcentral sequence similarity search API allows you to perform most of the same actions through
-            your own tools as you can through the web interface. Any tool capable of making HTTP requests can
-            communicate with this API, for example <a href="https://curl.se/" target="_blank">curl</a>.
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12">
-        <h2>API Throttling</h2>
-        <p>
-            Job submissions (<code>/api/submit-job</code>) are rate limited to 10 requests per minute per IP address.
-            There is no rate limit on job status or results endpoints.
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12">
-        <h2>Example script</h2>
-        <p>
-            An example of a Python script to perform searches for each record of a FASTA file is provided below.
-            It uses the biopython package and requires python >= 3.5.
-        </p>
-        <p>
-            You can use this script to search for sequences in the RNAcentral database or in one of the
-            <a href="/expert-databases">Expert Databases</a>.
-        </p>
-        <p>
-            The results will be organized in a new directory. A file in JSON format containing the metadata and the
-            search results will be created. This file will be named with the description of the sequence.
-            Here is an example:
-        </p>
-        <p>
-            <code>
-                results<br />
-                |-- URS00001F7A66_9031 Gallus gallus (chicken) gga-let-7g-5p.json<br />
-                |-- ...
-            </code>
-        </p>
-        <link rel="stylesheet" href="{% static 'rnacentral/sequence-search/prism/prism.min.css' %}">
-        <link rel="stylesheet" href="{% static 'rnacentral/sequence-search/prism/prism-line-numbers.min.css' %}">
-        <pre class="line-numbers"><code class="language-python">"""
+"""
 Copyright [2009-present] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -115,7 +55,7 @@ def get_sequence_search_result(description, sequence, job_id):
 
     while True:
         try:
-            url = "{}api/job-results/{}?page={}&amp;page_size={}".format(SERVER, job_id, page, page_size)
+            url = "{}api/job-results/{}?page={}&page_size={}".format(SERVER, job_id, page, page_size)
             data = requests.get(url, timeout=30).json()
         except requests.exceptions.RequestException as e:
             print("Error fetching results page {} for {}: {}".format(page, description, e))
@@ -186,27 +126,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-</code></pre>
-        <script src="{% static 'rnacentral/sequence-search/prism/prism.min.js' %}"></script>
-        <script src="{% static 'rnacentral/sequence-search/prism/prism-python.min.js' %}"></script>
-        <script src="{% static 'rnacentral/sequence-search/prism/prism-line-numbers.min.js' %}"></script>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <h2>Swagger</h2>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <p class="panel-title">Explore the API through Swagger</p>
-          </div>
-          <div class="panel-body">
-            <div class="embed-responsive embed-responsive-16by9">
-              <iframe class="embed-responsive-item" src="https://sequence-search.rnacentral.org/docs" frameborder="0" allowfullscreen></iframe>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-{% endblock %}
