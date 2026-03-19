@@ -61,7 +61,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name',
             'tax_string': 'Taxonomy'
         },
-        facetfields: ['entry_type','rna_type', 'so_rna_type', 'has_litsumm', 'has_lit_scan', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        facetfields: ['entry_type','rna_type', 'so_rna_type', 'has_litsumm', 'has_lit_scan', 'has_goflow', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         foldableFacets: ['rna_type', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates'],
         sortableFields: [
             { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
@@ -406,10 +406,21 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
                 facet.facetValues = self.consolidateFacetValues(facet.facetValues);
                 // Update labels
                 facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.value === 'True') { 
+                    if (facetValue.value === 'True') {
                         facetValue.label = 'Publications available';
-                    } else if (facetValue.value === 'False') { 
+                    } else if (facetValue.value === 'False') {
                         facetValue.label = 'No publications';
+                    }
+                });
+            }
+            if (facet.id === 'has_goflow') {
+                facet.label = 'GoFlow';
+                facet.facetValues = self.consolidateFacetValues(facet.facetValues);
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.value === 'True') {
+                        facetValue.label = 'GoFlow available';
+                    } else if (facetValue.value === 'False') {
+                        facetValue.label = 'GoFlow not available';
                     }
                 });
             }
